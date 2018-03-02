@@ -1,0 +1,143 @@
+---
+title: "crplot"
+author: "Christopher Weld <ceweld@email.wm.edu>, Lawrence Leemis <leemis@math.wm.edu>"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{crplot}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8} 
+---
+ 
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction   
+  
+The `crplot` function is part of the `conf` package which generates a two-dimensional confidence region plot for the parameters of the Weibull or inverse Gaussian distributions fitted to a dataset.
+
+## Installation Instructions
+
+The `crplot` function is accessible following installation of the `conf` package:
+
+    install.packages("conf")
+    library(conf)
+
+## Example
+
+The dataset for ball bearing failure times, given by Lieblein and Zelen^[Lieblein, J., and Zelen, M. (1956), Statistical Investigation of the Fatigue Life of Deep-Groove Ball Bearings, *Journal of Research of the National Bureau of Standards*, 57, 273--316], is used throughout this example.  Its fit to the Weibull distribution, including the confidence region illustrated next, is also explained in depth in the Reliability textbook by Leemis^[Leemis, L. (1995), *Reliability: Probabilistic Models and Statistical Methods Second Edition*, Prentice-Hall Inc., 345--251].
+
+After reading ball bearing failure times (in millions of revolutions) into the vector `ballbearing`, `crplot` is called using arguments for the Weibull distribution, and a level of significance $\alpha = 0.05$ to yield a $95\%$ confidence region.
+ 
+```{r, fig.width = 4, fig.height = 4, fig.show = 'hold'}
+library(conf)
+ballbearing <- c(17.88, 28.92, 33.00, 41.52, 42.12, 45.60, 48.48, 51.84,
+                 51.96, 54.12, 55.56, 67.80, 68.64, 68.64, 68.88, 84.12,
+                 93.12, 98.64, 105.12, 105.84, 127.92, 128.04, 173.40)
+crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull") 
+```
+
+In addition to the $95\%$ confidence region plot, output informs the user that its smoothing boundary search heuristic (default heuristic) uses 102 points to complete the plot.  The maximum likelihood estimator values are plotted as a + within the confidence region.
+
+Valuable perspective is often given if the origin is included within a plot.  The argument `origin = TRUE` in the plot below invokes this change.  Alternatively, the user can specify a unique frame of reference using optional `xlim` and/or `ylim` arguments.  Two additional modifications complete the plot below: its points are hidden using `pts = FALSE`, and significant figures for the respective horizontal and vertical axes are specified using `sf = c(2, 4)`.
+
+```{r, fig.width = 4, fig.height = 4, fig.show = 'hold'}
+crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", 
+       pts = FALSE, sf = c(2, 4), origin = TRUE)
+```
+    
+Setting `info = TRUE` allows the user to access data pertinent to the resulting plot for subsequent analysis and/or plot custimization.  This is shown next; also note the assignment `x <- crplot(...)`, which is necessary to collect plot data for future use.
+
+```{r, fig.height = 4, fig.width = 4, fig.keep = 'none'}
+x <- crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", 
+       pts = FALSE, sf = c(2, 4), origin = TRUE, info = TRUE)
+names(x)
+```
+
+Displaying `names(x)` confirms that `info = TRUE` directs `crplot` to return a list with respective arguments `"kappa"`, `"lambda"`, and `"phi"`.  The `"kappa"` and `"lambda"` parameters correspond to the plot horizontal and vertical axes values.  They are the Weibull distribution shape and scale parameters, respectively.  These parameters update appropriately when fitting the data to the inverse Gaussian distribution (returning mean and shape parameters, `"mu"` and `"lambda"`, respectively).  The third list argument, `"phi"`, gives angles in radians relative to the MLE, corresponding to each plot point.  These `"phi"` ($\phi$) values determined plot points using Jaeger's radial profile log likelihood technique^[Jaeger, A. (2016), "Computation of Two- and Three-Dimensional Confidence Regions With the Likelihood Ratio", *The American Statistician*, 70, 395--398].
+
+Custom plots and analysis are possible using the data returned when `info = TRUE`.  Two examples follow.  The first shades the confidence region and alters its border line-type.  
+ 
+```{r, fig.height = 4, fig.width = 3.5, fig.show = 'asis'}
+# with confidence region data stored in x, it is now available for custom graphics
+plot(x$kappa, x$lambda, type = 'l', lty = 5, xlim = c(0, 3), ylim = c(0, 0.0163),
+     xlab = expression(kappa), ylab = expression(lambda))
+polygon(x$kappa, x$lambda, col = "gray80", border = NA)
+```
+
+The second example will analyze $\phi$ angles (with respect to the MLE) used to create the confidence region plot.  This is done with two plots.  
+
+The first of the two plots illustrates the confidence region plot, with segments radiating from its MLE at applicable $\phi$ values.  Note the greater density of $\phi$ angles for plot regions with greater curvature.  This is a consequence of the smoothing search heuristic (`heuristic = 1`) plotting algorithm used as the default plotting method for `crplot`.
+
+The second plot is a perspective of `phi` values numerically using a cummulitive distribution function.  Note how most $\phi$ angles are near horizontal orientation ($0$ and $\pi$ radians, respectfully).  This is a consequence of the vastly different scales for its respective parameters, $\kappa$ and $\lambda$.  The *actual* $\phi$ angles required to assemble the confidence region plot can vary greatly from their *apparent* angles due to scale differences between axes.
+
+```{r, fig.show = 'hold'}
+# record MLE values (previously output to screen when info = TRUE) & reproduce CR plot
+kappa.hat <- 2.10206
+lambda.hat <- 0.01221
+crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", xlab = expression(kappa), 
+       ylab = expression(lambda), main = paste0("Confidence Region"),
+       pts = FALSE, mlelab = FALSE, sf = c(2, 4), origin = TRUE)
+
+# 1st analysis plot: overlay phi angles (as line segments) on the confidence region plot
+par(xpd = FALSE)
+segments(rep(kappa.hat, length(x$phi)), rep(lambda.hat, length(x$phi)),
+         x1 = kappa.hat * cos(x$phi) + kappa.hat, y1 = kappa.hat * sin(x$phi) + lambda.hat, lwd = 0.2)
+
+# 2nd analysis plot: CDF of phi angles reveals most are very near 0 (2pi) and pi
+plot.ecdf(x$phi, pch = 20, cex = 0.1, axes = FALSE, xlab = expression(phi), ylab = "", main = "CDF")
+axis(side = 1, at = round(c(0, pi, 2*pi), 2))
+axis(side = 2, at = c(0, 1), las = 2)
+```
+
+All confidence region plots to this point are made using the default smoothing search heuristic (`heuristic = 1`).  It plots more points in border regions with higher curvature, and does so until a maximum apparant angle constraint between three successive points is met (*apparant* angles assume a square plot area and account for axes scale differences).  That constraint (default $5^\circ$) is customizable using the optional `maxdeg` argument to yield plots using more points for greater definition (`maxdeg` values < 5) or with less points at a reduced resolution (`maxdeg` values > 5).  Lower resolution graphics sacrifice detail and are less computationally expensive.  This is significant if generating a large sample of confidence regions (i.e. hundreds of confidence regions supporting bootstrap analysis repetitions, or a large pairwise matrix evaluation).
+
+The default `maxdeg = 5` is appropriate for most circumstances.  Values of `maxdeg` < $3^\circ$ are not permitted to avoid numeric approximation complications implicit with populating too many confidence region boundary points. The plots below illustrate confidence region plot results with increased and decreased resolution.
+
+```{r, fig.show = 'hold'}
+crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", 
+       maxdeg = 3, main = "maxdeg = 3")
+crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", 
+       maxdeg = 3, main = "maxdeg = 3 (pts hidden)", pts = FALSE)
+crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", 
+       maxdeg = 20, main = "maxdeg = 20")
+crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", 
+       maxdeg = 20, main = "maxdeg = 20 (pts hidden)", pts = FALSE)
+```
+
+An alternative plot heuristic is available using the optional arugument `heuristic = 0`.  It plots a predetermined number of confidence region points (user specified using `ellipse_n`) in a roughly uniform fashion along its boundary using an elliptic-oriented plotting technique.  Its name references the method its algorithm uses to draw an ellipse---known as the parallelogram method; a result of the Theorem of Steiner^[Meserve, B. E. (2014), *Fundamental Concepts of Geometry*, Courier Corporation]---that identifies approximately equidistant points along the confidence region boundary regardless of the relative scales of its axes.
+
+The next pair of plots illustrate differences between the default smoothing search plot heuristic and the elliptic-oriented alternative heuristic (`heuristic = 0`).  They also illustrate a fit to the inverse Gaussian distribution, rather than the Weibull distribution shown previously.
+
+```{r, fig.show = 'hold'}
+crplot(dataset = ballbearing, alpha = 0.05, distn = "invgauss", sf = c(2, 2),
+       main = "default; heuristic = 1")
+crplot(dataset = ballbearing, alpha = 0.05, distn = "invgauss", sf = c(2, 2), 
+       heuristic = 0, ellipse_n = 100, main = "heuristic = 0")
+```
+
+An `ellipse_n` value must always accompany use of `heuristic = 0`.  Additionally, `ellipse_n` must be a positive integer multiple of four $\geq 8$.  This requirement enables its algorithm to exploit computational efficiencies associated with ellipse symettry throughout its respective quadrants.
+
+Plot heuristics are combined if an `ellipse_n` value $\geq 8$ is given under default plot conditions, or equivalently `heuristic = 1`.  In this case, `crplot` implements the heuristics in sequence.  It begins plotting the confidence region using `ellipse_n` points through the `heuristic = 0` plot algorithm, and then augments points as necessary to meet `maxdeg` constraints corresponding to its default smoothing search heuristic.  
+
+Although its steps are hidden from view when using this approach, they are shown below for clarity.  The final plot (combination: step 2) augments the step 1 plot points (showing `heuristic = 0`, `ellipse_n = 16` results) according to the smoothing search heuristic with a maximum angle tollerance of `maxdeg = 10`.   
+
+```{r, fig.show = 'hold'}
+crplot(dataset = ballbearing, alpha = 0.05, distn = "invgauss", sf = c(2, 2),
+       heuristic = 0, ellipse_n = 40, main = "combination: step 1")
+crplot(dataset = ballbearing, alpha = 0.05, distn = "invgauss", sf = c(2, 2), 
+       maxdeg = 10, ellipse_n = 40, main = "combination: step 2")
+```
+
+The next plot illustrates the default smoothing search heuristic with `maxdeg = 10` (matching the above parameterization) for means of comparison with the combined approach above.
+
+```{r, fig.show = 'hold'}
+crplot(dataset = ballbearing, alpha = 0.05, distn = "invgauss", sf = c(2, 2), 
+       maxdeg = 10, main = "default (heuristic = 1)")
+```
+

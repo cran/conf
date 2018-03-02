@@ -1,0 +1,11 @@
+9790f9f56b473890fdcc7a42d6b6d146 *DESCRIPTION
+6a3a28d9ec05a1bda1a32675ba4236d5 *NAMESPACE
+6f789fb6f6ebc6fe7ea3dd49c68022cc *R/conf-package.R
+639fc4fd3d782e9e870ba6a1e3e47e56 *R/crplot.R
+f58b4e208485b60362921142343beacd *build/vignette.rds
+f01e3461865fc269bbbb289f86140b81 *inst/doc/crplot.R
+c6a1da1f8edb7a38263ca23c9d7a80aa *inst/doc/crplot.Rmd
+16857cdd579a0d3177ab44c2dacb8dc3 *inst/doc/crplot.html
+f28789a8f309b38c2e1a60a7a2be6f39 *man/conf.Rd
+89627bab655052743f1677415d15f6a0 *man/crplot.Rd
+c6a1da1f8edb7a38263ca23c9d7a80aa *vignettes/crplot.Rmd
