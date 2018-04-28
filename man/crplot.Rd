@@ -22,6 +22,7 @@ crplot(dataset, alpha, distn,
                 ylim      = NULL,
                 tol       = .Machine$double.eps ^ 0.5,
                 info      = FALSE,
+                repair    = TRUE,
                 showplot  = TRUE )
 }
 \arguments{
@@ -29,7 +30,8 @@ crplot(dataset, alpha, distn,
 
 \item{alpha}{significance level; resulting plot illustrates a 100(1 - alpha)\% confidence region.}
 
-\item{distn}{distribution to fit the dataset to; accepted values: \code{"weibull"}, \code{"invgauss"}.}
+\item{distn}{distribution to fit the dataset to; accepted values: \code{'gamma'}, \code{'invgauss'},
+\code{'lnorm'}, \code{'llogis'}, \code{'norm'}, \code{'weibull'}.}
 
 \item{heuristic}{numeric value selecting method for plotting: 0 for elliptic-oriented point distribution, and
 1 for smoothing boundary search heuristic.}
@@ -70,6 +72,9 @@ likelihood estimate coordinate point (default is \code{TRUE}).}
 \item{info}{logical argument to return plot information: MLE prints to screen; (x, y) plot point coordinates
 and corresponding phi angles (with respect to MLE) are returned as a list.}
 
+\item{repair}{logical argument to repair regions inaccessible using a radial angle from its MLE due to multiple
+roots at select \eqn{\phi} angles.}
+
 \item{showplot}{logical argument specifying if a plot is output; altering from its default of \code{TRUE} is
 only logical assuming \code{crplot} is run for its data only (see the \code{info} argument).}
 }
@@ -77,8 +82,9 @@ only logical assuming \code{crplot} is run for its data only (see the \code{info
 if the optional argument \code{info = TRUE} is included then a list of plot coordinates and phi angles is returned
 }
 \description{
-Plots the two-dimensional confidence region for probability distribution (Weibull or
-inverse Gaussian) parameters corresponding to a user given dataset and level of significance.
+Plots the two-dimensional confidence region for probability distribution parameters (supported distribution
+suffixes: gamma, invgauss, lnorm, llogis, norm, weibull) corresponding to a user given dataset and level
+of significance.
 }
 \details{
 This function supports two-dimensional confidence region plots for Weibull or inverse Gaussian parameters.
@@ -119,6 +125,64 @@ azimuth from its MLE, and locates the associated confidence region boundary poin
 asymptotic results associated with the ratio test statistic \eqn{-2 [log L(\theta) - log L(\theta hat)]}
 which converges in distribution to the chi-square distribution with two degrees of freedom (for
 a two parameter distribution).
+
+This package uses the following parameterization for its supported distributions, and illustrates
+the corresponding confidence regions accordingly:
+
+\itemize{
+\item The gamma distribution
+for shape parameter \eqn{\kappa > 0}, scale parameter \eqn{\theta > 0}, and \eqn{x > 0},
+has the probability density function
+\deqn{1 / (Gamma(\kappa) \theta ^ \kappa) x ^ (\kappa - 1) exp(-x / \theta).}
+
+\item The inverse Gaussian distribution
+for mean \eqn{\mu > 0}, shape parameter \eqn{\lambda > 0}, and \eqn{x > 0},
+has the probability density function
+\deqn{\sqrt (\lambda / (2 \pi x ^ 3)) exp( - \lambda (x - \mu) ^ 2 / (2 \mu ^ 2 x)).}
+
+\item The log normal distribution
+for the real-numbered mean \eqn{\mu} of the logarithm, standard deviation \eqn{\sigma > 0}
+of the logarithm, and \eqn{x > 0},
+has the probability density function
+\deqn{1 / (x \sigma \sqrt(2 \pi)) exp(-(\log x - \mu) ^ 2 / (2 \sigma ^ 2)).}
+
+\item The log logistic distribution
+for scale parameter \eqn{\alpha > 0}, shape parameter \eqn{\beta > 0}, and \eqn{x \ge 0},
+has a probability density function
+\deqn{(\beta / \alpha) (x / \alpha) ^ (\beta - 1) / (1 + (x / \beta)) ^ 2.}
+
+\item The normal distribution
+for the real-numbered mean \eqn{\mu}, standard deviation \eqn{\sigma > 0}, and \eqn{x} is a real number,
+has the probability density function
+\deqn{1 / \sqrt (2 \pi \sigma ^ 2) exp(-(x - \mu) ^ 2 / (2 \sigma ^ 2)).}
+
+\item The Weibull distribution
+for scale parameter \eqn{\lambda > 0}, shape parameter \eqn{\kappa > 0}, and \eqn{x > 0},
+has the probability density function
+\deqn{\kappa (\lambda ^ \kappa) x ^ (\kappa - 1) exp(-(\lambda x) ^ \kappa).}
+}
+
+The confidence region horizontal and vertical axis convention in use by \code{crplot} for each
+distribution is:
+\itemize{
+\item The gamma distribution confidence region plot shows \eqn{\theta} on its horizontal axis,
+and \eqn{\kappa} on its vertical axis.
+
+\item The inverse Gaussian distribution confidence region plot shows \eqn{\mu} on its horizontal
+axis, and \eqn{\lambda} on its vertical axis.
+
+\item The log normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis,
+and \eqn{\sigma} on its vertical axis.
+
+\item The log logistic distribution confidence region plot shows \eqn{\alpha} on its
+horizontal axis, and \eqn{\beta} on its vertical axis.
+
+\item The normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis, and
+\eqn{\sigma} on its vertical axis.
+
+\item The Weibull distribution confidence region plot shows \eqn{\kappa} on its horizontal axis,
+and \eqn{\lambda} on its vertical axis.
+}
 }
 \examples{
 ## plot the 95\% confidence region for Weibull shape and scale parameters
@@ -141,6 +205,10 @@ crplot(dataset = ballbearing, distn = "weibull", alpha = 0.05,
 crplot(dataset = ballbearing, distn = "invgauss", alpha = 0.05,
        pts = FALSE)
 }
+\references{
+Jaeger, A. (2016), "Computation of Two- and Three-Dimensional Confidence Regions with the Likelihood Ratio",
+The American Statistician, 49, 48--53.
+}
 \seealso{
 \code{\link{uniroot}}
 }
@@ -148,6 +216,9 @@ crplot(dataset = ballbearing, distn = "invgauss", alpha = 0.05,
 Christopher Weld (\email{ceweld@email.wm.edu})
 
 Lawrence Leemis (\email{leemis@math.wm.edu})
+}
+\concept{
+confidence region plot
 }
 \keyword{Estimation,}
 \keyword{Graphical}

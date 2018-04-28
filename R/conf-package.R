@@ -1,19 +1,26 @@
-#' conf: A facilitating package for statistical measures of confidence
+#' conf: Visualization and Analysis of Statistical Measures of Confidence
 #'
 #' @description
-#' This package currently focuses on two-dimensional confidence region plots for parametric
-#' probability distribution (Weibull or inverse Gaussian) parameters corresponding to a user
-#' given dataset and level of significance.
+#' Enables:
+#' \enumerate{
+#' \item confidence region plots in two-dimensions corresponding to a user given dataset,
+#' level of significance, and parametric probability distribution (supported distribution suffixes:
+#' gamma, invgauss, lnorm, llogis, norm, weibull), and
+#' \item calculating confidence intervals and the associated actual coverage for binomial proportions.
+#' }
 #'
-#' \bold{Request from authors}: We appreciate your feedback, and encourage users to email us (addresses below).
-#' In addition to your suggestions regarding its functionality, we welcome and appreciate your insight
+#' \bold{Request from authors}: We welcome and appreciate your feedback and insights
 #' as to how this resource is being leveraged to improve whatever it is you do.  Please include your name
 #' and adedemic and/or business affiliation in your correspondance.
 #'
 #' @details
-#' This package includes the following functions available for user:
+#' This package includes the functions:
 #' \itemize{
-#' \item confidence region plots: \code{\link{crplot}}
+#' \item confidence region plots: \code{\link{crplot}},
+#' \item confidence intervals for binomial proportions: \code{\link{binomTest}},
+#' \item actual coverage calculation for binomial proportions: \code{\link{binomTestCoverage}},
+#' \item coverage plots for binomial proportions: \code{\link{binomTestCoveragePlot}}, and
+#' \item ensemble confidence intervals for binomial proportions: \code{\link{binomTestEnsemble}}.
 #' }
 #'
 #' @section Acknowledgments:
@@ -21,7 +28,7 @@
 #' supported this work.
 #'
 #' @author
-#' Christopher Weld, Larry Leemis
+#' Christopher Weld, Hayeon Park, Larry Leemis
 #'
 #' Maintainer: Christopher Weld <ceweld@email.wm.edu>
 #'

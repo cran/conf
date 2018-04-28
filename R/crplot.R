@@ -1,12 +1,14 @@
 #' Plotting Two-Dimensional Confidence Regions
 #'
 #' @description
-#' Plots the two-dimensional confidence region for probability distribution (Weibull or
-#' inverse Gaussian) parameters corresponding to a user given dataset and level of significance.
+#' Plots the two-dimensional confidence region for probability distribution parameters (supported distribution
+#' suffixes: gamma, invgauss, lnorm, llogis, norm, weibull) corresponding to a user given dataset and level
+#' of significance.
 #'
 #' @param dataset a 1 x n vector of dataset values.
 #' @param alpha significance level; resulting plot illustrates a 100(1 - alpha)\% confidence region.
-#' @param distn distribution to fit the dataset to; accepted values: \code{"weibull"}, \code{"invgauss"}.
+#' @param distn distribution to fit the dataset to; accepted values: \code{'gamma'}, \code{'invgauss'},
+#' \code{'lnorm'}, \code{'llogis'}, \code{'norm'}, \code{'weibull'}.
 #' @param heuristic numeric value selecting method for plotting: 0 for elliptic-oriented point distribution, and
 #' 1 for smoothing boundary search heuristic.
 #' @param maxdeg maximum angle tolerance between consecutive plot segments in degrees.
@@ -29,15 +31,19 @@
 #' @param tol the \code{\link{uniroot}} parameter specifying its required accuracy.
 #' @param info logical argument to return plot information: MLE prints to screen; (x, y) plot point coordinates
 #' and corresponding phi angles (with respect to MLE) are returned as a list.
+#' @param repair logical argument to repair regions inaccessible using a radial angle from its MLE due to multiple
+#' roots at select \eqn{\phi} angles.
 #' @param showplot logical argument specifying if a plot is output; altering from its default of \code{TRUE} is
 #' only logical assuming \code{crplot} is run for its data only (see the \code{info} argument).
 #' @import stats
 #' @import graphics
+#' @import STAR
 #' @export
 #' @return if the optional argument \code{info = TRUE} is included then a list of plot coordinates and phi angles is returned
-# @aliases
+#' @concept confidence region plot
 #' @keywords Graphical Methods, Parameter Estimation, Numerical Optimization
-# @examples
+#' @references Jaeger, A. (2016), "Computation of Two- and Three-Dimensional Confidence Regions with the Likelihood Ratio",
+#' The American Statistician, 49, 48--53.
 #' @seealso \code{\link{uniroot}}
 #' @author Christopher Weld (\email{ceweld@email.wm.edu})
 #' @author Lawrence Leemis (\email{leemis@math.wm.edu})
@@ -62,6 +68,7 @@
 #'                 ylim      = NULL,
 #'                 tol       = .Machine$double.eps ^ 0.5,
 #'                 info      = FALSE,
+#'                 repair    = TRUE,
 #'                 showplot  = TRUE )
 #'
 #' @details
@@ -104,6 +111,64 @@
 #' which converges in distribution to the chi-square distribution with two degrees of freedom (for
 #' a two parameter distribution).
 #'
+#' This package uses the following parameterization for its supported distributions, and illustrates
+#' the corresponding confidence regions accordingly:
+#'
+#' \itemize{
+#' \item The gamma distribution
+#' for shape parameter \eqn{\kappa > 0}, scale parameter \eqn{\theta > 0}, and \eqn{x > 0},
+#' has the probability density function
+#' \deqn{1 / (Gamma(\kappa) \theta ^ \kappa) x ^ (\kappa - 1) exp(-x / \theta).}
+#'
+#' \item The inverse Gaussian distribution
+#' for mean \eqn{\mu > 0}, shape parameter \eqn{\lambda > 0}, and \eqn{x > 0},
+#' has the probability density function
+#' \deqn{\sqrt (\lambda / (2 \pi x ^ 3)) exp( - \lambda (x - \mu) ^ 2 / (2 \mu ^ 2 x)).}
+#'
+#' \item The log normal distribution
+#' for the real-numbered mean \eqn{\mu} of the logarithm, standard deviation \eqn{\sigma > 0}
+#' of the logarithm, and \eqn{x > 0},
+#' has the probability density function
+#' \deqn{1 / (x \sigma \sqrt(2 \pi)) exp(-(\log x - \mu) ^ 2 / (2 \sigma ^ 2)).}
+#'
+#' \item The log logistic distribution
+#' for scale parameter \eqn{\alpha > 0}, shape parameter \eqn{\beta > 0}, and \eqn{x \ge 0},
+#' has a probability density function
+#' \deqn{(\beta / \alpha) (x / \alpha) ^ (\beta - 1) / (1 + (x / \beta)) ^ 2.}
+#'
+#' \item The normal distribution
+#' for the real-numbered mean \eqn{\mu}, standard deviation \eqn{\sigma > 0}, and \eqn{x} is a real number,
+#' has the probability density function
+#' \deqn{1 / \sqrt (2 \pi \sigma ^ 2) exp(-(x - \mu) ^ 2 / (2 \sigma ^ 2)).}
+#'
+#' \item The Weibull distribution
+#' for scale parameter \eqn{\lambda > 0}, shape parameter \eqn{\kappa > 0}, and \eqn{x > 0},
+#' has the probability density function
+#' \deqn{\kappa (\lambda ^ \kappa) x ^ (\kappa - 1) exp(-(\lambda x) ^ \kappa).}
+#' }
+#'
+#' The confidence region horizontal and vertical axis convention in use by \code{crplot} for each
+#' distribution is:
+#' \itemize{
+#' \item The gamma distribution confidence region plot shows \eqn{\theta} on its horizontal axis,
+#' and \eqn{\kappa} on its vertical axis.
+#'
+#' \item The inverse Gaussian distribution confidence region plot shows \eqn{\mu} on its horizontal
+#' axis, and \eqn{\lambda} on its vertical axis.
+#'
+#' \item The log normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis,
+#' and \eqn{\sigma} on its vertical axis.
+#'
+#' \item The log logistic distribution confidence region plot shows \eqn{\alpha} on its
+#' horizontal axis, and \eqn{\beta} on its vertical axis.
+#'
+#' \item The normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis, and
+#' \eqn{\sigma} on its vertical axis.
+#'
+#' \item The Weibull distribution confidence region plot shows \eqn{\kappa} on its horizontal axis,
+#' and \eqn{\lambda} on its vertical axis.
+#' }
+#'
 #' @examples
 #' ## plot the 95% confidence region for Weibull shape and scale parameters
 #' ## corresponding to the given ballbearing dataset
@@ -132,7 +197,7 @@
 # Name             : crplot.R
 # Authors          : Chris Weld & Larry Leemis
 # Language         : R (part of conf package)
-# Latest Revision  : Feb 2018
+# Latest Revision  : May 2018
 #######################################################################################
 crplot <- function(dataset,
                    alpha,
@@ -154,7 +219,11 @@ crplot <- function(dataset,
                    ylim = NULL,
                    tol = .Machine$double.eps ^ 0.5,
                    info = FALSE,
+                   repair = TRUE,
                    showplot = TRUE) {
+
+  ## Existing functions for solving non-closed form MLEs are found in these packages ####
+  #require(STAR)
 
   # parameter error checking ###########################################################
 
@@ -165,14 +234,26 @@ crplot <- function(dataset,
   if (is.null(dataset) || length(dataset) == 1 || !is.numeric(dataset))
     stop("'dataset' must be a numeric vector with length > 1")
 
-  if (distn != "weibull" && distn != "invgauss")
-    stop("'distn' invalid; only 'weibull' and 'invgauss' are supported")
+  if (!is.element(distn, c("weibull", "invgauss", "norm", "lnorm", "llogis", "gamma")))
+    stop("'distn' invalid; only 'gamma', 'invgauss', 'lnorm', 'llogis', 'norm', 'weibull' are supported")
 
   if (distn == "weibull" && min(dataset) <= 0)
     stop("'dataset' parameter contains infeasible Weibull distribution outcome(s) <= 0")
 
   if (distn == "invgauss" && min(dataset) <= 0)
     stop("'dataset' parameter contains infeasible inverse Gaussian distribution outcome(s) <= 0")
+
+  if (distn == "norm" && min(dataset) <= 0)
+    stop("'dataset' parameter contains infeasible normal distribution outcome(s) <= 0")
+
+  if (distn == "lnorm" && min(dataset) <= 0)
+    stop("'dataset' parameter contains infeasible lognormal distribution outcome(s) <= 0")
+
+  if (distn == "llogis" && min(dataset) <= 0)
+    stop("'dataset' parameter contains infeasible loglogistic distribution outcome(s) <= 0")
+
+  if (distn == "gamma" && min(dataset) <= 0)
+    stop("'dataset' parameter contains infeasible gamma distribution outcome(s) <= 0")
 
   if (is.null(alpha) || alpha <= 0 || alpha >= 1 || !is.numeric(alpha) || length(alpha) != 1)
     stop("'alpha' numeric significance level parameter required such that 0 < alpha < 1")
@@ -228,6 +309,9 @@ crplot <- function(dataset,
   if (!is.logical(info) || length(info) != 1)
     stop("'info' must be a single logical parameter")
 
+  if (!is.logical(repair) || length(repair) != 1)
+    stop("'repair' must be a single logical parameter")
+
   if (!is.logical(showplot) || length(showplot) != 1)
     stop("'showplot' must be a single logical parameter")
 
@@ -263,7 +347,10 @@ crplot <- function(dataset,
   #
   # 6. crsmooth.       Confidence region smoothing function.  Given an initial vector of angles to
   #                    calculate confidence region points with, it iteratively adds additional angles
-  #                    until all apparent angle bends are within the specified angle tolerance.
+  #                    until all apparent angle bends are within the specified angle tolerance.  Also
+  #                    contains a recursive routine to identify and fix "deadspace" inaccessible by a
+  #                    radial angle from the MLE by identifying and smoothing the CR from an alternate
+  #                    off-MLE jump-center location within the CR.
   #
   # Utilizing the above listed functions, a short block of code at the bottom of this file then creates
   # the confidence region plot.
@@ -412,6 +499,42 @@ crplot <- function(dataset,
       mle.list <- list("theta1.hat" = mu.hat, "theta2.hat" = lambda.hat, "mleLLvalue" = mleLL)
     }
 
+    # normal MLE
+    else if (distn == "norm"){
+      n <- length(x)
+      mu.hat <- (1 / n) * sum(x)
+      sigma2.hat <- (1 / n) * sum((x - mu.hat)^2)  # this is sigma-squared, but will return sigma
+      mleLL <- (-n / 2)*log(2*pi) - (n / 2)*log(sigma2.hat) - (1 / (2 * sigma2.hat)) * sum((x - mu.hat)^2)
+      mle.list <- list("theta1.hat" = mu.hat, "theta2.hat" = sqrt(sigma2.hat), "mleLLvalue" = mleLL)
+    }
+
+    # lognormal MLE
+    else if (distn == "lnorm"){
+      n <- length(x)
+      mu.hat <- (1 / n) * sum(log(x))
+      sigma2.hat <- (1 / n) * sum((log(x) - mu.hat)^2)  # this is sigma-squared, but will return sigma
+      mleLL <- (-n / 2)*log(2*pi) - (n / 2)*log(sigma2.hat) - sum(log(x)) - (1 / (2 * sigma2.hat)) * sum((log(x) - mu.hat)^2)
+      mle.list <- list("theta1.hat" = mu.hat, "theta2.hat" = sqrt(sigma2.hat), "mleLLvalue" = mleLL)
+    }
+
+    # loglogistic MLE
+    else if (distn == "llogis"){
+      temp1 <- llogisMLE(x)
+      alpha.hat <- exp(temp1$estimate[['location']])
+      beta.hat <- 1 / temp1$estimate[['scale']]
+      mleLL <- temp1$logLik
+      mle.list <- list("theta1.hat" = alpha.hat, "theta2.hat" = beta.hat, "mleLLvalue" = mleLL)
+    }
+
+    # gamma MLE
+    else if (distn == "gamma"){
+      temp1 <- gammaMLE(x)
+      kappa.hat <- temp1$estimate[['shape']]
+      theta.hat <- temp1$estimate[['scale']]
+      mleLL <- temp1$logLik
+      mle.list <- list("theta1.hat" = theta.hat, "theta2.hat" = kappa.hat, "mleLLvalue" = mleLL)
+    }
+
     invisible(mle.list)
   }
 
@@ -477,6 +600,85 @@ crplot <- function(dataset,
       # return value for invgauss distn (positive when inside conf region, neg outside)
       valuereturn <- ((n / 2) * log(lambda) - (n / 2) * log(2 * pi) - (3 / 2) * temp1 -
                   (lambda / (2 * mu ^ 2)) * temp2 - temp)
+    }
+
+    # normal distribution
+    if (distn == "norm") {
+      mu.hat <- MLEHAT[1, ]
+      sigma.hat <- MLEHAT[2, ]
+      temp <- mleLLvalue - (chi2 / 2)
+      mu <- mu.hat + (d * cos(phi))
+      sigma <- sigma.hat + (d * sin(phi))
+
+      temp1 <- 0
+      for (i in 1:n){
+        if (cen[i] == 1){
+          temp1 <- temp1 + (x[i] - mu)^2
+        }
+      }
+
+      valuereturn <- (-n / 2) * log(2 * pi) - (n / 2) * log(sigma^2) - (1 / (2*sigma^2)) * temp1 - temp
+    }
+
+    # lognormal distribution
+    if (distn == "lnorm") {
+      mu.hat <- MLEHAT[1, ]
+      sigma.hat <- MLEHAT[2, ]
+      temp <- mleLLvalue - (chi2 / 2)
+      mu <- mu.hat + (d * cos(phi))
+      sigma <- sigma.hat + (d * sin(phi))
+
+      temp1 <- 0
+      temp2 <- 0
+
+      for (i in 1:n){
+        if (cen[i] == 1){
+          temp1 <- temp1 + log(x[i])
+          temp2 <- temp2 + (log(x[i]) - mu)^2
+        }
+      }
+
+      valuereturn <- (-n / 2) * log(2 * pi) - (n / 2) * log(sigma^2) - temp1 - (1 / (2*sigma^2)) * temp2 - temp
+    }
+
+    # loglogistic distribution
+    if (distn == "llogis") {
+      alpha.hat <- MLEHAT[1, ]
+      beta.hat <- MLEHAT[2, ]
+      temp <- mleLLvalue - (chi2 / 2)
+      alpha <- alpha.hat + (d * cos(phi))
+      beta <- beta.hat + (d * sin(phi))
+
+      temp1 <- 0
+      temp2 <- 0
+      for (i in 1:n){
+        if (cen[i] == 1){
+          temp1 <- temp1 + log(x[i])
+          temp2 <- temp2 + log(1 + (x[i] / alpha)^beta)
+        }
+      }
+      valuereturn <- n * log(beta) - n * beta * log(alpha) + (beta - 1) * temp1 - 2 * temp2 - temp
+    }
+
+    # gamma distribution
+    if (distn == "gamma") {
+      theta.hat <- MLEHAT[1, ]
+      kappa.hat <- MLEHAT[2, ]
+      temp <- mleLLvalue - (chi2 / 2)
+      theta <- theta.hat + (d * cos(phi))
+      kappa <- kappa.hat + (d * sin(phi))
+
+      temp1 <- 0
+      temp2 <- 0
+
+      for (i in 1:n){
+        if (cen[i] == 1){
+          temp1 <- temp1 + log(x[i])
+          temp2 <- temp2 + (x[i] / theta)
+        }
+      }
+
+      valuereturn <- -n * kappa * log(theta) + (kappa - 1) * temp1 - temp2 - n * log(gamma(kappa)) - temp
     }
 
     invisible(valuereturn)
@@ -569,7 +771,8 @@ crplot <- function(dataset,
 
   ######################################################################################
 
-  crsmooth = function(maxdeg, samp, cen, alpha, mle.list, ellipse_n)  {
+  crsmooth = function(maxdeg, samp, cen, alpha, mle.list, ellipse_n,
+                      xrepair, phinewstore, repairinfo, jumpxy, repairtarget, repairpass)  {
     #rm(cr)                               # remove previously stored values
     maxrad <- maxdeg * (pi / 180)         # allowable angle converted to radians
     maxcurrent <- pi                      # initialize as > maxrad to enter while loop
@@ -696,14 +899,272 @@ crplot <- function(dataset,
       phinew <- sort(unique(phinew))
       if (sum(phinew) != 0) {phi <- sort(unique(c(phi, phinew))) }
       if (count >= 50) {
-        maxcurrent <- maxrad
+
+        ############################################################################################
+        # May 2018 addition enables charting previously inaccessible regions by identifying
+        # jump-center locations away from the MLE but within the CR where a similar smoothing
+        # algorithm is done using the radial log likelihood approach.  Recursively calls crsmooth.
+        ############################################################################################
+        if ((repairpass != TRUE) && (repair == TRUE)) {
+
+        shiftpercent <- 0.5               # % along that available shift range for phi that determines jump point
+        uphill <- 0.01                    # percentage uphill from CR boarder
+
+        xrepair <- xrepair + 1
+        # identify all areas needing repair and their points to facilitate reconstruction
+        # this is done during the first pass (xrepair = 1) only, since these variables change as areas are repaired
+        if (xrepair == 1) {
+          #print("Creating and storing repair info")
+          phinewstore <- phinew
+          left <- leftx <- lefty <- rep(0, 4)
+          right <- rightx <- righty <- rep(0, 4)
+          jumpphi <- phi1 <- phi2 <- rep(0, 4)
+          jumpxy <- matrix(rep(0, 8), ncol = 2)
+
+          #####################################################
+          # Quadrant I (with respect to MLE) repairs
+          if (any(phinewstore < (pi / 2))) {
+            #print("Creating jump-point to access and patch unreachable area (in Quad I relative to MLE)")
+            print("The 1st quadrant (with respect to the MLE) currently does not offer repairs (no known cases with issues here; yours may be the first!)")
+            q <- 1      # quad I
+          }
+
+          #####################################################
+          # Quadrant II (with respect to MLE) identification
+          if (length(phinewstore[(phinewstore > pi / 2) & (phinewstore < pi)]) > 0) {
+            #print("Creating jump-point to access and patch unreachable area (in Quad II relative to MLE)")
+            q <- 2      # quad II
+
+            # identify the boarders of the unreachable area
+            quadindex <- intersect(which(phinewstore > (pi / 2)), which(phinewstore < pi))    # unique to this quadrant
+            left[q] <- max(phinewstore[quadindex])                                            # unique to this quadrant
+            leftx[q] <- cr[min(which(phi > left[q])) + 1, 1]
+            lefty[q] <- cr[min(which(phi > left[q])) + 1, 2]
+            right[q] <- min(phinewstore[quadindex])                                           # unique to this quadrant
+            rightx[q] <- cr[max(which(phi < right[q])) - 1, 1]
+            righty[q] <- cr[max(which(phi < right[q])) - 1, 2]
+            #points(leftx[q], lefty[q], pch = 16, col = "green")
+            #points(rightx[q], righty[q], pch = 16, col = "blue")
+            # create a "new" center (instead of MLE) to access previously unreachable CR points as follows:
+            # assess shift range available in x-direction within CR boundary,
+            # determine MLE phi corresponding to a % along that available shift range
+            # offset slightly inside CR via "uphill" alpha adjustment to locate jump x-y coordinates
+            shiftmaxindex <- min(intersect(which(cr[, 1] < rightx[q]), which(cr[, 2] < righty[q])))         # unique to this quadrant
+            shift <- shiftpercent * (rightx[q] - cr[shiftmaxindex, 1])                                      # unique to this quadrant
+            jumpphi[q] <- pi / 2 + atan((theta1.hat - (rightx[q] - shift)) / (righty[q] - theta2.hat))      # unique to this quadrant
+            jumpxy[q,] <- crsolve(samp, cen, alpha = alpha + uphill, mle.list = mle.list, phi = jumpphi[q])
+            #points(jumpxy[q, 1], jumpxy[q, 2], pch = 16, col = "red")
+            phi1[q] <- pi / 2 + atan((jumpxy[q,1] - leftx[q]) / (lefty[q] - jumpxy[q,2]))      # region of interest: (0, phi1)
+            phi2[q] <- 2 * pi - atan((jumpxy[q,2] - righty[q]) / (rightx[q] - jumpxy[q,1]))    # region of interest: (phi2, 2pi]
+          }
+
+          #####################################################
+          # Quadrant III (with respect to MLE) identification
+          if (length(phinewstore[(phinewstore > pi) & (phinewstore < 3 * pi / 2)]) > 0) {
+            #print("Creating jump-point to access and patch unreachable area (in Quad III relative to MLE)")
+            q <- 3      # quad III
+
+            # identify the boarders of the unreachable area
+            quadindex <- intersect(which(phinewstore > pi), which(phinewstore < 3 * pi / 2))  # unique to this quadrant
+            left[q] <- max(phinewstore[quadindex])                                            # unique to this quadrant
+            leftx[q] <- cr[min(which(phi > left[q])) + 1, 1]
+            lefty[q] <- cr[min(which(phi > left[q])) + 1, 2]
+            right[q] <- min(phinewstore[quadindex])                                           # unique to this quadrant
+            rightx[q] <- cr[max(which(phi < right[q])) - 1, 1]
+            righty[q] <- cr[max(which(phi < right[q])) - 1, 2]
+            #points(leftx[q], lefty[q], pch = 16, col = "green")
+            #points(rightx[q], righty[q], pch = 16, col = "blue")
+            # create a "new" center (instead of MLE) to access previously unreachable CR points as follows:
+            # assess shift range available in y-direction within CR boundary,
+            # determine MLE phi corresponding to a % along that available shift range
+            # offset slightly inside CR via "uphill" alpha adjustment to locate jump x-y coordinates
+            shiftmaxindex <- min(intersect(which(cr[, 1] > rightx[q]), which(cr[, 2] < righty[q])))      # unique to this quadrant
+            #points(cr[shiftmaxindex, 1], cr[shiftmaxindex, 2], pch = 16, col = "brown")
+            shift <- shiftpercent * (righty[q] - cr[shiftmaxindex, 2])                                   # unique to this quadrant
+            jumpphi[q] <- pi + atan((theta2.hat - righty[q] + shift) / (theta1.hat - rightx[q]))         # unique to this quadrant
+            jumpxy[q,] <- crsolve(samp, cen, alpha = alpha + uphill, mle.list = mle.list, phi = jumpphi[q])
+            #points(jumpxy[q, 1], jumpxy[q, 2], pch = 16, col = "red")
+            phi1[q] <- pi + atan((jumpxy[q, 2] - lefty[q]) / (jumpxy[q, 1] - leftx[q]))      # leftmost phi relative to jump-center
+            phi2[q] <- atan((righty[q] - jumpxy[q, 2]) / (rightx[q] - jumpxy[q, 1]))         # rightmost phi relative to jump-center
+          }
+
+          #####################################################
+          # Quadrant IV (with respect to MLE) repairs
+          if (any(phinewstore > (3 * pi / 2))) {
+            #print("Creating jump-point to access and patch unreachable area (in Quad IV relative to MLE)")
+            q <- 4               # quad IV
+
+            # identify the boarders of the unreachable area
+            quadindex <- which(phinewstore > (3 * pi / 2))                               # unique to this quadrant
+            left[q] <- max(phinew[quadindex])                                            # unique to this quadrant
+            leftx[q] <- cr[min(which(phi > left[q])) + 1, 1]
+            lefty[q] <- cr[min(which(phi > left[q])) + 1, 2]
+            right[q] <- min(phinew[quadindex])                                           # unique to this quadrant
+            rightx[q] <- cr[max(which(phi < right[q])) - 1, 1]
+            righty[q] <- cr[max(which(phi < right[q])) - 1, 2]
+            #points(leftx[q], lefty[q], pch = 16, col = "green")
+            #points(rightx[q], righty[q], pch = 16, col = "blue")
+
+            # create a "new" center (instead of MLE) to access previously unreachable CR points as follows:
+            # assess shift range available in y-direction within CR boundary,
+            # determine MLE phi corresponding to a % along that available shift range
+            # offset slightly inside CR via "uphill" alpha adjustment to locate jump x-y coordinates
+            shiftmaxindex <- max(intersect(which(cr[, 1] < leftx[q]), which(cr[, 2] < lefty[q])))      # unique to this quadrant
+            #points(cr[shiftmaxindex, 1], cr[shiftmaxindex, 2], pch = 16, col = "purple")
+            shift <- shiftpercent * (lefty[q] - cr[shiftmaxindex, 2])
+            jumpphi[q] <- 2 * pi - atan((theta2.hat - lefty[q] + shift) / (leftx[q] - theta1.hat))      # unique to this quadrant
+            jumpxy[q,] <- crsolve(samp, cen, alpha = alpha + uphill, mle.list = mle.list, phi = jumpphi[q])
+            #points(jumpxy[q, 1], jumpxy[q, 2], pch = 16, col = "orange")
+            phi1[q] <- pi / 2 + atan((jumpxy[q,1] - leftx[q]) / (lefty[q] - jumpxy[q,2]))      # region of interest: (0, phi1)
+            phi2[q] <- 2 * pi - atan((jumpxy[q,2] - righty[q]) / (rightx[q] - jumpxy[q,1]))    # region of interest: (phi2, 2pi]
+          }
+
+        # repair info must be kept un-impacted by upcoming recursive crsmooth calls; data stored accordingly here
+        done <- rep(FALSE, 4)
+        repairinfo <- rbind(left, leftx, lefty, right, rightx, righty, jumpphi, phi1, phi2, done)
+        #print(repairinfo)
+        message("alternate-centerpoint(s) used to repair plot regions inaccessible via a radial angle from its MLE")
+        }                                    # end if xrepair == 1
+        else {                               # all iterations following 1st pass must re-assume repair parameters
+          #print("Loading repair info")
+          left <- repairinfo[1,]
+          leftx <- repairinfo[2,]
+          lefty <- repairinfo[3,]
+          right <- repairinfo[4,]
+          rightx <- repairinfo[5,]
+          righty <- repairinfo[6,]
+          jumpphi <- repairinfo[7,]
+          phi1 <- repairinfo[8,]
+          phi2 <- repairinfo[9,]
+          done <- repairinfo[10,]
+        }
+
+        ###############################################################################
+        # half-way through repairs; relevant points and angles recorded above.
+        # next, recursively call crsmooth on jump-centers to populate missing regions.
+        ###############################################################################
+
+        #####################################################
+        # Quadrant I (with respect to MLE) repairs
+        q <- 1
+        if ((length(phinewstore[phinewstore < pi / 2] > 0)) && (done[q] != TRUE)) {
+          #print("Repairing (Quad I relative to MLE)")
+          message("quad I (relative to the MLE) repair not present because no confirmed cases yet (this might be the first!)")
+          repairinfo[10, q] <- TRUE      # annotate this quad is done
+        }
+
+        #####################################################
+        # Quadrant II (with respect to MLE) repairs
+        q <- 2        # quad II
+        if ((length(phinewstore[(phinewstore > pi / 2) & (phinewstore < pi)]) > 0) && (done[q] != TRUE)) {
+          #message("...repairing (Quad II relative to MLE)")
+          repairinfo[10, q] <- TRUE      # annotate this quad is done
+
+          # store the "new" centerpoint as theta1.hat & thata2.hat (albeit not an MLE; stays consistent with existing code)
+          # maintain the MLE log-likelihood value as mleLLvalues because it is still needed in llrsolve
+          # run smoothing search algorithm from jump point, and trim results to region of interest (per phi1, phi2 values)
+          # note: since multiple roots available per phi, also check that y-values are not outside region of interest
+          jumpinfo <- list("theta1.hat" = jumpxy[q, 1], "theta2.hat" = jumpxy[q, 2], "mleLLvalue" = mle.list$mleLLvalue)
+          jpoints <- crsmooth(maxdeg = maxdeg, samp = mydata, cen = cen, alpha = alpha, mle.list = jumpinfo, ellipse_n = ellipse_n,
+                              xrepair = xrepair, phinewstore = phinewstore, repairinfo = repairinfo, jumpxy = jumpxy, repairpass = TRUE)
+
+          keepindex <- which((jpoints$phi < phi1[q] | jpoints$phi > phi2[q]) & jpoints$y > righty[q])
+          jkeep <- list("x" = jpoints$x[keepindex],
+                        "y" = jpoints$y[keepindex],
+                        "phi" = jpoints$phi[keepindex] )
+                        #"y" = jpoints$y[(which(jpoints$phi < phi1[q] | jpoints$phi > phi2[q] & jpoints$y > righty[q]))],
+                        #"phi" = jpoints$phi[(which(jpoints$phi < phi1[q] | jpoints$phi > phi2[q] & jpoints$y > righty[q]))])
+          #points(jkeep$x, jkeep$y, pch = 16, col = "blue", cex = 0.5)
+
+          # insert additional CR boundary points into existing list
+          # identify phi angle corresponding to MLE to remain consistent
+          phiactual <- pi / 2 + atan((theta1.hat - jkeep$x) / (jkeep$y - theta2.hat))
+          go <- c(which(jkeep$phi > phi1[q]), which(jkeep$phi <= phi1[q]))
+          insertafter <- which(crlist$y ==  max(crlist$y[which(crlist$x < jkeep$x[which.min(jkeep$y)])])) - 1           # unique to this quadrant
+          crlist$x <- append(crlist$x, jkeep$x[go], after = insertafter)
+          crlist$y <- append(crlist$y, jkeep$y[go], after = insertafter)
+          crlist$phi <- append(crlist$phi, phiactual[go], after = insertafter)
+
+        }
+
+        #####################################################
+        # Quadrant III (with respect to MLE) repairs
+        q <- 3
+        if ((length(phinewstore[(phinewstore > pi) & (phinewstore < 3 * pi / 2)]) > 0) && (done[q] != TRUE)) {
+          #message("...repairing (Quad III relative to MLE)")
+          repairinfo[10, q] <- TRUE      # annotate this quad is done
+
+          # store the "new" centerpoint as theta1.hat & thata2.hat (albeit not an MLE; stays consistent with existing code)
+          # maintain the MLE log-likelihood value as mleLLvalues because it is still needed in llrsolve
+          # run smoothing search algorithm from jump point, and trim results to region of interest (per phi1, phi2 values)
+          # note: since multiple roots available per phi, also check that y-values are not outside region of interest
+          jumpinfo <- list("theta1.hat" = jumpxy[q, 1], "theta2.hat" = jumpxy[q, 2], "mleLLvalue" = mle.list$mleLLvalue)
+          jpoints <- crsmooth(maxdeg = maxdeg, samp = mydata, cen = cen, alpha = alpha, mle.list = jumpinfo, ellipse_n = ellipse_n,
+                              xrepair = xrepair, phinewstore = phinewstore, repairinfo = repairinfo, jumpxy = jumpxy, repairpass = TRUE)
+
+          keepindex <- which((jpoints$phi < phi1[q]) & (jpoints$x < rightx[q]))
+          jkeep <- list("x" = jpoints$x[keepindex],
+                        "y" = jpoints$y[keepindex],
+                        "phi" = jpoints$phi[keepindex] )
+          #"y" = jpoints$y[(which(jpoints$phi < phi1[q] | jpoints$phi > phi2[q] & jpoints$y > righty[q]))],
+          #"phi" = jpoints$phi[(which(jpoints$phi < phi1[q] | jpoints$phi > phi2[q] & jpoints$y > righty[q]))])
+          #points(jkeep$x, jkeep$y, pch = 16, col = "yellow", cex = 0.5)
+
+          # insert additional CR boundary points into existing list
+          # identify phi angle corresponding to MLE to remain consistent
+          phiactual <- pi / 2 + atan((theta1.hat - jkeep$x) / (jkeep$y - theta2.hat))
+          go <- c(which(jkeep$phi > phi1[q]), which(jkeep$phi <= phi1[q]))
+          insertafter <- which(crlist$x ==  min(crlist$x[which(crlist$x < jkeep$x[which.max(jkeep$y)])])) - 1         # unique to this quadrant
+          crlist$x <- append(crlist$x, jkeep$x[go], after = insertafter)
+          crlist$y <- append(crlist$y, jkeep$y[go], after = insertafter)
+          crlist$phi <- append(crlist$phi, phiactual[go], after = insertafter)
+
+        }
+
+        #####################################################
+        # Quadrant IV (with respect to MLE) repairs
+        q <- 4
+        if (any(phinewstore > (3 * pi / 2)) && (done[q] != TRUE)) {
+          #message("...repairing (Quad IV relative to MLE)")
+          repairinfo[10, q] <- TRUE      # annotate this quad is done
+
+          # store the "new" centerpoint as theta1.hat & thata2.hat (albeit not an MLE; stays consistent with existing code)
+          # maintain the MLE log-likelihood value as mleLLvalues because it is still needed in llrsolve
+          # run smoothing search algorithm from jump point, and trim results to region of interest (per phi1, phi2 values)
+          # note: since multiple roots available per phi, also check that y-values are not outside region of interest
+          jumpinfo <- list("theta1.hat" = jumpxy[q, 1], "theta2.hat" = jumpxy[q, 2], "mleLLvalue" = mle.list$mleLLvalue)
+          jpoints <- crsmooth(maxdeg = maxdeg, samp = mydata, cen = cen, alpha = alpha, mle.list = jumpinfo, ellipse_n = ellipse_n,
+                              xrepair = xrepair, phinewstore = phinewstore, repairinfo = repairinfo, jumpxy = jumpxy, repairpass = TRUE)
+
+          keepindex <- which((jpoints$phi < phi1[q] | jpoints$phi > phi2[q]) & jpoints$x > leftx[q])
+          jkeep <- list("x" = jpoints$x[keepindex],
+                        "y" = jpoints$y[keepindex],
+                        "phi" = jpoints$phi[keepindex])
+          #points(jkeep$x, jkeep$y, pch = 16, col = "yellow", cex = 0.5)
+
+          # insert additional CR boundary points into existing list
+          # identify phi angle corresponding to MLE to remain consistent
+          phiactual <- 2* pi - atan((theta2.hat - jkeep$y) / (jkeep$x - theta1.hat))
+          go <- c(which(jkeep$phi > phi1[q]), which(jkeep$phi <= phi1[q]))
+          insertafter <- which(crlist$x ==  max(crlist$x[which(crlist$y < jkeep$y[which.min(jkeep$x)])]))           # unique to this quadrant
+          crlist$x <- append(crlist$x, jkeep$x[go], after = insertafter)
+          crlist$y <- append(crlist$y, jkeep$y[go], after = insertafter)
+          crlist$phi <- append(crlist$phi, phiactual[go], after = insertafter)
+
+        }
+      }              # end repairpass
+      maxcurrent <- maxrad
+      if (repair == FALSE) {
         warning("max iteration tolerance hit; working confidence region plot is shown, however, maxdeg constraint is not met")
         #print("WARNING: max iteration tolerance hit; maxdeg constraint not met, however, working plot is shown.")
         #print("...this is attributable to either regions inaccessible via a radial azimuth from its MLE, or a uniroot tol argument too small.")
       }
-    }
+    }                # end (if (count > 50) && repairpass != TRUE)
+    }                # end (while (maxcurrent > maxrad))
+
     invisible(crlist)
   }
+
 
   ############################################################################################
   ### end of functions; function calls below determine and then plot the confidence region ###
@@ -720,8 +1181,8 @@ crplot <- function(dataset,
 
   # identify confidence region boundary coordinates
   if (heuristic == 1) {
-    crlist <- crsmooth(maxdeg = maxdeg, samp = mydata, cen = cen, alpha = alpha,
-                       mle.list = mle.list, ellipse_n = ellipse_n)
+    crlist <- crsmooth(maxdeg = maxdeg, samp = mydata, cen = cen, alpha = alpha, mle.list = mle.list, ellipse_n = ellipse_n,
+                       xrepair = 0, phinewstore = NULL, repairinfo = NULL, jumpxy = NULL, repairtarget = NULL, repairpass = FALSE)
   }
   else if (heuristic == 0) {
     phi <- angles(a = theta1.hat, b = theta2.hat, npoints = ellipse_n)
@@ -806,13 +1267,35 @@ crplot <- function(dataset,
     print(paste0("Confidence region plot complete; made using ", length(phi)," boundary points."))
     if (distn == "weibull") {
       print(paste0("MLE value is: (kappa.hat = ", theta1.hat, ", lambda.hat = ", theta2.hat,")"))
-      crlist <- list("kappa" = crlist$x, "lambda" = crlist$y, "phi" = crlist$phi)
+      crlist <- list("kappa" = crlist$x, "lambda" = crlist$y, "phi" = crlist$phi,
+                     "kappahat" = mle.list$theta1.hat, "lambdahat" = mle.list$theta2.hat)
     }
     else if (distn == "invgauss") {
       print(paste0("MLE value is: (mu.hat = ", theta1.hat, ", lambda.hat = ", theta2.hat,")"))
-      crlist <- list("mu" = crlist$x, "lambda" = crlist$y, "phi" = crlist$phi)
+      crlist <- list("mu" = crlist$x, "lambda" = crlist$y, "phi" = crlist$phi,
+                     "muhat" = mle.list$theta1.hat, "lambdahat" = mle.list$theta2.hat)
     }
-  return(crlist)
+    else if (distn == "norm") {
+      print(paste0("MLE value is: (mu.hat = ", theta1.hat, ", sigma.hat = ", theta2.hat,")"))
+      crlist <- list("mu" = crlist$x, "sigma" = crlist$y, "phi" = crlist$phi,
+                     "muhat" = mle.list$theta1.hat, "sigmahat" = mle.list$theta2.hat)
+    }
+    else if (distn == "lnorm") {
+      print(paste0("MLE value is: (mu.hat = ", theta1.hat, ", sigma.hat = ", theta2.hat,")"))
+      crlist <- list("mu" = crlist$x, "sigma" = crlist$y, "phi" = crlist$phi,
+                     "muhat" = mle.list$theta1.hat, "sigmahat" = mle.list$theta2.hat)
+    }
+    else if (distn == "llogis") {
+      print(paste0("MLE value is: (alpha.hat = ", theta1.hat, ", beta.hat = ", theta2.hat,")"))
+      crlist <- list("alpha" = crlist$x, "beta" = crlist$y, "phi" = crlist$phi,
+                     "alphahat" = mle.list$theta1.hat, "betahat" = mle.list$theta2.hat)
+    }
+    else if (distn == "gamma") {
+      print(paste0("MLE value is: (theta.hat = ", theta1.hat, ", kappa.hat = ", theta2.hat,")"))
+      crlist <- list("theta" = crlist$x, "kappa" = crlist$y, "phi" = crlist$phi,
+                     "thetahat" = mle.list$theta1.hat, "kappahat" = mle.list$theta2.hat)
+    }
+    return(crlist)
   }
   else if (info == FALSE) {
     return(paste0("Confidence region plot complete; made using ", length(phi)," boundary points."))

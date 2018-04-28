@@ -12,7 +12,7 @@
 
 <meta name="author" content="Christopher Weld ceweld@email.wm.edu, Lawrence Leemis leemis@math.wm.edu" />
 
-<meta name="date" content="2018-03-01" />
+<meta name="date" content="2018-04-28" />
 
 <title>crplot</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">crplot</h1>
 <h4 class="author"><em>Christopher Weld <a href="mailto:ceweld@email.wm.edu">ceweld@email.wm.edu</a>, Lawrence Leemis <a href="mailto:leemis@math.wm.edu">leemis@math.wm.edu</a></em></h4>
-<h4 class="date"><em>2018-03-01</em></h4>
+<h4 class="date"><em>2018-04-28</em></h4>
 
 
 
@@ -107,7 +107,7 @@ ballbearing &lt;-<span class="st"> </span><span class="kw">c</span>(<span class=
 <span class="co">#&gt; [1] &quot;Confidence region plot complete; made using 102 boundary points.&quot;</span>
 <span class="co">#&gt; [1] &quot;MLE value is: (kappa.hat = 2.10205887520988, lambda.hat = 0.0122132431195755)&quot;</span>
 <span class="kw">names</span>(x)
-<span class="co">#&gt; [1] &quot;kappa&quot;  &quot;lambda&quot; &quot;phi&quot;</span></code></pre></div>
+<span class="co">#&gt; [1] &quot;kappa&quot;     &quot;lambda&quot;    &quot;phi&quot;       &quot;kappahat&quot;  &quot;lambdahat&quot;</span></code></pre></div>
 <p>Displaying <code>names(x)</code> confirms that <code>info = TRUE</code> directs <code>crplot</code> to return a list with respective arguments <code>&quot;kappa&quot;</code>, <code>&quot;lambda&quot;</code>, and <code>&quot;phi&quot;</code>. The <code>&quot;kappa&quot;</code> and <code>&quot;lambda&quot;</code> parameters correspond to the plot horizontal and vertical axes values. They are the Weibull distribution shape and scale parameters, respectively. These parameters update appropriately when fitting the data to the inverse Gaussian distribution (returning mean and shape parameters, <code>&quot;mu&quot;</code> and <code>&quot;lambda&quot;</code>, respectively). The third list argument, <code>&quot;phi&quot;</code>, gives angles in radians relative to the MLE, corresponding to each plot point. These <code>&quot;phi&quot;</code> (<span class="math inline">\(\phi\)</span>) values determined plot points using Jaeger’s radial profile log likelihood technique<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a>.</p>
 <p>Custom plots and analysis are possible using the data returned when <code>info = TRUE</code>. Two examples follow. The first shades the confidence region and alters its border line-type.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># with confidence region data stored in x, it is now available for custom graphics</span>
