@@ -2,13 +2,13 @@
 #'
 #' @description
 #' Plots the two-dimensional confidence region for probability distribution parameters (supported distribution
-#' suffixes: gamma, invgauss, lnorm, llogis, norm, weibull) corresponding to a user given dataset and level
+#' suffixes: gamma, invgauss, lnorm, llogis, norm, unif, weibull) corresponding to a user given dataset and level
 #' of significance.
 #'
 #' @param dataset a 1 x n vector of dataset values.
 #' @param alpha significance level; resulting plot illustrates a 100(1 - alpha)\% confidence region.
 #' @param distn distribution to fit the dataset to; accepted values: \code{'gamma'}, \code{'invgauss'},
-#' \code{'lnorm'}, \code{'llogis'}, \code{'norm'}, \code{'weibull'}.
+#' \code{'llogis'}, \code{'lnorm'}, \code{'norm'}, \code{'unif'}, \code{'weibull'}.
 #' @param heuristic numeric value selecting method for plotting: 0 for elliptic-oriented point distribution, and
 #' 1 for smoothing boundary search heuristic.
 #' @param maxdeg maximum angle tolerance between consecutive plot segments in degrees.
@@ -37,17 +37,17 @@
 #' only logical assuming \code{crplot} is run for its data only (see the \code{info} argument).
 #' @import stats
 #' @import graphics
-#' @import STAR
+#' @importFrom STAR llogisMLE gammaMLE
 #' @export
 #' @return if the optional argument \code{info = TRUE} is included then a list of plot coordinates and phi angles is returned
 #' @concept confidence region plot
-#' @keywords Graphical Methods, Parameter Estimation, Numerical Optimization
+#' @keywords confidence region, confidence intervals, statistical graphics, data visualization, graphical methods,
+#' parameter estimation, numerical optimization
 #' @references Jaeger, A. (2016), "Computation of Two- and Three-Dimensional Confidence Regions with the Likelihood Ratio",
 #' The American Statistician, 49, 48--53.
-#' @seealso \code{\link{uniroot}}
+#' @seealso \code{\link{coversim}}, \code{\link{uniroot}}
 #' @author Christopher Weld (\email{ceweld@email.wm.edu})
 #' @author Lawrence Leemis (\email{leemis@math.wm.edu})
-#' @keywords confidence region, confidence intervals, statistical graphics, data visualization
 #'
 #' @usage
 #' crplot(dataset, alpha, distn,
@@ -72,14 +72,13 @@
 #'                 showplot  = TRUE )
 #'
 #' @details
-#' This function supports two-dimensional confidence region plots for Weibull or inverse Gaussian parameters.
-#' The first input argument (shape for Weibull, mean for inverse Gaussian) is given on its horizontal axis,
-#' and the second (scale for Weibull, shape for inverse Gaussian) on the vertical axis.  It requires
+#' This function plots confidence regions for a variety of two-parameter distributions.  It requires
 #' \itemize{
 #' \item a vector of dataset values,
 #' \item the level of significance (alpha), and
-#' \item a distribution (Weibull or inverse Gaussian) to fit the data to.
+#' \item a distribution to fit the data to.
 #' }
+#' Plots display according to probability density function parameterization given later in this section.
 #' Two heuristics (and their associated combination) are available to plot confidence regions.  Along
 #' with their descriptions, they are:
 #' \enumerate{
@@ -118,12 +117,17 @@
 #' \item The gamma distribution
 #' for shape parameter \eqn{\kappa > 0}, scale parameter \eqn{\theta > 0}, and \eqn{x > 0},
 #' has the probability density function
-#' \deqn{1 / (Gamma(\kappa) \theta ^ \kappa) x ^ (\kappa - 1) exp(-x / \theta).}
+#' \deqn{1 / (Gamma(\kappa) \theta ^ \kappa) x ^ {(\kappa - 1)} exp(-x / \theta).}
 #'
 #' \item The inverse Gaussian distribution
 #' for mean \eqn{\mu > 0}, shape parameter \eqn{\lambda > 0}, and \eqn{x > 0},
 #' has the probability density function
 #' \deqn{\sqrt (\lambda / (2 \pi x ^ 3)) exp( - \lambda (x - \mu) ^ 2 / (2 \mu ^ 2 x)).}
+#'
+#' \item The log logistic distribution
+#' for scale parameter \eqn{\lambda > 0}, shape parameter \eqn{\kappa > 0}, and \eqn{x \ge 0},
+#' has a probability density function
+#' \deqn{(\kappa \lambda) (x \lambda) ^ {(\kappa - 1)} / (1 + (\lambda x) ^ \kappa) ^ 2.}
 #'
 #' \item The log normal distribution
 #' for the real-numbered mean \eqn{\mu} of the logarithm, standard deviation \eqn{\sigma > 0}
@@ -131,20 +135,20 @@
 #' has the probability density function
 #' \deqn{1 / (x \sigma \sqrt(2 \pi)) exp(-(\log x - \mu) ^ 2 / (2 \sigma ^ 2)).}
 #'
-#' \item The log logistic distribution
-#' for scale parameter \eqn{\alpha > 0}, shape parameter \eqn{\beta > 0}, and \eqn{x \ge 0},
-#' has a probability density function
-#' \deqn{(\beta / \alpha) (x / \alpha) ^ (\beta - 1) / (1 + (x / \beta)) ^ 2.}
-#'
 #' \item The normal distribution
 #' for the real-numbered mean \eqn{\mu}, standard deviation \eqn{\sigma > 0}, and \eqn{x} is a real number,
 #' has the probability density function
 #' \deqn{1 / \sqrt (2 \pi \sigma ^ 2) exp(-(x - \mu) ^ 2 / (2 \sigma ^ 2)).}
 #'
+#' \item The uniform distribution for real-valued parameters \eqn{a} and \eqn{b} where \eqn{a < b}
+#' and \eqn{a \le x \le b},
+#' has the probability density function
+#' \deqn{1 / (b - a).}
+#'
 #' \item The Weibull distribution
 #' for scale parameter \eqn{\lambda > 0}, shape parameter \eqn{\kappa > 0}, and \eqn{x > 0},
 #' has the probability density function
-#' \deqn{\kappa (\lambda ^ \kappa) x ^ (\kappa - 1) exp(-(\lambda x) ^ \kappa).}
+#' \deqn{\kappa (\lambda ^ \kappa) x ^ {(\kappa - 1)} exp(-(\lambda x) ^ \kappa).}
 #' }
 #'
 #' The confidence region horizontal and vertical axis convention in use by \code{crplot} for each
@@ -159,11 +163,14 @@
 #' \item The log normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis,
 #' and \eqn{\sigma} on its vertical axis.
 #'
-#' \item The log logistic distribution confidence region plot shows \eqn{\alpha} on its
-#' horizontal axis, and \eqn{\beta} on its vertical axis.
+#' \item The log logistic distribution confidence region plot shows \eqn{\lambda} on its
+#' horizontal axis, and \eqn{\kappa} on its vertical axis.
 #'
 #' \item The normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis, and
 #' \eqn{\sigma} on its vertical axis.
+#'
+#' \item The uniform distribution confidence region plot shows \eqn{a} on its horizontal axis, and
+#' \eqn{b} on its vertical axis.
 #'
 #' \item The Weibull distribution confidence region plot shows \eqn{\kappa} on its horizontal axis,
 #' and \eqn{\lambda} on its vertical axis.
@@ -222,9 +229,6 @@ crplot <- function(dataset,
                    repair = TRUE,
                    showplot = TRUE) {
 
-  ## Existing functions for solving non-closed form MLEs are found in these packages ####
-  #require(STAR)
-
   # parameter error checking ###########################################################
 
   if (missing(dataset)) stop ("argument 'dataset' is missing, with no default")
@@ -234,20 +238,14 @@ crplot <- function(dataset,
   if (is.null(dataset) || length(dataset) == 1 || !is.numeric(dataset))
     stop("'dataset' must be a numeric vector with length > 1")
 
-  if (!is.element(distn, c("weibull", "invgauss", "norm", "lnorm", "llogis", "gamma")))
-    stop("'distn' invalid; only 'gamma', 'invgauss', 'lnorm', 'llogis', 'norm', 'weibull' are supported")
+  if (!is.element(distn, c("weibull", "invgauss", "norm", "lnorm", "llogis", "gamma", "unif")))
+    stop("'distn' invalid; only 'gamma', 'invgauss', 'lnorm', 'llogis', 'norm', 'unif', 'weibull' are supported")
 
   if (distn == "weibull" && min(dataset) <= 0)
     stop("'dataset' parameter contains infeasible Weibull distribution outcome(s) <= 0")
 
   if (distn == "invgauss" && min(dataset) <= 0)
     stop("'dataset' parameter contains infeasible inverse Gaussian distribution outcome(s) <= 0")
-
-  if (distn == "norm" && min(dataset) <= 0)
-    stop("'dataset' parameter contains infeasible normal distribution outcome(s) <= 0")
-
-  if (distn == "lnorm" && min(dataset) <= 0)
-    stop("'dataset' parameter contains infeasible lognormal distribution outcome(s) <= 0")
 
   if (distn == "llogis" && min(dataset) <= 0)
     stop("'dataset' parameter contains infeasible loglogistic distribution outcome(s) <= 0")
@@ -335,7 +333,7 @@ crplot <- function(dataset,
   #
   # 3. mlesolve.       This function calculates and returns the MLE.  Weibull MLEs use Braxton Fixed Point
   #                    Algorithm with initial Menon estimate to begin iterating the algorithm (ref: pg 338
-  #                    in Leemis Reliability text)
+  #                    in Leemis Reliability text).
   #
   # 4. llrsolve.       Using the asymptotically chisquared likelihood ratio statistic, this function returns
   #                    a function whose positive values reside within the (1 - alpha)% confidence region,
@@ -433,6 +431,7 @@ crplot <- function(dataset,
   # This function calculates and returns the maximum likelihood estimator for the specified distribution
   # as well as the value of its loglikelihood function at the MLE.  Weibull MLEs are found using the
   # Braxton Fixed Point Algorithm, and inverse Gaussian MLEs are found using its closed form solution.
+  # Gamma and log logistic use the STAR package to identify their MLEs.
   # Returned is mle.list with values list("theta1.hat", "theta2.hat", "mleLLvalue").
   mlesolve = function(x, cen, epsilon = 0.000000001){
     n <- length(x)
@@ -519,20 +518,28 @@ crplot <- function(dataset,
 
     # loglogistic MLE
     else if (distn == "llogis"){
-      temp1 <- llogisMLE(x)
-      alpha.hat <- exp(temp1$estimate[['location']])
-      beta.hat <- 1 / temp1$estimate[['scale']]
+      temp1 <- STAR::llogisMLE(x)
+      lambda.hat <- 1 / exp(temp1$estimate[['location']])
+      kappa.hat <- 1 / temp1$estimate[['scale']]
       mleLL <- temp1$logLik
-      mle.list <- list("theta1.hat" = alpha.hat, "theta2.hat" = beta.hat, "mleLLvalue" = mleLL)
+      mle.list <- list("theta1.hat" = lambda.hat, "theta2.hat" = kappa.hat, "mleLLvalue" = mleLL)
     }
 
     # gamma MLE
     else if (distn == "gamma"){
-      temp1 <- gammaMLE(x)
+      temp1 <- STAR::gammaMLE(x)
       kappa.hat <- temp1$estimate[['shape']]
       theta.hat <- temp1$estimate[['scale']]
       mleLL <- temp1$logLik
       mle.list <- list("theta1.hat" = theta.hat, "theta2.hat" = kappa.hat, "mleLLvalue" = mleLL)
+    }
+
+    # uniform MLE
+    else if (distn == "unif") {
+      a.hat <- min(x)
+      b.hat <- max(x)
+      mleLL <- -n * log(b.hat - a.hat)
+      mle.list <- list("theta1.hat" = a.hat, "theta2.hat" = b.hat, "mleLLvalue" = mleLL)
     }
 
     invisible(mle.list)
@@ -643,21 +650,21 @@ crplot <- function(dataset,
 
     # loglogistic distribution
     if (distn == "llogis") {
-      alpha.hat <- MLEHAT[1, ]
-      beta.hat <- MLEHAT[2, ]
+      lambda.hat <- MLEHAT[1, ]
+      kappa.hat <- MLEHAT[2, ]
       temp <- mleLLvalue - (chi2 / 2)
-      alpha <- alpha.hat + (d * cos(phi))
-      beta <- beta.hat + (d * sin(phi))
+      lambda <- lambda.hat + (d * cos(phi))
+      kappa <- kappa.hat + (d * sin(phi))
 
       temp1 <- 0
       temp2 <- 0
       for (i in 1:n){
         if (cen[i] == 1){
           temp1 <- temp1 + log(x[i])
-          temp2 <- temp2 + log(1 + (x[i] / alpha)^beta)
+          temp2 <- temp2 + log(1 + (x[i] / (1 / lambda))^kappa)
         }
       }
-      valuereturn <- n * log(beta) - n * beta * log(alpha) + (beta - 1) * temp1 - 2 * temp2 - temp
+      valuereturn <- n * log(kappa) - n * kappa * log(1 / lambda) + (kappa - 1) * temp1 - 2 * temp2 - temp
     }
 
     # gamma distribution
@@ -679,6 +686,17 @@ crplot <- function(dataset,
       }
 
       valuereturn <- -n * kappa * log(theta) + (kappa - 1) * temp1 - temp2 - n * log(gamma(kappa)) - temp
+    }
+
+    # uniform distribution
+    if (distn == "unif") {
+      a.hat <- MLEHAT[1, ]
+      b.hat <- MLEHAT[2, ]
+      temp <- mleLLvalue - (chi2 / 2)
+      a <- a.hat + (d * cos(phi))
+      b <- b.hat + (d * sin(phi))
+
+      valuereturn <- -n * log(b - a) - temp
     }
 
     invisible(valuereturn)
@@ -706,10 +724,10 @@ crplot <- function(dataset,
       done <- 0
       for (umult in c(10, 100, 500)) {   # uniroot 'upper' argument will use this multiplier to set >> upper bounds in search of root
         if (done == 0) {
-          if (phi[j] <= pi / 2) {                                                # phi angles of 0 to pi / 2
+          if ((phi[j] <= pi / 2) || (distn %in% c("norm", "lnorm", "unif") && phi[j] <= pi)) {                              # phi angles of 0 to pi / 2
             tempUpper <- umult * max(theta1.hat, theta2.hat)
           }
-          else if (phi[j] <= pi +  atan(theta2.hat/theta1.hat)) {                 # phi angles of pi / 2 through intercept with origin
+          else if ((phi[j] <= pi +  atan(theta2.hat/theta1.hat)) && !(distn %in% c("norm", "lnorm)"))) {                 # phi angles of pi / 2 through intercept with origin
             temp <- theta1.hat / (-cos(phi[j]))    # an upper bound for confidence region feasible points; -cos() because cos(phi[i]) < 0
             tempUpper <- temp * 0.99               # set search limit just before upper limit (y-axis)
           }
@@ -720,6 +738,9 @@ crplot <- function(dataset,
           if ((tempUpper > umult * theta1.hat) && (tempUpper > umult * theta2.hat)) {
             tempUpper <- umult * max(c(theta1.hat, theta2.hat))     # arbitrary upper bound for phi near pi/2; accept risk CR bound <= umult * max(mle_parameter)
           }
+          #print(theta2.hat)
+          #print(paste0("phi is: ", phi[j]))
+          #print(paste0("tempUpper is: ", tempUpper))
           g <- suppressWarnings(try(g1 <- uniroot(llrsolve, lower = 0, upper = tempUpper,
                                                   phi = phi[j], MLE = MLEHAT, mleLLvalue = mleLLvalue, x = samp,
                                                   cen = cen, chi2 = qchisq(1 - alpha, 2), tol = tol)))
@@ -1180,7 +1201,13 @@ crplot <- function(dataset,
   mleLLvalue <- mle.list$mleLLvalue
 
   # identify confidence region boundary coordinates
-  if (heuristic == 1) {
+  if (distn == "unif") {
+      phi <- c(pi / 2, pi)
+      cr <- crsolve(samp = dataset, cen = cen, alpha = alpha, mle.list = mle.list, phi = phi)
+      crlist <- list("x" = append(cr[, 1], theta1.hat), "y" = append(cr[, 2], theta2.hat), "phi" = append(phi, 0))
+      message("uniform distribution confidence region is built using the three points triangulating that region")
+  }
+  else if (heuristic == 1) {
     crlist <- crsmooth(maxdeg = maxdeg, samp = mydata, cen = cen, alpha = alpha, mle.list = mle.list, ellipse_n = ellipse_n,
                        xrepair = 0, phinewstore = NULL, repairinfo = NULL, jumpxy = NULL, repairtarget = NULL, repairpass = FALSE)
   }
@@ -1258,7 +1285,7 @@ crplot <- function(dataset,
   #print("dataset was: ")
   #print(dataset)
   # returned values (if requested), otherwise only output to screen # boundary points.
-  if (length(dataset) <= 5) {
+  if ((length(dataset) <= 5) && (distn != "unif")) {
     warning("small sample size is ill-suited to invoke the asymptotic properties assumed by the confidence region plot")
     #print("WARNING: small sample sizes can yield irregular confidence region shapes that are unatainable using crplot.")
     #print("WARNING: small sample sizes violate the asymptotic properties assumption used to produce the confidence region.")
@@ -1286,14 +1313,19 @@ crplot <- function(dataset,
                      "muhat" = mle.list$theta1.hat, "sigmahat" = mle.list$theta2.hat)
     }
     else if (distn == "llogis") {
-      print(paste0("MLE value is: (alpha.hat = ", theta1.hat, ", beta.hat = ", theta2.hat,")"))
-      crlist <- list("alpha" = crlist$x, "beta" = crlist$y, "phi" = crlist$phi,
-                     "alphahat" = mle.list$theta1.hat, "betahat" = mle.list$theta2.hat)
+      print(paste0("MLE value is: (lambda.hat = ", theta1.hat, ", kappa.hat = ", theta2.hat,")"))
+      crlist <- list("lambda" = crlist$x, "kappa" = crlist$y, "phi" = crlist$phi,
+                     "lambdahat" = mle.list$theta1.hat, "kappahat" = mle.list$theta2.hat)
     }
     else if (distn == "gamma") {
       print(paste0("MLE value is: (theta.hat = ", theta1.hat, ", kappa.hat = ", theta2.hat,")"))
       crlist <- list("theta" = crlist$x, "kappa" = crlist$y, "phi" = crlist$phi,
                      "thetahat" = mle.list$theta1.hat, "kappahat" = mle.list$theta2.hat)
+    }
+    else if (distn == "uniform") {
+      print(paste0("MLE value is: (a.hat = ", theta1.hat, ", b.hat = ", theta2.hat,")"))
+      crlist <- list("a" = crlist$x, "b" = crlist$y, "phi" = crlist$phi,
+                     "ahat" = mle.list$theta1.hat, "bhat" = mle.list$theta2.hat)
     }
     return(crlist)
   }

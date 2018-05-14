@@ -10,7 +10,7 @@ Enables:
 \enumerate{
 \item confidence region plots in two-dimensions corresponding to a user given dataset,
 level of significance, and parametric probability distribution (supported distribution suffixes:
-gamma, invgauss, lnorm, llogis, norm, weibull), and
+gamma, invgauss, llogis, lnorm, norm, unif, weibull), and
 \item calculating confidence intervals and the associated actual coverage for binomial proportions.
 }
 
@@ -22,6 +22,7 @@ and adedemic and/or business affiliation in your correspondance.
 This package includes the functions:
 \itemize{
 \item confidence region plots: \code{\link{crplot}},
+\item confidence region coverage analysis: \code{\link{coversim}},
 \item confidence intervals for binomial proportions: \code{\link{binomTest}},
 \item actual coverage calculation for binomial proportions: \code{\link{binomTestCoverage}},
 \item coverage plots for binomial proportions: \code{\link{binomTestCoveragePlot}}, and
