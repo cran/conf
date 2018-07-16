@@ -30,9 +30,11 @@ polygon(x$kappa, x$lambda, col = "gray80", border = NA)
 # record MLE values (previously output to screen when info = TRUE) & reproduce CR plot
 kappa.hat <- 2.10206
 lambda.hat <- 0.01221
-crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", xlab = expression(kappa), 
-       ylab = expression(lambda), main = paste0("Confidence Region"),
+crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", xlab = "shape", 
+       ylab = " ", main = paste0("Confidence Region"),
        pts = FALSE, mlelab = FALSE, sf = c(2, 4), origin = TRUE)
+par(xpd = TRUE)
+text(-1.2, 0.007, "scale")
 
 # 1st analysis plot: overlay phi angles (as line segments) on the confidence region plot
 par(xpd = FALSE)
@@ -69,4 +71,28 @@ crplot(dataset = ballbearing, alpha = 0.05, distn = "invgauss", sf = c(2, 2),
 ## ---- fig.show = 'hold'--------------------------------------------------
 crplot(dataset = ballbearing, alpha = 0.05, distn = "invgauss", sf = c(2, 2), 
        maxdeg = 10, main = "default (heuristic = 1)")
+
+## ---- fig.show = 'hold'--------------------------------------------------
+X <- seq(1, 2.5, by = 0.25)
+crplot(dataset = X, alpha = 0.01, distn = "gamma", sf = c(2, 2), pts = FALSE, repair = FALSE, main = "without repair")
+x <- crplot(seq(1, 2.5, by = 0.25), 0.01, "gamma", sf = c(2, 2), info = TRUE, repair = FALSE, main = "without repair")
+index1 <- which(x$kappa == max(x$kappa))
+index2 <- which(x$theta == max(x$theta))
+lines(c(x$thetahat, x$theta[index1]), c(x$kappahat, x$kappa[index1]), col = "red")
+lines(c(x$thetahat, x$theta[index2]), c(x$kappahat, x$kappa[index2]), col = "red")
+
+## ---- fig.show = 'hold'--------------------------------------------------
+crplot(seq(1, 2.5, by = 0.25), 0.01, "gamma", sf = c(2, 2), pts = FALSE, main = "with repair")
+crplot(seq(1, 2.5, by = 0.25), 0.01, "gamma", sf = c(2, 2), main = "with repair")
+lines(c(x$thetahat, x$theta[index1]), c(x$kappahat, x$kappa[index1]), col = "red")
+lines(c(x$thetahat, x$theta[index2]), c(x$kappahat, x$kappa[index2]), col = "red")
+
+## ---- fig.show = 'hold'--------------------------------------------------
+crplot(seq(1, 2.5, by = 0.25), 0.01, "gamma", sf = c(2, 2), pts = TRUE, main = "max(theta) zoom", xlim = c(1.25, 1.5), ylim = c(1.4, 2.4))
+crplot(seq(1, 2.5, by = 0.25), 0.01, "gamma", sf = c(2, 2), pts = TRUE, main = "max(kappa) zoom", xlim = c(0.04, 0.05), ylim = c(37, 41))
+
+## ---- fig.show = 'hold'--------------------------------------------------
+  x <- crplot(c(2, 2.5), 0.01, "llogis", sf = c(2, 2), info = TRUE, pts = FALSE, main = "llogis")
+  x <- crplot(c(2, 2.5), 0.01, "weibull", sf = c(2, 2), info = TRUE, pts = FALSE, main = "weibull")
+  x <- crplot(c(2, 2.5), 0.01, "norm", sf = c(2, 2), info = TRUE, pts = FALSE, main = "weibull")
 

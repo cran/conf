@@ -476,7 +476,12 @@ coversim <- function(alpha,
 
       # identify samples in n rows and iter columns (trial given in one column)
       if (!is.null(dataset)) {
-        samples <- dataset
+        if (dim(dataset)[2] == 1) {
+          samples <- matrix(dataset, nrow = length(dataset))
+        }
+        else {
+          samples <- dataset
+        }
       }
       else {
         if (distn == "gamma") {
@@ -505,6 +510,7 @@ coversim <- function(alpha,
         }
       }
 
+      assessed <- 0           # initialize counter to record number of m.c. sims assessed (does not count errors)
       for (i in 1:iter) {
         invisible(utils::capture.output(
           x <- try(crplot(dataset = samples[, i],
@@ -559,19 +565,23 @@ coversim <- function(alpha,
           allresults[count, i] <- result
         }
         if ((((i / iter) * 100) %% 1) == 0) {
-          pworking <- format(100 * sum(allresults[count, ]) / i, digits = 2)
-          cat(paste0("\r", ((i / iter) * 100), "% complete; covered thus far: ",
-                     pworking, "%"))
+          pworking <- format(100 * sum(allresults[count, ]) / max(1, (i - sum(allerrors[count, ]))), digits = 2)
+          cat(paste0("\r", ((i / iter) * 100), "% complete"))
+                     # ; covered thus far: ", pworking, "%"))
           }
       }                                # end iter for-loop
 
       # record results and print to screen
       cat("\n")
       incount <- sum(allresults[count, ])
+      print(paste0(iter, " replications complete."))
+      print(paste0(incount, " confidence regions contained the true parameters."))
       print(paste0(sum(allerrors[count, ]), " total errors."))
-      print(paste0(incount, " of the ", iter - errors, " confidence regions (",
-                   incount / (iter - errors), ") contained the true parameters."))
-      allcoverage[count] <- incount / (iter - errors)
+      #print(paste0(incount, " of the ", iter - sum(allerrors[count, ]), " confidence regions (",
+      #             incount / (iter - sum(allerrors[count, ])), ") contained the true parameters."))
+      #print(paste0(incount / iter, " contained the true parameters
+      #             (assumes errors associate with misses, as typically the case)."))
+      allcoverage[count] <- incount / (iter - sum(allerrors[count, ]))
     }                # end alpha for-loop
     cat("\n")
   }                  # end n for-loop
@@ -604,19 +614,19 @@ coversim <- function(alpha,
     }
   }
 
-  if (info == TRUE) {
+  if (info) {
     # return coverage results; include samples and runif(0, 1) quantiles upon request
     alab <- rep(alpha, length(n))
     nlab <- rep(n, each = length(alpha))
-    if ((returnsamp == TRUE) && (returnquant == TRUE)) {
+    if (returnsamp && returnquant) {
       return(list("alab" = alab, "nlab" = nlab, "results" = allresults, "errors" = allerrors, "coverage" = allcoverage,
-                  "ru01" = ru01, "samples" = samples))
+                  "quantiles" = ru01, "samples" = samples))
     }
-    else if (returnquant == TRUE) {
+    else if (returnquant) {
       return(list("alab" = alab, "nlab" = nlab, "results" = allresults, "errors" = allerrors, "coverage" = allcoverage,
-                  "ru01" = ru01))
+                  "quantiles" = ru01))
     }
-    else if (returnsamp == TRUE) {
+    else if (returnsamp) {
       return(list("alab" = alab, "nlab" = nlab, "results" = allresults, "errors" = allerrors, "coverage" = allcoverage,
                   "samples" = samples))
     }
@@ -624,5 +634,15 @@ coversim <- function(alpha,
       return(list("alab" = alab, "nlab" = nlab, "results" = allresults, "errors" = allerrors, "coverage" = allcoverage))
     }
   }
+  else if (returnsamp && returnquant) {
+    return(list("quantiles" = ru01, "samples" = samples))
+  }
+  else if (returnsamp) {
+    return(list("samples" = samples))
+  }
+  else if (returnquant) {
+    return(list("quantiles" = ru01))
+  }
+
 
 }  # end coversim function

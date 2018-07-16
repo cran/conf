@@ -12,6 +12,7 @@ crplot(dataset, alpha, distn,
                 mlelab    = TRUE,
                 sf        = c(5, 5),
                 mar       = c(4, 4.5, 2, 1.5),
+                xyswap    = FALSE,
                 xlab      = "",
                 ylab      = "",
                 main      = "",
@@ -23,6 +24,8 @@ crplot(dataset, alpha, distn,
                 tol       = .Machine$double.eps ^ 0.5,
                 info      = FALSE,
                 repair    = TRUE,
+                jumpshift = 0.5,
+                jumpuphill = min(alpha, 0.01),
                 showplot  = TRUE )
 }
 \arguments{
@@ -51,6 +54,8 @@ likelihood estimate coordinate point (default is \code{TRUE}).}
 
 \item{mar}{specifies margin values for \code{par(mar = c( ))} (see \code{mar} in \code{\link{par}}).}
 
+\item{xyswap}{logical argument to switch the axes that the distribution parameter are shown.}
+
 \item{xlab}{string specifying the x axis label.}
 
 \item{ylab}{string specifying the y axis label.}
@@ -74,6 +79,10 @@ and corresponding phi angles (with respect to MLE) are returned as a list.}
 
 \item{repair}{logical argument to repair regions inaccessible using a radial angle from its MLE due to multiple
 roots at select \eqn{\phi} angles.}
+
+\item{jumpshift}{\% of vertical or horizontal "gap" (near uncharted region) to angle jump-center location towards}
+
+\item{jumpuphill}{significance level increase to alpha ("uphill" on confidence region) to locate the jump-center}
 
 \item{showplot}{logical argument specifying if a plot is output; altering from its default of \code{TRUE} is
 only logical assuming \code{crplot} is run for its data only (see the \code{info} argument).}
