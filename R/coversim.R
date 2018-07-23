@@ -317,8 +317,8 @@ coversim <- function(alpha,
   if (is.null(heuristic) || !is.numeric(heuristic) || (heuristic != 0 && heuristic != 1))
     stop("'heuristic' parameter must be 0 (elliptic-oriented points) or 1 (search heuristic)")
 
-  if (is.null(maxdeg) || !is.numeric(maxdeg) || maxdeg < 3 || maxdeg >= 90)
-    stop("'maxdeg' parameter must be a numeric angle tollerance in degrees such that 3 <= maxdeg < 90")
+  if (is.null(maxdeg) || !is.numeric(maxdeg) || maxdeg < 1 || maxdeg >= 90)
+    stop("'maxdeg' parameter must be a numeric angle tollerance in degrees such that 1 <= maxdeg < 90")
 
   if ((ellipse_n == 4) && (heuristic == 0))
     stop("'ellipse_n' (number of plot points) >= 8 required for 'heuristic = 0' (elliptic-oriented points)")

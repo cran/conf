@@ -93,8 +93,8 @@
 #' \code{maxdeg} parameter specifies the maximum tolerable angle between three successive points.
 #' Lower values of \code{maxdeg} result in smoother plots, and its default value of 5 degrees
 #' provides adequate smoothing in most circumstances.  Values of \code{maxdeg} \eqn{\le} 3 are not
-#' permitted due to their complicating implications to trigonometric numerical approximations near 0
-#' and 1.
+#' recommended due to their complicating implications to trigonometric numerical approximations near 0
+#' and 1; their use may result in plot errors.
 #' \item \emph{Elliptic-Oriented Point Distribution}.  This heuristic allows the user to specify
 #' a number of points to plot along the confidence region boundary at roughly uniform intervals.
 #' Its name is derived from the technique it uses to choose these points---an extension of the Steiner
@@ -268,8 +268,8 @@ crplot <- function(dataset,
   if (is.null(heuristic) || !is.numeric(heuristic) || (heuristic != 0 && heuristic != 1))
     stop("'heuristic' parameter must be 0 (elliptic-oriented points) or 1 (search heuristic)")
 
-  if (is.null(maxdeg) || !is.numeric(maxdeg) || maxdeg < 3 || maxdeg >= 90)
-    stop("'maxdeg' parameter must be a numeric angle tollerance in degrees such that 3 <= maxdeg < 90")
+  if (is.null(maxdeg) || !is.numeric(maxdeg) || maxdeg < 1 || maxdeg >= 90)
+    stop("'maxdeg' parameter must be a numeric angle tollerance in degrees such that 1 <= maxdeg < 90")
 
   if ((ellipse_n == 4) && (heuristic == 0))
     stop("'ellipse_n' (number of plot points) >= 8 required for 'heuristic = 0' (elliptic-oriented points)")
@@ -325,7 +325,7 @@ crplot <- function(dataset,
   if (jumpshift <= 0 || jumpshift >= 1 || !is.numeric(jumpshift) || length(jumpshift) != 1)
     stop("'jumpshift' must be a single numeric value 0 < jumpshift < 1")
 
-  if (jumpuphill <= 0 || (alpha + jumpuphill) >= 1 || !is.numeric(jumpuphill) || length(jumpuphill) != 1)
+  if (jumpuphill <= 0 || !is.numeric(jumpuphill) || length(jumpuphill) != 1)
     stop("'jumpuphill' must be a single numeric value such that 0 < (alpha + jumpuphill) < 1")
 
   if (!is.logical(showplot) || length(showplot) != 1)
@@ -1017,6 +1017,13 @@ crplot <- function(dataset,
           rightphi <- rightx <- righty <- rep(0, 4)
           jumpphi <- gaptype <- phi1 <- phi2 <- rep(0, 4)
           jumpxy <- matrix(rep(0, 8), ncol = 2)
+
+          # ensure a user-entered jumpuphill value is not infeasible
+          if ((alpha + jumpuphill) > 1) {
+            warning("infeasible jumpuphill value ((alpha + jumpuphill) > 1); restoring default of min(alpha, 0.01)")
+            jumpuphill <- min(alpha, 0.01)
+            #jumpuphill <- 0.9 * alpha + 0.1     # (alpha + 0.1(1 - alpha))
+          }
 
           #####################################################
           # Quadrant I (with respect to MLE) repairs

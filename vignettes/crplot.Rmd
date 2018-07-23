@@ -183,7 +183,7 @@ The final examples below demonstrate how repairs are necessary for some (log log
 ```{r, fig.show = 'hold'}
   x <- crplot(c(2, 2.5), 0.01, "llogis", sf = c(2, 2), info = TRUE, pts = FALSE, main = "llogis")
   x <- crplot(c(2, 2.5), 0.01, "weibull", sf = c(2, 2), info = TRUE, pts = FALSE, main = "weibull")
-  x <- crplot(c(2, 2.5), 0.01, "norm", sf = c(2, 2), info = TRUE, pts = FALSE, main = "weibull")
+  x <- crplot(c(2, 2.5), 0.01, "norm", sf = c(2, 2), info = TRUE, pts = FALSE, main = "norm")
 ```
 
 Overriding the default with `repair = FALSE` is not typically recommended, but possible for two reasons.  First, repairs require additional computation time that circumstance may warrant avoiding for a quicker (albeit less-precise) solution.  Second, occasionally `crplot` fails to complete a confidence region plot due an R uniroot or other numeric failure.  In such cases, turning off repairs can enable an otherwise unobtainable plot to return to the user.  

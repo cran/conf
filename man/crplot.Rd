@@ -111,8 +111,8 @@ greater curvature to ensure a smooth appearance throughout the confidence region
 \code{maxdeg} parameter specifies the maximum tolerable angle between three successive points.
 Lower values of \code{maxdeg} result in smoother plots, and its default value of 5 degrees
 provides adequate smoothing in most circumstances.  Values of \code{maxdeg} \eqn{\le} 3 are not
-permitted due to their complicating implications to trigonometric numerical approximations near 0
-and 1.
+recommended due to their complicating implications to trigonometric numerical approximations near 0
+and 1; their use may result in plot errors.
 \item \emph{Elliptic-Oriented Point Distribution}.  This heuristic allows the user to specify
 a number of points to plot along the confidence region boundary at roughly uniform intervals.
 Its name is derived from the technique it uses to choose these points---an extension of the Steiner

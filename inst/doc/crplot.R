@@ -94,5 +94,5 @@ crplot(seq(1, 2.5, by = 0.25), 0.01, "gamma", sf = c(2, 2), pts = TRUE, main = "
 ## ---- fig.show = 'hold'--------------------------------------------------
   x <- crplot(c(2, 2.5), 0.01, "llogis", sf = c(2, 2), info = TRUE, pts = FALSE, main = "llogis")
   x <- crplot(c(2, 2.5), 0.01, "weibull", sf = c(2, 2), info = TRUE, pts = FALSE, main = "weibull")
-  x <- crplot(c(2, 2.5), 0.01, "norm", sf = c(2, 2), info = TRUE, pts = FALSE, main = "weibull")
+  x <- crplot(c(2, 2.5), 0.01, "norm", sf = c(2, 2), info = TRUE, pts = FALSE, main = "norm")
 
