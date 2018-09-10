@@ -166,11 +166,11 @@
 #' \item The inverse Gaussian distribution confidence region plot shows \eqn{\mu} on its horizontal
 #' axis, and \eqn{\lambda} on its vertical axis.
 #'
-#' \item The log normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis,
-#' and \eqn{\sigma} on its vertical axis.
-#'
 #' \item The log logistic distribution confidence region plot shows \eqn{\lambda} on its
 #' horizontal axis, and \eqn{\kappa} on its vertical axis.
+#'
+#' \item The log normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis,
+#' and \eqn{\sigma} on its vertical axis.
 #'
 #' \item The normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis, and
 #' \eqn{\sigma} on its vertical axis.
@@ -535,6 +535,9 @@ crplot <- function(dataset,
     }
 
     # loglogistic MLE
+    # admin note: STAR expresses the log logistic distribution with a much different parameterization
+    # although a counterintuitive equality, its "location" parameter = log(scale) via our parameterization
+    # and its "scale" parameter = (1 / shape) via our parameterization
     else if (distn == "llogis"){
       temp1 <- STAR::llogisMLE(x)
       lambda.hat <- 1 / exp(temp1$estimate[['location']])
@@ -761,7 +764,7 @@ crplot <- function(dataset,
           #print(paste0("tempUpper is: ", tempUpper))
           g <- suppressWarnings(try(g1 <- uniroot(llrsolve, lower = 0, upper = tempUpper,
                                                   phi = phi[j], MLE = MLEHAT, mleLLvalue = mleLLvalue, x = samp,
-                                                  cen = cen, chi2 = qchisq(1 - alpha, 2), tol = tol)))
+                                                  cen = cen, chi2 = qchisq(1 - alpha, 2), tol = tol), silent = TRUE))
 
           # errors in uniroot (calculating "g") are possible, and a result of poor upper bound selection
           # the next section of code troubleshoots those errors in two ways:
@@ -781,12 +784,12 @@ crplot <- function(dataset,
             #print(paste0("Error; correction is sought with uniroot upper bound modifications... ", tempUpperHi))
             g <- suppressWarnings(try(g1 <- uniroot(llrsolve, lower = 0, upper = tempUpperHi,
                                      phi = phi[j], MLE = MLEHAT, mleLLvalue = mleLLvalue, x = samp,
-                                     cen = cen, chi2 = qchisq(1 - alpha, 2), tol = tol)))
+                                     cen = cen, chi2 = qchisq(1 - alpha, 2), tol = tol), silent = TRUE))
             if (class(g) == "try-error") {
               #print(paste0("...............try pushing up the min value to ", tempUpperLo))
               g <- suppressWarnings(try(g1 <- uniroot(llrsolve, lower = 0, upper = tempUpperLo,
                            phi = phi[j], MLE = MLEHAT, mleLLvalue = mleLLvalue, x = samp,
-                           cen = cen, chi2 = qchisq(1 - alpha, 2), tol = tol)))
+                           cen = cen, chi2 = qchisq(1 - alpha, 2), tol = tol), silent = TRUE))
             }
             if (class(g) != "try-error") {
               #print("...*error overcome* through uniroot 'upper' argument modification; algorithm resuming...")
@@ -1409,9 +1412,9 @@ crplot <- function(dataset,
 
   # label axes appropriately in the absence of a user specified label
   disttype <- c("gamma", "invgauss", "llogis", "lnorm", "norm", "unif", "weibull")
-  xaxislabel <- c(expression(theta), expression(mu), expression(mu), expression(lambda),
+  xaxislabel <- c(expression(theta), expression(mu), expression(lambda), expression(mu),
                   expression(mu), expression(a), expression(kappa))
-  yaxislabel <- c(expression(kappa), expression(lambda), expression(sigma), expression(kappa),
+  yaxislabel <- c(expression(kappa), expression(lambda), expression(kappa), expression(sigma),
                   expression(sigma), expression(b), expression(lambda))
   if (!is.expression(xlab)) {
     if (xlab == "") {
@@ -1442,10 +1445,20 @@ crplot <- function(dataset,
     ylabs <- c(ylabs, theta2.hat)
   }
   if (origin == TRUE) {
-    xmin <- 0
-    ymin <- 0
-    xlabs <- c(0, xlabs)
-    ylabs <- c(0, ylabs)
+    if (min(cr[,1]) > 0) {
+      xmin <- 0
+    }
+    else {
+      xmin <- min(cr[,1])
+    }
+    if (min(cr[,2]) > 0) {
+      ymin <- 0
+    }
+    else {
+      ymin <- min(cr[,2])
+    }
+    xlabs <- sort(c(xmin, xlabs))
+    ylabs <- sort(c(ymin, ylabs))
   }
   else {
     xmin <- min(cr[,1])

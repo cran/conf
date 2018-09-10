@@ -184,11 +184,11 @@ and \eqn{\kappa} on its vertical axis.
 \item The inverse Gaussian distribution confidence region plot shows \eqn{\mu} on its horizontal
 axis, and \eqn{\lambda} on its vertical axis.
 
-\item The log normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis,
-and \eqn{\sigma} on its vertical axis.
-
 \item The log logistic distribution confidence region plot shows \eqn{\lambda} on its
 horizontal axis, and \eqn{\kappa} on its vertical axis.
+
+\item The log normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis,
+and \eqn{\sigma} on its vertical axis.
 
 \item The normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis, and
 \eqn{\sigma} on its vertical axis.

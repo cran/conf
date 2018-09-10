@@ -6,10 +6,10 @@
 #' Each trial uses a random dataset with user-specified parameters (default) or a user specified dataset
 #' matrix (\code{'n'} samples per column, \code{'iter'} columns) and returns the corresponding actual coverage results.
 #'
-#' @param alpha significance level; resulting plot illustrates a 100(1 - alpha)\% confidence region.
+#' @param alpha significance level; scalar or vector; resulting plot illustrates a 100(1 - alpha)\% confidence region.
 #' @param distn distribution to fit the dataset to; accepted values: \code{'gamma'}, \code{'invgauss'},
 #' \code{'lnorm'}, \code{'llogis'}, \code{'norm'}, \code{'weibull'}.
-#' @param n trial sample size (producing each confidence region); needed if a dataset is not given.
+#' @param n trial sample size (producing each confidence region); scalar or vector; needed if a dataset is not given.
 #' @param iter iterations of individual trials per parameterization; needed if a dataset is not given.
 #' @param dataset a \code{'n'} x \code{'iter'} matrix of dataset values.
 #' @param point coverage is assessed relative to this point.
@@ -82,7 +82,7 @@
 #'                 mar       = c(4, 4.5, 2, 1.5),
 #'                 xlab      = "",
 #'                 ylab      = "",
-#'                 main      = paste0("alpha: ", a, "  n: ", samp),
+#'                 main      = "",
 #'                 xlas      = 1,
 #'                 ylas      = 2,
 #'                 origin    = FALSE,
@@ -204,7 +204,7 @@ coversim <- function(alpha,
                      mar = c(4, 4.5, 2, 1.5),
                      xlab = "",
                      ylab = "",
-                     main = paste0("alpha: ", a, "  n: ", samp),
+                     main = "",
                      xlas = 1,
                      ylas = 2,
                      origin = FALSE,
@@ -532,7 +532,8 @@ coversim <- function(alpha,
                           tol = tol,
                           repair = repair,
                           showplot = showplot,
-                          info = TRUE))
+                          info = TRUE),
+                   silent = TRUE)
         ))
 
 
@@ -586,31 +587,65 @@ coversim <- function(alpha,
     cat("\n")
   }                  # end n for-loop
 
-  # plot results
-  #par(mfrow = c(1, 1))
-  if (distn == "weibull") {
-    # use if cycling alpha values but keeping sample size constant:
-    if (length(alpha) > 1) {
-      plot(1 - alpha, allcoverage, main = paste0("kappa: ", kappa, ", lambda: ", lambda, ", samp: ", n, ", iter: ", iter),
-           ylab = "coverage", xlab = "stated coverage (1 - alpha)")
+  if (main == "") {
+    if (length(n) <= length(alpha)) {
+      main <- paste0("samp: ", n, " (iter: ", iter, ")")
     }
-    # use if cycling through sample sizes but keeping alpha constant
-    if (length(n) > 1) {
-      plot(n, allcoverage, main = paste0("kappa: ", kappa, ", lambda: ", lambda, ", alpha: ", a, ", iter: ", iter),
-           ylab = "coverage", xlab = "sample size")
+    else {
+      main <- paste0("alpha: ", a, " (iter: ", iter, ")")
     }
   }
 
-  if (distn == "invgauss") {
-    # use if cycling alpha values but keeping sample size constant:
-    if ((length(alpha) > 1) && (length(n) == 1)) {
-      plot(1 - alpha, allcoverage, main = paste0("mu: ", mu, ", lambda: ", lambda, ", samp: ", n, ", iter: ", iter),
-           ylab = "coverage", xlab = "stated coverage (1 - alpha)")
+  # plot results if > 1 datapoint
+  if (length(allcoverage) > 1) {
+    nplots <- min(length(n), length(alpha))      # necessary number of plots to display all results
+    if (length(n) == 1) {
+      plot(1 - alpha, allcoverage, main = main,
+           ylab = "actual coverage", xlab = "nominal coverage")
+      lines(c(min(c(1-alpha, allcoverage)), max(c(1-alpha, allcoverage))), c(min(c(1-alpha, allcoverage)), max(c(1-alpha, allcoverage))), lty = 3)
     }
-    # use if cycling through sample sizes but keeping alpha constant:
-    if ((length(alpha) == 1) && (length(n) > 1)) {
-      plot(n, allcoverage, main = paste0("mu: ", mu, ", lambda: ", lambda, ", runs per sample size: ", iter,
-                                        " alpha: ", a), ylab = "coverage", xlab = "sample size")
+    else if (length(alpha) == 1) {
+      plot(n, allcoverage, main = main, ##################paste0("alpha: ", a, " (iter: ", iter, ")"),
+           ylab = "actual coverage", xlab = "sample size")
+      lines(c(min(n), max(n)), c(1 - alpha, 1 - alpha), lty = 3)
+    }
+    else if (nplots <= 9) {
+      if (nplots <= 3) {
+        par(mfrow = c(1, nplots))
+      }
+      else if (nplots == 4) {
+        par(mfrow = c(2, 2))
+      }
+      else if (nplots <= 6) {
+        par(mfrow = c(2, 3))
+      }
+      else {
+        par(mfrow = c(3, 3))
+      }
+    }
+    else {
+      par(mfrow = c(3, 3))
+      message("note: only first 9 summary plots will display")
+    }
+    # plot multiple summaries if 1 < nplots <= 9
+    if ((nplots > 1) && (length(n) <= length(alpha))) {      # plot nominal vs actual coverage
+      marker <- 1       # use to annotate the start location of results for "current" parameterization
+      for (i in 1:min(length(n), 9)) {
+        plot(1 - alpha, allcoverage[marker:(marker + length(alpha) - 1)], main = main, ##############paste0("n: ", n[i], " (iter: ", iter, ")"),
+             ylab = "actual coverage", xlab = "nominal coverage")
+        lines(c(min(c(1-alpha, allcoverage)), max(c(1-alpha, allcoverage))), c(min(c(1-alpha, allcoverage)), max(c(1-alpha, allcoverage))), lty = 3)
+        marker <- marker + length(alpha)
+      }
+      par(mfrow = c(1, 1))
+    }
+    else if ((nplots > 1) && (length(n) > length(alpha))) {   # plot n vs actual coverage
+      marker <- seq(1, (length(alpha) * length(n)), by = length(alpha))     # use to annotate the start location of results for "current" parameterization
+      for (i in 1:min(length(alpha), 9)) {
+        plot(n, allcoverage[marker + i - 1], main = main,   #############paste0("alpha: ", alpha[i], " (iter: ", iter, ")"),
+             ylab = "actual coverage", xlab = "sample size")
+        lines(c(min(n), max(n)), c(1 - alpha[i], 1 - alpha[i]), lty = 3)
+      }
+      par(mfrow = c(1, 1))
     }
   }
 

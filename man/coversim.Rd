@@ -24,7 +24,7 @@ coversim(alpha, distn,
                 mar       = c(4, 4.5, 2, 1.5),
                 xlab      = "",
                 ylab      = "",
-                main      = paste0("alpha: ", a, "  n: ", samp),
+                main      = "",
                 xlas      = 1,
                 ylas      = 2,
                 origin    = FALSE,
@@ -39,12 +39,12 @@ coversim(alpha, distn,
                 delay     = 0 )
 }
 \arguments{
-\item{alpha}{significance level; resulting plot illustrates a 100(1 - alpha)\% confidence region.}
+\item{alpha}{significance level; scalar or vector; resulting plot illustrates a 100(1 - alpha)\% confidence region.}
 
 \item{distn}{distribution to fit the dataset to; accepted values: \code{'gamma'}, \code{'invgauss'},
 \code{'lnorm'}, \code{'llogis'}, \code{'norm'}, \code{'weibull'}.}
 
-\item{n}{trial sample size (producing each confidence region); needed if a dataset is not given.}
+\item{n}{trial sample size (producing each confidence region); scalar or vector; needed if a dataset is not given.}
 
 \item{iter}{iterations of individual trials per parameterization; needed if a dataset is not given.}
 
