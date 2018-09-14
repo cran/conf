@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 ## Introduction   
   
-The `coversim` function performs coverage simulations for two-dimensional confidence region plots, and is part of the `conf` package.  It is capable of performing numerous simulation iterations (or replications) in a single command.
+The `coversim` function performs coverage simulations for two-dimensional confidence region plots, and is part of the [conf](https://CRAN.R-project.org/package=conf) package.  It is capable of performing numerous simulation iterations (or replications) in a single command.
 
 Each trial within the `coversim` function uses a random dataset with user-specified parameters (default), or a user specified dataset matrix.  Each trial identifies if a point of interest (either the population parameters or a user specified point) is within or outside of the confidence region plot.  
 
@@ -201,8 +201,29 @@ title(main = "Weibull(kappa = 3, lambda = 0.5) \n Coverage Results for Various S
 
 Customizing this plot successfully highlights the difference of results between the various parameterizations of the simulation, providing useful intuition how actual coverage varies for small $n$ as a function of the nominal coverage.
 
+## Coverage analysis of user defined datasets
 
+The `coversim` function allows its user to provide their own sample, rather than drawing a random sample from a user-defined parametric population distribution.  In those circumstance the user must provide either a vector (for a single iteration) or an `n` by `iter` matrix (for multiple iterations) of samples, and a point of interest to assess coverage relative to.
 
+The next example illustrates a single coverage assessment for a user-defined dataset of ball bearing failure times, given by Lieblein and Zelen^[Lieblein, J., and Zelen, M. (1956), Statistical Investigation of the Fatigue Life of Deep-Groove Ball Bearings, *Journal of Research of the National Bureau of Standards*, 57, 273--316], relative to a user-defined the point of interest.  Its fit to the Weibull distribution is explained in depth in the Reliability textbook by Leemis^[Leemis, L. (1995), *Reliability: Probabilistic Models and Statistical Methods Second Edition*, Prentice-Hall Inc., 345--251].  After storing ball bearing failure times (in millions of revolutions) into the vector `ballbearing`, `coversim` assesses that a $90\%$ confidence region does not cover the point $\kappa = 1, \lambda = 0.015$.  The fact this point (with $\kappa = 1$) is not covered supports the intuition that the ball bearings are wearing out, and therefore their times to failure do not follow an exponential distribution.
 
+```{r, fig.width = 4, fig.height = 4, fig.show = 'hold'}
+ballbearing <- c(17.88, 28.92, 33.00, 41.52, 42.12, 45.60, 48.48, 51.84,
+                 51.96, 54.12, 55.56, 67.80, 68.64, 68.64, 68.88, 84.12,
+                 93.12, 98.64, 105.12, 105.84, 127.92, 128.04, 173.40)
+coversim(alpha = 0.1, distn = "weibull", dataset = ballbearing, point = c(1, 0.015), showplot = TRUE, origin = TRUE)
+```
 
+The `coversim` function `dataset` argument can also accept multiple iterations of user-specified samples in a single command.  For those circumstance, `dataset` is an `n` by `iter` matrix of sample values: each row representing one of `n` drawn samples, and each column representing a sample set.  This capability is demonstrated next.
+
+Suppose five samples of the aforementioned ball bearing dataset were each collected by four different engineers, and the $90\%$ confidence region of each respective subset is assessed for coverage of the point $\kappa = 1, \lambda = 0.015$.  In this case `dataset` is a 5-row, 4-column matrix, with each column representing a sample set corresponding to one of the engineers.  Each column of the `dataset` matrix produces a confidence region for the Weibull population parameters, which is subsequently assessed to either cover or miss the $\kappa = 1, \lambda = 0.015$ point of interest.
+
+```{r, fig.width = 4, fig.height = 4, fig.show = 'hold'}
+set.seed(1)              # ensure consistent results will illustrate in this vignette
+par(mfrow = c(2, 2))     # display resulting plots in a 2 row by 2 column grid
+samplematrix <- matrix(sample(ballbearing, 20), ncol = 4)   # subset 20 samples into four groups (columns)
+coversim(alpha = 0.1, distn = "weibull", dataset = samplematrix, point = c(1, 0.015), showplot = TRUE, origin = TRUE)
+```
+
+Three of four $90\%$ confidence regions cover the point $\kappa = 1, \lambda = 0.015$.  This is partially a consequence of reducing the sample size used to plot each confidence region (from $23$ to $5$), which in-turn increases uncertainty surrounding its maximum likelihood estimator (the area contained within the $90\%$ confidence region).
 

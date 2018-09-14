@@ -5,7 +5,10 @@
 #' \enumerate{
 #' \item confidence region plots in two-dimensions corresponding to a user given dataset,
 #' level of significance, and parametric probability distribution (supported distribution suffixes:
-#' gamma, invgauss, llogis, lnorm, norm, unif, weibull), and
+#' gamma, invgauss, llogis, lnorm, norm, unif, weibull),
+#' \item coverage simulations (if a point of interest is within or outside of a confidence region
+#' boundary) for either random samples drawn from a user-specified parametric distribution or for a
+#' user-specified dataset and point of interest, and
 #' \item calculating confidence intervals and the associated actual coverage for binomial proportions.
 #' }
 #'
@@ -23,6 +26,10 @@
 #' \item coverage plots for binomial proportions: \code{\link{binomTestCoveragePlot}}, and
 #' \item ensemble confidence intervals for binomial proportions: \code{\link{binomTestEnsemble}}.
 #' }
+#'
+#' @section Vignettes:
+#' The CRAN website https://CRAN.R-project.org/package=conf contains links for vignettes on the
+#' \code{\link{crplot}} and \code{\link{coversim}} functions.
 #'
 #' @section Acknowledgments:
 #' The lead author thanks The Omar Bradley Fellowship for Research in Mathematics for funding that partially

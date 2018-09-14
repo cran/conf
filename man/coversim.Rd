@@ -32,8 +32,8 @@ coversim(alpha, distn,
                 ylim      = NULL,
                 tol       = .Machine$double.eps ^ 0.5,
                 info      = FALSE,
-                returnsamp   = FALSE,
-                returnquant   = FALSE,
+                returnsamp  = FALSE,
+                returnquant = FALSE,
                 repair    = TRUE,
                 showplot  = FALSE,
                 delay     = 0 )
@@ -48,7 +48,8 @@ coversim(alpha, distn,
 
 \item{iter}{iterations of individual trials per parameterization; needed if a dataset is not given.}
 
-\item{dataset}{a \code{'n'} x \code{'iter'} matrix of dataset values.}
+\item{dataset}{a \code{'n'} x \code{'iter'} matrix of dataset values, or a vector of length \code{'n'} (for a
+single iteration).}
 
 \item{point}{coverage is assessed relative to this point.}
 
@@ -73,54 +74,61 @@ coversim(alpha, distn,
 elliptic-oriented point distribution (must be a multiple of four because its algorithm
 exploits symmetry in the quadrants of an ellipse).}
 
-\item{pts}{displays confidence region boundary points if \code{TRUE}.}
+\item{pts}{displays confidence region boundary points if \code{TRUE} (applies to confidence region plots when \code{showplot = TRUE}).}
 
-\item{mlelab}{logical argument to include the maximum
-likelihood estimate coordinate point (default is \code{TRUE}).}
+\item{mlelab}{logical argument to include the maximum likelihood estimate coordinate point (default is \code{TRUE},
+applies to confidence region plots when \code{showplot = TRUE}).}
 
-\item{sf}{specifies the number of significant figures on axes labels.}
+\item{sf}{specifies the number of significant figures on axes labels (applies to confidence region plots when \code{showplot = TRUE}).}
 
 \item{mar}{specifies margin values for \code{par(mar = c( ))} (see \code{mar} in \code{\link{par}}).}
 
-\item{xlab}{string specifying the x axis label.}
+\item{xlab}{string specifying the x axis label (applies to confidence region plots when \code{showplot = TRUE}).}
 
-\item{ylab}{string specifying the y axis label.}
+\item{ylab}{string specifying the y axis label (applies to confidence region plots when \code{showplot = TRUE}).}
 
-\item{main}{string specifying the plot title.}
+\item{main}{string specifying the plot title (applies to confidence region plots when \code{showplot = TRUE}).}
 
-\item{xlas}{numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}}).}
+\item{xlas}{numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}},
+applies to confidence region plots when \code{showplot = TRUE}).}
 
-\item{ylas}{numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}}).}
+\item{ylas}{numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}},
+applies to confidence region plots when \code{showplot = TRUE}).}
 
-\item{origin}{logical argument to include the plot origin (default is \code{FALSE}).}
+\item{origin}{logical argument to include the plot origin (applies to confidence region plots when \code{showplot = TRUE}).}
 
-\item{xlim}{two element vector containing horizontal axis minimum and maximum values.}
+\item{xlim}{two element vector containing horizontal axis minimum and maximum values (applies to confidence region plots
+when \code{showplot = TRUE}).}
 
-\item{ylim}{two element vector containing vertical axis minimum and maximum values.}
+\item{ylim}{two element vector containing vertical axis minimum and maximum values (applies to confidence region plots
+when \code{showplot = TRUE}).}
 
 \item{tol}{the \code{\link{uniroot}} parameter specifying its required accuracy.}
 
-\item{info}{logical argument to return coverage information in a list; includes alpha value(s), n value(s), coverage
+\item{info}{logical argument to return coverage information in a list; includes alpha value(s), \code{n} value(s), coverage
 and error results per iteration, and \code{returnsamp} and/or \code{returnquant} when requested.}
 
-\item{returnsamp}{logical argument; if \code{TRUE} returns random samples used in a matrix with n rows, iter cols.}
+\item{returnsamp}{logical argument; if \code{TRUE} returns random samples used in a matrix with \code{n} rows, \code{iter} cols.}
 
-\item{returnquant}{logical argument; if \code{TRUE} returns random quantiles used in a matrix with n rows, iter cols.}
+\item{returnquant}{logical argument; if \code{TRUE} returns random quantiles used in a matrix with \code{n} rows, \code{iter} cols.}
 
 \item{repair}{logical argument to repair regions inaccessible using a radial angle from its MLE (multiple root azimuths).}
 
 \item{showplot}{logical argument specifying if each coverage trial produces a plot.}
 
-\item{delay}{numeric value of delay (in seconds) between trials so its plot can be seen.}
+\item{delay}{numeric value of delay (in seconds) between trials so its plot can be seen (applies when \code{showplot = TRUE}).}
 }
 \value{
-if the optional argument \code{info = TRUE} is included then a list of coverage results is returned.
+If the optional argument \code{info = TRUE} is included then a list of coverage results is returned.  That list
+includes alpha value(s), n value(s), coverage and error results per iteration.  Additionally, \code{returnsamp = TRUE}
+and/or \code{returnquant = TRUE} will result in an \code{n} row, \code{iter} column maxtix of sample and/or sample cdf values.
 }
 \description{
 Creates a confidence region and determines coverage results for a corresponding point of interest.
 Iterates through a user specified number of trials.
 Each trial uses a random dataset with user-specified parameters (default) or a user specified dataset
 matrix (\code{'n'} samples per column, \code{'iter'} columns) and returns the corresponding actual coverage results.
+See the CRAN website https://CRAN.R-project.org/package=conf for a link to a \code{coversim} vignette.
 }
 \details{
 This package uses the following parameterization for its supported distributions, and illustrates

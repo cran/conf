@@ -3,7 +3,8 @@
 #' @description
 #' Plots the two-dimensional confidence region for probability distribution parameters (supported distribution
 #' suffixes: gamma, invgauss, lnorm, llogis, norm, unif, weibull) corresponding to a user given dataset and level
-#' of significance.
+#' of significance.  See the CRAN website https://CRAN.R-project.org/package=conf for a link to a \code{crplot}
+#' vignette.
 #'
 #' @param dataset a 1 x n vector of dataset values.
 #' @param alpha significance level; resulting plot illustrates a 100(1 - alpha)\% confidence region.
@@ -1146,7 +1147,8 @@ crplot <- function(dataset,
         #print(repairinfo)
         #print(jumpxy)
         #stop()
-        message("alternate-centerpoint(s) used to repair plot regions inaccessible via a radial angle from its MLE")
+        warning("alternate-centerpoint(s) used to repair plot regions inaccessible via a radial angle from its MLE")
+        #message("alternate-centerpoint(s) used to repair plot regions inaccessible via a radial angle from its MLE")
         }                                    # end if xrepair == 1
         else {                               # all iterations following 1st pass must re-assume repair parameters
           # each column in repairinfo represents a quadrant (with respect to the MLE)

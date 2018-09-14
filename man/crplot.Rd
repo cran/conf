@@ -93,7 +93,8 @@ if the optional argument \code{info = TRUE} is included then a list of plot coor
 \description{
 Plots the two-dimensional confidence region for probability distribution parameters (supported distribution
 suffixes: gamma, invgauss, lnorm, llogis, norm, unif, weibull) corresponding to a user given dataset and level
-of significance.
+of significance.  See the CRAN website https://CRAN.R-project.org/package=conf for a link to a \code{crplot}
+vignette.
 }
 \details{
 This function plots confidence regions for a variety of two-parameter distributions.  It requires

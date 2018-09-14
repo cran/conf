@@ -5,13 +5,15 @@
 #' Iterates through a user specified number of trials.
 #' Each trial uses a random dataset with user-specified parameters (default) or a user specified dataset
 #' matrix (\code{'n'} samples per column, \code{'iter'} columns) and returns the corresponding actual coverage results.
+#' See the CRAN website https://CRAN.R-project.org/package=conf for a link to a \code{coversim} vignette.
 #'
 #' @param alpha significance level; scalar or vector; resulting plot illustrates a 100(1 - alpha)\% confidence region.
 #' @param distn distribution to fit the dataset to; accepted values: \code{'gamma'}, \code{'invgauss'},
 #' \code{'lnorm'}, \code{'llogis'}, \code{'norm'}, \code{'weibull'}.
 #' @param n trial sample size (producing each confidence region); scalar or vector; needed if a dataset is not given.
 #' @param iter iterations of individual trials per parameterization; needed if a dataset is not given.
-#' @param dataset a \code{'n'} x \code{'iter'} matrix of dataset values.
+#' @param dataset a \code{'n'} x \code{'iter'} matrix of dataset values, or a vector of length \code{'n'} (for a
+#' single iteration).
 #' @param point coverage is assessed relative to this point.
 #' @param seed random number generator seed.
 #' @param kappa distribution parameter (when applicable).
@@ -25,27 +27,31 @@
 #' @param ellipse_n number of roughly equidistant confidence region points to plot using the
 #' elliptic-oriented point distribution (must be a multiple of four because its algorithm
 #' exploits symmetry in the quadrants of an ellipse).
-#' @param pts displays confidence region boundary points if \code{TRUE}.
-#' @param mlelab logical argument to include the maximum
-#' likelihood estimate coordinate point (default is \code{TRUE}).
-#' @param sf specifies the number of significant figures on axes labels.
+#' @param pts displays confidence region boundary points if \code{TRUE} (applies to confidence region plots when \code{showplot = TRUE}).
+#' @param mlelab logical argument to include the maximum likelihood estimate coordinate point (default is \code{TRUE},
+#' applies to confidence region plots when \code{showplot = TRUE}).
+#' @param sf specifies the number of significant figures on axes labels (applies to confidence region plots when \code{showplot = TRUE}).
 #' @param mar specifies margin values for \code{par(mar = c( ))} (see \code{mar} in \code{\link{par}}).
-#' @param xlab string specifying the x axis label.
-#' @param ylab string specifying the y axis label.
-#' @param main string specifying the plot title.
-#' @param xlas numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}}).
-#' @param ylas numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}}).
-#' @param origin logical argument to include the plot origin (default is \code{FALSE}).
-#' @param xlim two element vector containing horizontal axis minimum and maximum values.
-#' @param ylim two element vector containing vertical axis minimum and maximum values.
+#' @param xlab string specifying the x axis label (applies to confidence region plots when \code{showplot = TRUE}).
+#' @param ylab string specifying the y axis label (applies to confidence region plots when \code{showplot = TRUE}).
+#' @param main string specifying the plot title (applies to confidence region plots when \code{showplot = TRUE}).
+#' @param xlas numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}},
+#' applies to confidence region plots when \code{showplot = TRUE}).
+#' @param ylas numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}},
+#' applies to confidence region plots when \code{showplot = TRUE}).
+#' @param origin logical argument to include the plot origin (applies to confidence region plots when \code{showplot = TRUE}).
+#' @param xlim two element vector containing horizontal axis minimum and maximum values (applies to confidence region plots
+#' when \code{showplot = TRUE}).
+#' @param ylim two element vector containing vertical axis minimum and maximum values (applies to confidence region plots
+#' when \code{showplot = TRUE}).
 #' @param tol the \code{\link{uniroot}} parameter specifying its required accuracy.
-#' @param info logical argument to return coverage information in a list; includes alpha value(s), n value(s), coverage
+#' @param info logical argument to return coverage information in a list; includes alpha value(s), \code{n} value(s), coverage
 #' and error results per iteration, and \code{returnsamp} and/or \code{returnquant} when requested.
-#' @param returnsamp logical argument; if \code{TRUE} returns random samples used in a matrix with n rows, iter cols.
-#' @param returnquant logical argument; if \code{TRUE} returns random quantiles used in a matrix with n rows, iter cols.
+#' @param returnsamp logical argument; if \code{TRUE} returns random samples used in a matrix with \code{n} rows, \code{iter} cols.
+#' @param returnquant logical argument; if \code{TRUE} returns random quantiles used in a matrix with \code{n} rows, \code{iter} cols.
 #' @param repair logical argument to repair regions inaccessible using a radial angle from its MLE (multiple root azimuths).
 #' @param showplot logical argument specifying if each coverage trial produces a plot.
-#' @param delay numeric value of delay (in seconds) between trials so its plot can be seen.
+#' @param delay numeric value of delay (in seconds) between trials so its plot can be seen (applies when \code{showplot = TRUE}).
 #' @import stats
 #' @import graphics
 #' @importFrom SDMTools pnt.in.poly
@@ -53,7 +59,9 @@
 #' @importFrom utils capture.output
 #' @importFrom statmod dinvgauss pinvgauss qinvgauss rinvgauss
 #' @export
-#' @return if the optional argument \code{info = TRUE} is included then a list of coverage results is returned.
+#' @return If the optional argument \code{info = TRUE} is included then a list of coverage results is returned.  That list
+#' includes alpha value(s), n value(s), coverage and error results per iteration.  Additionally, \code{returnsamp = TRUE}
+#' and/or \code{returnquant = TRUE} will result in an \code{n} row, \code{iter} column maxtix of sample and/or sample cdf values.
 #' @concept confidence region plot
 #' @keywords Graphical Methods, Parameter Estimation, Numerical Optimization
 #' @seealso \code{\link{crplot}}, \code{\link{uniroot}}
@@ -90,8 +98,8 @@
 #'                 ylim      = NULL,
 #'                 tol       = .Machine$double.eps ^ 0.5,
 #'                 info      = FALSE,
-#'                 returnsamp   = FALSE,
-#'                 returnquant   = FALSE,
+#'                 returnsamp  = FALSE,
+#'                 returnquant = FALSE,
 #'                 repair    = TRUE,
 #'                 showplot  = FALSE,
 #'                 delay     = 0 )
@@ -228,7 +236,7 @@ coversim <- function(alpha,
     stop ("both 'n' and 'iter', or 'dataset' are required to parameterize the simulation")
 
   if (!is.null(dataset) && (length(dataset) == 1 || !is.numeric(dataset)))
-    stop("'dataset' must be a numeric vector with length > 1")
+    stop("'dataset' must be a numeric vector with length > 1, or an 'n' by 'iter' matrix")
 
   if (!is.null(dataset) && (length(alpha) != 1))
     stop("when using 'dataset', a scalar value for 'alpha' argument is required")
@@ -236,11 +244,23 @@ coversim <- function(alpha,
   if (!is.null(dataset) && (!is.null(c(lambda, kappa, theta, mu, sigma))))
     warning("distribution parameters are ignored when 'dataset' is given")
 
-  if ((!is.null(dataset) && !is.null(n)) && (nrow(dataset) != n))
-    stop("when using 'dataset', 'n' must correspond to nrow(dataset) if given")
+  if (!is.null(dataset) && !is.null(n)) {
+    if (is.matrix(dataset) && (nrow(dataset) != n)) {
+      stop("when using a matrix 'dataset', 'n' must correspond to nrow(dataset) if given")
+    }
+    if (is.vector(dataset) && (length(dataset) != n)) {
+      stop("when using a 'dataset' vector, 'n' must correspond to length(dataset) if given")
+    }
+  }
 
-  if ((!is.null(dataset) && !is.null(iter)) && (ncol(dataset) != iter))
-    stop("when using 'dataset', 'iter' must correspond to ncol(dataset) if given")
+  if (!is.null(dataset) && !is.null(iter)) {
+    if  (is.matrix(dataset) && (ncol(dataset) != iter)) {
+      stop("when using a 'dataset' matrix, 'iter' must correspond to ncol(dataset) if given")
+    }
+    if (is.vector(dataset) && (iter != 1)) {
+      stop("when using a 'dataset' vector, 'iter' must be 1 if given")
+    }
+  }
 
   if (!is.null(dataset) && is.null(point))
     stop("'point' is required when using 'dataset'")
@@ -450,9 +470,23 @@ coversim <- function(alpha,
   # through desired parameterizations, model confidence regions, determine coverage,
   # and return results.
 
-  if (!is.null(seed))  set.seed(seed)             # for the option of repeatable results
-  if ((!is.null(dataset)) && (is.null(n)))  n <- nrow(dataset)
-  if ((!is.null(dataset)) && (is.null(iter)))  iter <- ncol(dataset)
+  if (!is.null(seed)) {                    # for the option of repeatable results
+    set.seed(seed)
+  }
+
+  if (!is.null(dataset)) {                 # ensure datatset in matrix form and ID n, iter
+    if (is.vector(dataset)) {
+      dataset <- matrix(dataset, ncol = 1)
+    }
+    if (is.matrix(dataset)) {
+      if (is.null(n)) {
+        n <- nrow(dataset)
+      }
+      if (is.null(iter)) {
+        iter <- ncol(dataset)
+      }
+    }
+  }
 
   # initialize counter & variables to store results:
   count <- 0
@@ -592,7 +626,7 @@ coversim <- function(alpha,
       main <- paste0("samp: ", n, " (iter: ", iter, ")")
     }
     else {
-      main <- paste0("alpha: ", a, " (iter: ", iter, ")")
+      main <- paste0("alpha: ", alpha, " (iter: ", iter, ")")
     }
   }
 
@@ -631,9 +665,9 @@ coversim <- function(alpha,
     if ((nplots > 1) && (length(n) <= length(alpha))) {      # plot nominal vs actual coverage
       marker <- 1       # use to annotate the start location of results for "current" parameterization
       for (i in 1:min(length(n), 9)) {
-        plot(1 - alpha, allcoverage[marker:(marker + length(alpha) - 1)], main = main, ##############paste0("n: ", n[i], " (iter: ", iter, ")"),
-             ylab = "actual coverage", xlab = "nominal coverage")
-        lines(c(min(c(1-alpha, allcoverage)), max(c(1-alpha, allcoverage))), c(min(c(1-alpha, allcoverage)), max(c(1-alpha, allcoverage))), lty = 3)
+        plot(1 - alpha, allcoverage[marker:(marker + length(alpha) - 1)], main = main[i], ##############paste0("n: ", n[i], " (iter: ", iter, ")"),
+             ylab = "actual coverage", xlab = "nominal coverage", xlim = c(0, 1), ylim = c(0, 1))
+        lines(c(0, 1), c(0, 1), lty = 3)
         marker <- marker + length(alpha)
       }
       par(mfrow = c(1, 1))
@@ -641,7 +675,7 @@ coversim <- function(alpha,
     else if ((nplots > 1) && (length(n) > length(alpha))) {   # plot n vs actual coverage
       marker <- seq(1, (length(alpha) * length(n)), by = length(alpha))     # use to annotate the start location of results for "current" parameterization
       for (i in 1:min(length(alpha), 9)) {
-        plot(n, allcoverage[marker + i - 1], main = main,   #############paste0("alpha: ", alpha[i], " (iter: ", iter, ")"),
+        plot(n, allcoverage[marker + i - 1], main = main[i],   #############paste0("alpha: ", alpha[i], " (iter: ", iter, ")"),
              ylab = "actual coverage", xlab = "sample size")
         lines(c(min(n), max(n)), c(1 - alpha[i], 1 - alpha[i]), lty = 3)
       }

@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 ## Introduction   
   
-The `crplot` function is part of the `conf` package.  It generates a two-dimensional confidence region plot for the specified two-parameter parametric distribution, fitted to a dataset.
+The `crplot` function is part of the [conf](https://CRAN.R-project.org/package=conf) package.  It generates a two-dimensional confidence region plot for the specified two-parameter parametric distribution, fitted to a dataset.
 
 ## Installation Instructions
 
