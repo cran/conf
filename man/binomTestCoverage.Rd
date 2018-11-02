@@ -31,7 +31,7 @@
   }
 
   The actual coverage for a particular value of \eqn{p}, the probability of success of interest, is
-  \deqn{actual coverage(p) = sum_{x=0}^n {I(x,p) {n \choose x} p^x (1-p)^{(n-x)}},}
+  \deqn{actual coverage(p) = \sum_{x=0}^n {I(x,p) {n \choose x} p^x (1-p)^{(n-x)}},}
   where \eqn{I(x)} is an indicator function that determines if a confidence interval covers \eqn{p} when \eqn{X = x}
   which is from Vollset(1993).
 

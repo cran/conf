@@ -2,14 +2,15 @@
 #'
 #' @description
 #' Plots the two-dimensional confidence region for probability distribution parameters (supported distribution
-#' suffixes: gamma, invgauss, lnorm, llogis, norm, unif, weibull) corresponding to a user given dataset and level
-#' of significance.  See the CRAN website https://CRAN.R-project.org/package=conf for a link to a \code{crplot}
-#' vignette.
+#' suffixes: cauchy, gamma, invgauss, lnorm, llogis, logis, norm, unif, weibull) corresponding to a user given
+#' dataset and level of significance.  See the CRAN website https://CRAN.R-project.org/package=conf for a link
+#' to a \code{crplot} vignette.
 #'
 #' @param dataset a 1 x n vector of dataset values.
 #' @param alpha significance level; resulting plot illustrates a 100(1 - alpha)\% confidence region.
-#' @param distn distribution to fit the dataset to; accepted values: \code{'gamma'}, \code{'invgauss'},
-#' \code{'llogis'}, \code{'lnorm'}, \code{'norm'}, \code{'unif'}, \code{'weibull'}.
+#' @param distn distribution to fit the dataset to; accepted values: \code{'cauchy'}, \code{'gamma'}, \code{'invgauss'},
+#' \code{'logis'}, \code{'llogis'}, \code{'lnorm'}, \code{'norm'}, \code{'unif'}, \code{'weibull'}.
+#' @param cen a vector of binary values specifying right-censored values as 0, and 1 (default) otherwise
 #' @param heuristic numeric value selecting method for plotting: 0 for elliptic-oriented point distribution, and
 #' 1 for smoothing boundary search heuristic.
 #' @param maxdeg maximum angle tolerance between consecutive plot segments in degrees.
@@ -41,6 +42,7 @@
 #' only logical assuming \code{crplot} is run for its data only (see the \code{info} argument).
 #' @import stats
 #' @import graphics
+#' @importFrom fitdistrplus mledist
 #' @importFrom STAR llogisMLE gammaMLE
 #' @export
 #' @return if the optional argument \code{info = TRUE} is included then a list of plot coordinates and phi angles is returned
@@ -49,19 +51,22 @@
 #' parameter estimation, numerical optimization
 #' @references Jaeger, A. (2016), "Computation of Two- and Three-Dimensional Confidence Regions with the Likelihood Ratio",
 #' The American Statistician, 49, 48--53.
+#' @references Weld, C., Loh, A., Leemis, L. (in press), "Plotting Likelihood-Ratio Based Confidence Regions for
+#' Two-Parameter Univariate Probability Models, The American Statistician.
 #' @seealso \code{\link{coversim}}, \code{\link{uniroot}}
 #' @author Christopher Weld (\email{ceweld@email.wm.edu})
 #' @author Lawrence Leemis (\email{leemis@math.wm.edu})
 #'
 #' @usage
 #' crplot(dataset, alpha, distn,
+#'                 cen       = rep(1, length(dataset)),
 #'                 heuristic = 1,
 #'                 maxdeg    = 5,
 #'                 ellipse_n = 4,
 #'                 pts       = TRUE,
 #'                 mlelab    = TRUE,
 #'                 sf        = c(5, 5),
-#'                 mar       = c(4, 4.5, 2, 1.5),
+#'                 mar       = c(4, 5, 2, 1.5),
 #'                 xyswap    = FALSE,
 #'                 xlab      = "",
 #'                 ylab      = "",
@@ -117,10 +122,30 @@
 #' which converges in distribution to the chi-square distribution with two degrees of freedom (for
 #' a two parameter distribution).
 #'
-#' This package uses the following parameterization for its supported distributions, and illustrates
-#' the corresponding confidence regions accordingly:
+#' The default axes convention in use by \code{crplot} are
+#'
+#' \tabular{lcc}{
+#' \tab Horizontal \tab Vertical\cr
+#' Distribution  \tab  Axis  \tab Axis\cr
+#' Caucy \tab \eqn{a} \tab \eqn{s}\cr
+#' gamma \tab \eqn{\theta} \tab \eqn{\kappa}\cr
+#' inverse Gaussian \tab \eqn{\mu} \tab \eqn{\lambda}\cr
+#' log logistic \tab \eqn{\lambda} \tab \eqn{\kappa}\cr
+#' log normal \tab \eqn{\mu} \tab \eqn{\sigma}\cr
+#' logistic \tab \eqn{\mu} \tab \eqn{\sigma}\cr
+#' normal \tab \eqn{\mu} \tab \eqn{\sigma}\cr
+#' uniform \tab \eqn{a} \tab \eqn{b}\cr
+#' Weibull \tab \eqn{\kappa} \tab \eqn{\lambda}
+#' }
+#'
+#' where each respective distribution is defined below.
 #'
 #' \itemize{
+#' \item The Cauchy distribution
+#' for the real-numbered location parameter \eqn{a}, scale parameter \eqn{s}, and \eqn{x} is a real number,
+#' has the probability density function
+#' \deqn{1 / (s \pi (1 + ((x - a) / s) ^ 2)).}
+#'
 #' \item The gamma distribution
 #' for shape parameter \eqn{\kappa > 0}, scale parameter \eqn{\theta > 0}, and \eqn{x > 0},
 #' has the probability density function
@@ -142,6 +167,11 @@
 #' has the probability density function
 #' \deqn{1 / (x \sigma \sqrt(2 \pi)) exp(-(\log x - \mu) ^ 2 / (2 \sigma ^ 2)).}
 #'
+#' \item The logistic distribution
+#' for the real-numbered location parameter \eqn{\mu}, scale parameter \eqn{\sigma}, and \eqn{x} is a real number,
+#' has the probability density function
+#' \deqn{(1 / \sigma) exp((x - \mu) / \sigma) (1 + exp((x - \mu) / \sigma)) ^ -2}
+#'
 #' \item The normal distribution
 #' for the real-numbered mean \eqn{\mu}, standard deviation \eqn{\sigma > 0}, and \eqn{x} is a real number,
 #' has the probability density function
@@ -156,31 +186,6 @@
 #' for scale parameter \eqn{\lambda > 0}, shape parameter \eqn{\kappa > 0}, and \eqn{x > 0},
 #' has the probability density function
 #' \deqn{\kappa (\lambda ^ \kappa) x ^ {(\kappa - 1)} exp(-(\lambda x) ^ \kappa).}
-#' }
-#'
-#' The confidence region horizontal and vertical axis convention in use by \code{crplot} for each
-#' distribution is:
-#' \itemize{
-#' \item The gamma distribution confidence region plot shows \eqn{\theta} on its horizontal axis,
-#' and \eqn{\kappa} on its vertical axis.
-#'
-#' \item The inverse Gaussian distribution confidence region plot shows \eqn{\mu} on its horizontal
-#' axis, and \eqn{\lambda} on its vertical axis.
-#'
-#' \item The log logistic distribution confidence region plot shows \eqn{\lambda} on its
-#' horizontal axis, and \eqn{\kappa} on its vertical axis.
-#'
-#' \item The log normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis,
-#' and \eqn{\sigma} on its vertical axis.
-#'
-#' \item The normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis, and
-#' \eqn{\sigma} on its vertical axis.
-#'
-#' \item The uniform distribution confidence region plot shows \eqn{a} on its horizontal axis, and
-#' \eqn{b} on its vertical axis.
-#'
-#' \item The Weibull distribution confidence region plot shows \eqn{\kappa} on its horizontal axis,
-#' and \eqn{\lambda} on its vertical axis.
 #' }
 #'
 #' @examples
@@ -216,13 +221,14 @@
 crplot <- function(dataset,
                    alpha,
                    distn,
+                   cen = rep(1, length(dataset)),
                    heuristic = 1,
                    maxdeg = 5,
                    ellipse_n = 4,
                    pts = TRUE,
                    mlelab = TRUE,
                    sf = c(5, 5),
-                   mar = c(4, 4.5, 2, 1.5),
+                   mar = c(4, 5, 2, 1.5),
                    xyswap = FALSE,
                    xlab = "",
                    ylab = "",
@@ -248,8 +254,8 @@ crplot <- function(dataset,
   if (is.null(dataset) || length(dataset) == 1 || !is.numeric(dataset))
     stop("'dataset' must be a numeric vector with length > 1")
 
-  if (!is.element(distn, c("weibull", "invgauss", "norm", "lnorm", "llogis", "gamma", "unif")))
-    stop("'distn' invalid; only 'gamma', 'invgauss', 'lnorm', 'llogis', 'norm', 'unif', 'weibull' are supported")
+  if (!is.element(distn, c("weibull", "invgauss", "norm", "lnorm", "logis", "llogis", "gamma", "unif", "cauchy")))
+    stop("'distn' invalid; supported are: 'cauchy', 'gamma', 'invgauss', 'lnorm', 'logis', 'llogis', 'norm', 'unif', 'weibull'")
 
   if (distn == "weibull" && min(dataset) <= 0)
     stop("'dataset' parameter contains infeasible Weibull distribution outcome(s) <= 0")
@@ -265,6 +271,15 @@ crplot <- function(dataset,
 
   if (is.null(alpha) || alpha <= 0 || alpha >= 1 || !is.numeric(alpha) || length(alpha) != 1)
     stop("'alpha' numeric significance level parameter required such that 0 < alpha < 1")
+
+  if (!is.numeric(cen) || !all(cen %in% 0:1))
+    stop("'cen' must be a vector of binary (0 or 1) values with length(dataset) entries")
+
+  if ((distn == "unif") && (sum(cen) != length(dataset))) {
+    if (max(as.numeric(dataset[which(cen == 0)] %in% max(dataset))) == 1) {
+      stop("undefined 'unif' confidence region when max(dataset) corresponds to a (cen = 0) censored value")
+    }
+  }
 
   if (is.null(heuristic) || !is.numeric(heuristic) || (heuristic != 0 && heuristic != 1))
     stop("'heuristic' parameter must be 0 (elliptic-oriented points) or 1 (search heuristic)")
@@ -284,8 +299,8 @@ crplot <- function(dataset,
   if (!is.logical(mlelab) || length(mlelab) != 1)
     stop("'mlelab' must be a single logical parameter")
 
-  if (length(sf) != 2 || !is.numeric(sf) || floor(sf)[1] != sf[1] || floor(sf)[2] != sf[2] || min(sf) < 0)
-    stop("'sf' must be a non-negative vector of integers with length two")
+  if (length(sf) != 2 || !is.numeric(sf) || floor(sf)[1] != sf[1] || floor(sf)[2] != sf[2])
+    stop("'sf' must be a vector of integers with length two")
 
   if (length(mar) != 4 || !is.numeric(mar) || min(mar) < 0)
     stop("'mar' must be a vector of length four with positive numeric entries")
@@ -354,15 +369,18 @@ crplot <- function(dataset,
   #                    Algorithm with initial Menon estimate to begin iterating the algorithm (ref: pg 338
   #                    in Leemis Reliability text).
   #
-  # 4. llrsolve.       Using the asymptotically chisquared likelihood ratio statistic, this function returns
+  # 4. asesolve.       This function calculates and returns the asymptotic standard error for the specified
+  #                    distribution.  Returned is ase.list with values list("theta1.ase", "theta2.ase").
+  #
+  # 5. llrsolve.       Using the asymptotically chisquared likelihood ratio statistic, this function returns
   #                    a function whose positive values reside within the (1 - alpha)% confidence region,
   #                    and negative values reside outside of it.
   #
-  # 5. crsolve.        This function, leveraging the llrsolve function, calls uniroot to determine the
+  # 6. crsolve.        This function, leveraging the llrsolve function, calls uniroot to determine the
   #                    cartesian coordinates of confidence region boundary points corresponding to the input
   #                    vector of phi angles (given with respect to the MLE).
   #
-  # 6. crsmooth.       Confidence region smoothing function.  Given an initial vector of angles to
+  # 7. crsmooth.       Confidence region smoothing function.  Given an initial vector of angles to
   #                    calculate confidence region points with, it iteratively adds additional angles
   #                    until all apparent angle bends are within the specified angle tolerance.  Also
   #                    contains a recursive routine to identify and fix "deadspace" inaccessible by a
@@ -456,6 +474,19 @@ crplot <- function(dataset,
     n <- length(x)
     r <- sum(cen)
 
+    # Cauchy MLE
+    if (distn == "cauchy"){
+      # with censoring:
+      left <- replace(x, which(cen == -1), rep(NA, length(which(cen == -1))))
+      right <- replace(x, which(cen == 0), rep(NA, length(which(cen == 0))))
+      xx <- data.frame(left = left, right = right)
+      xxmle <- fitdistrplus::mledist(xx, "cauchy", silent = TRUE)
+      mleLL <- xxmle$loglik
+      a.hat <- as.numeric(xxmle$estimate[1][1])
+      alpha.hat <- as.numeric(xxmle$estimate[2][1])
+      mle.list <- list("theta1.hat" = a.hat, "theta2.hat" = alpha.hat, "mleLLvalue" = mleLL)
+    }
+
     # Weibull MLE
     if (distn == "weibull"){
       # c0 is an educated guess for the initial Menon estimate to begin iterating through the algorithm
@@ -464,12 +495,15 @@ crplot <- function(dataset,
       temp2 <- (sum(log(x)) ^ 2)
       temp3 <- 6 / ((n - 1) * pi ^ 2)
       temp4 <- (temp3 * (temp1 - temp2 / n))
-      c0 <- 1 / sqrt(temp4)
-      s1 <- 0
-      for(i in 1:n) {
-        if (cen[i] == 1) s1 = s1 + log(x[i])
-      }
-      repeat{
+      c0 <- 1 / sqrt(temp4)                     # initial estimate (ref: p 338 Reliability)
+
+      # Fixed point algorithm (FPA) supporting function for the Weibull MLE
+      # given by Qiao and Tsokos in their article Estimation of the three parameter
+      # Weibull probability distribution in Mathematics and Computers in Simulation,
+      # 1995, pgs 173--185
+      # (two-parameter summary is given on pg 174--175)
+      s1 <- sum(log(x) * cen)
+      repeat{                                   # ref: bottom p 246 Reliability
         s2 <- sum(x ^ c0)
         s3 <- sum(x ^ c0 * log(x))
         q <- (r * s2) / (r * s3 - s1 * s2)
@@ -480,15 +514,14 @@ crplot <- function(dataset,
       }
       kappa.hat <- c0
       lambda.hat <- 1 / (sum(x ^ kappa.hat) / r) ^ (1 / kappa.hat)
+      # using STAR package for Weibull MLE calcluations generates warning messages:
+      #kappa.hat <- weibullMLE(x)$estimate[1]
+      #lambda.hat <- 1 / weibullMLE(x)$estimate[2]
+
       # compute log likelihood function for censored weibull
       # reference: pg 246 in Leemis Reliability text
       temp1 <- sum(x ^ kappa.hat)
-      temp2 <- 0
-      for(i in 1:n){
-        if(cen[i] == 1){
-          temp2 <- temp2 + log(x[i])
-        }
-      }
+      temp2 <- sum(cen * log(x))
       mleLL <- (r * log(kappa.hat) + (kappa.hat * r * log(lambda.hat)) + ((kappa.hat - 1) * temp2) -
                      (lambda.hat ^ kappa.hat * temp1))
       mle.list <- list("theta1.hat" = kappa.hat, "theta2.hat" = lambda.hat, "mleLLvalue" = mleLL)
@@ -496,63 +529,95 @@ crplot <- function(dataset,
 
     # inverse Gaussian MLE
     else if (distn == "invgauss"){
-      mu.hat <- sum(x) / length(x)
-      tempsum <- 0
-      for (i in 1:length(x)) {
-        tempsum <- tempsum + (1 / x[i])
-      }
-      lambda.hat <-  ((1 / (length(x))) * tempsum -
-                        (length(x) / sum(x))) ^ -1
-      # determine loglikelihood value at MLE
-      temp1 <- 0
-      temp2 <- 0
-      for(i in 1:n){
-        if(cen[i] == 1){
-          temp1 <- temp1 + log(x[i])
-          temp2 <- temp2 + ((x[i] - mu.hat) ^ 2) / x[i]
-        }
-      }
-      mleLL <- (n / 2) * log(lambda.hat) - (n / 2) * log(2 * pi) - (3 / 2) * temp1 -
-        (lambda.hat / (2 * mu.hat ^ 2)) * temp2
+      # original formulation (without censored values)
+      #mu.hat <- sum(x) / length(x)
+      #tempsum <- sum(1 / x)
+      #lambda.hat <-  ((1 / (length(x))) * tempsum -
+      #                  (length(x) / sum(x))) ^ -1
+      # original loglikelihood value at MLE (without censored values)
+      #temp1 <- sum(log(x))
+      #temp2 <- sum((x - mu.hat) ^ 2 / x)
+      #mleLL <- (n / 2) * log(lambda.hat) - (n / 2) * log(2 * pi) - (3 / 2) * temp1 -
+      #  (lambda.hat / (2 * mu.hat ^ 2)) * temp2
+
+      # using STAR package in order to incorporate censored values:
+      # note: conf shape parameter (lambda) = (1 / sigma2) from STAR package
+      temp1 <- STAR::invgaussMLE(x, si = as.double(cen))     # STAR requires cen package as double
+      mu.hat <- temp1$estimate[['mu']]
+      lambda.hat <- 1 / temp1$estimate[['sigma2']]
+      mleLL <- temp1$logLik                      # log likelihood value at its maximum
       mle.list <- list("theta1.hat" = mu.hat, "theta2.hat" = lambda.hat, "mleLLvalue" = mleLL)
     }
 
     # normal MLE
     else if (distn == "norm"){
-      n <- length(x)
-      mu.hat <- (1 / n) * sum(x)
-      sigma2.hat <- (1 / n) * sum((x - mu.hat)^2)  # this is sigma-squared, but will return sigma
-      mleLL <- (-n / 2)*log(2*pi) - (n / 2)*log(sigma2.hat) - (1 / (2 * sigma2.hat)) * sum((x - mu.hat)^2)
-      mle.list <- list("theta1.hat" = mu.hat, "theta2.hat" = sqrt(sigma2.hat), "mleLLvalue" = mleLL)
+      # without censoring:
+      #n <- length(x)
+      #mu.hat <- (1 / n) * sum(x)
+      #sigma2.hat <- (1 / n) * sum((x - mu.hat)^2)  # this is sigma-squared, but will return sigma
+      #mleLL <- (-n / 2)*log(2*pi) - (n / 2)*log(sigma2.hat) - (1 / (2 * sigma2.hat)) * sum((x - mu.hat)^2)
+      #mle.list <- list("theta1.hat" = mu.hat, "theta2.hat" = sqrt(sigma2.hat), "mleLLvalue" = mleLL)
+      # with censoring:
+      left <- replace(x, which(cen == -1), rep(NA, length(which(cen == -1))))
+      right <- replace(x, which(cen == 0), rep(NA, length(which(cen == 0))))
+      xx <- data.frame(left = left, right = right)
+      xxmle <- fitdistrplus::mledist(xx, "norm", silent = TRUE)
+      mleLL <- xxmle$loglik
+      mu.hat <- xxmle$estimate[1][1]
+      sigma.hat <- xxmle$estimate[2][1]
+      mle.list <- list("theta1.hat" = mu.hat, "theta2.hat" = sigma.hat, "mleLLvalue" = mleLL)
     }
 
     # lognormal MLE
     else if (distn == "lnorm"){
-      n <- length(x)
-      mu.hat <- (1 / n) * sum(log(x))
-      sigma2.hat <- (1 / n) * sum((log(x) - mu.hat)^2)  # this is sigma-squared, but will return sigma
-      mleLL <- (-n / 2)*log(2*pi) - (n / 2)*log(sigma2.hat) - sum(log(x)) - (1 / (2 * sigma2.hat)) * sum((log(x) - mu.hat)^2)
-      mle.list <- list("theta1.hat" = mu.hat, "theta2.hat" = sqrt(sigma2.hat), "mleLLvalue" = mleLL)
+      # without censoring:
+      #n <- length(x)
+      #mu.hat <- (1 / n) * sum(log(x))
+      #sigma2.hat <- (1 / n) * sum((log(x) - mu.hat)^2)  # this is sigma-squared, but will return sigma
+      #mleLL <- (-n / 2)*log(2*pi) - (n / 2)*log(sigma2.hat) - sum(log(x)) - (1 / (2 * sigma2.hat)) * sum((log(x) - mu.hat)^2)
+      #mle.list <- list("theta1.hat" = mu.hat, "theta2.hat" = sqrt(sigma2.hat), "mleLLvalue" = mleLL)
+      # with censoring:
+      left <- replace(x, which(cen == -1), rep(NA, length(which(cen == -1))))
+      right <- replace(x, which(cen == 0), rep(NA, length(which(cen == 0))))
+      xx <- data.frame(left = left, right = right)
+      xxmle <- fitdistrplus::mledist(xx, "lnorm", silent = TRUE)
+      mleLL <- xxmle$loglik
+      mu.hat <- xxmle$estimate[1][1]
+      sigma.hat <- xxmle$estimate[2][1]
+      mle.list <- list("theta1.hat" = mu.hat, "theta2.hat" = sigma.hat, "mleLLvalue" = mleLL)
+    }
+
+    # logistic MLE
+    else if (distn == "logis"){
+      # with censoring:
+      left <- replace(x, which(cen == -1), rep(NA, length(which(cen == -1))))
+      right <- replace(x, which(cen == 0), rep(NA, length(which(cen == 0))))
+      xx <- data.frame(left = left, right = right)
+      xxmle <- fitdistrplus::mledist(xx, "logis", silent = TRUE)
+      mleLL <- xxmle$loglik
+      mu.hat <- xxmle$estimate[1][1]        # location
+      sigma.hat <- xxmle$estimate[2][1]     # scale
+      mle.list <- list("theta1.hat" = mu.hat, "theta2.hat" = sigma.hat, "mleLLvalue" = mleLL)
     }
 
     # loglogistic MLE
     # admin note: STAR expresses the log logistic distribution with a much different parameterization
-    # although a counterintuitive equality, its "location" parameter = log(scale) via our parameterization
+    # although a counterintuitive equality, its "location" parameter = 1 / log(scale) via our parameterization
     # and its "scale" parameter = (1 / shape) via our parameterization
     else if (distn == "llogis"){
-      temp1 <- STAR::llogisMLE(x)
+      temp1 <- STAR::llogisMLE(x, si = as.double(cen))
       lambda.hat <- 1 / exp(temp1$estimate[['location']])
       kappa.hat <- 1 / temp1$estimate[['scale']]
-      mleLL <- temp1$logLik
+      mleLL <- temp1$logLik                       # log likelihood value at its maximum
       mle.list <- list("theta1.hat" = lambda.hat, "theta2.hat" = kappa.hat, "mleLLvalue" = mleLL)
     }
 
     # gamma MLE
     else if (distn == "gamma"){
-      temp1 <- STAR::gammaMLE(x)
+      temp1 <- STAR::gammaMLE(x, si = as.double(cen))
       kappa.hat <- temp1$estimate[['shape']]
       theta.hat <- temp1$estimate[['scale']]
-      mleLL <- temp1$logLik
+      mleLL <- temp1$logLik                      # log likelihood value at its maximum
       mle.list <- list("theta1.hat" = theta.hat, "theta2.hat" = kappa.hat, "mleLLvalue" = mleLL)
     }
 
@@ -560,12 +625,106 @@ crplot <- function(dataset,
     else if (distn == "unif") {
       a.hat <- min(x)
       b.hat <- max(x)
-      mleLL <- -n * log(b.hat - a.hat)
+      #mleLL <- -n * log(b.hat - a.hat)
+      mleLL <- sum(log(b.hat - x)[cen == 0]) - n * log(b.hat - a.hat)  # with censoring
       mle.list <- list("theta1.hat" = a.hat, "theta2.hat" = b.hat, "mleLLvalue" = mleLL)
     }
 
     invisible(mle.list)
   }
+
+
+  ######################################################################################
+
+  # asesolve -------------------------------------------------------------------
+  # This function calculates and returns the asymptotic standard error for the specified distribution
+  # Returned is ase.list with values list("theta1.ase", "theta2.ase").
+  # Distns without std error easily accessible use the relative MLE sizes to estimate the aspect ratio
+  asesolve = function(x, cen, theta1.hat, theta2.hat) {
+    #print("entering asesolve")
+    n <- length(x)
+    r <- sum(cen)
+    if (distn == "cauchy") {
+      left <- replace(x, which(cen == -1), rep(NA, length(which(cen == -1))))
+      right <- replace(x, which(cen == 0), rep(NA, length(which(cen == 0))))
+      xx <- data.frame(left = left, right = right)
+      hes <- fitdistrplus::mledist(xx, "cauchy", silent = TRUE)$hessian      # using plotdistrplus
+      OI <- solve(hes)
+      se <- sqrt(OI)
+      theta1ase <- se[1]    # a location parameter
+      theta2ase <- se[4]    # alpha scale parameter
+    }
+    else if (distn == "gamma") {
+      theta1ase <- as.numeric(STAR::gammaMLE(x, si = as.double(cen))$se[2])    # scale parameter theta
+      theta2ase <- as.numeric(STAR::gammaMLE(x, si = as.double(cen))$se[1])    # shape parameter kappa
+    }
+    else if (distn == "invgauss") {
+      theta1ase <- as.numeric(STAR::invgaussMLE(x, si = as.double(cen))$se[1])       # mu
+      inv_theta2ase <- as.numeric(STAR::invgaussMLE(x, si = as.double(cen))$se[2])   # (1 / theta) se
+      theta2ase <- abs(1 / ((1 / theta2.hat) + (inv_theta2ase / 2)) -     # theta se approximation
+                         1 / ((1 / theta2.hat) - (inv_theta2ase / 2)))
+    }
+    else if (distn == "norm") {
+      left <- replace(x, which(cen == -1), rep(NA, length(which(cen == -1))))
+      right <- replace(x, which(cen == 0), rep(NA, length(which(cen == 0))))
+      xx <- data.frame(left = left, right = right)
+      hes <- fitdistrplus::mledist(xx, "norm", silent = TRUE)$hessian       # using plotdistrplus
+      OI <- solve(hes)
+      se <- sqrt(OI)
+      theta1ase <- se[1]    # mu
+      theta2ase <- se[4]    # sigma
+    }
+    else if (distn == "logis") {
+      left <- replace(x, which(cen == -1), rep(NA, length(which(cen == -1))))
+      right <- replace(x, which(cen == 0), rep(NA, length(which(cen == 0))))
+      xx <- data.frame(left = left, right = right)
+      hes <- fitdistrplus::mledist(xx, "logis", silent = TRUE)$hessian       # using plotdistrplus
+      OI <- solve(hes)
+      se <- sqrt(OI)
+      theta1ase <- se[1]    # mu (location)
+      theta2ase <- se[4]    # sigma (scale)
+    }
+    else if (distn == "llogis") {
+      alt_param <- STAR::llogisMLE(x, si = as.double(cen))
+      alt_theta1ase <- as.numeric(alt_param$se[1])     # (1 / log(lambda)) se
+      inv_theta2ase <- as.numeric(alt_param$se[2])     # (1 / kappa) se
+      high1 <- as.numeric(alt_param$estimate[1] + alt_theta1ase * 0.5)
+      low1 <- as.numeric(alt_param$estimate[1] - alt_theta1ase * 0.5)
+      theta1ase <- abs((1 / exp(high1)) - (1 / exp(low1)))              # approximation IAW param conversion
+      theta2ase <- abs(1 / ((1 / theta2.hat) + (inv_theta2ase / 2)) -   # approximation IAW param conversion
+                         1 / ((1 / theta2.hat) - (inv_theta2ase / 2)))
+    }
+    else if (distn == "lnorm") {
+      left <- replace(x, which(cen == -1), rep(NA, length(which(cen == -1))))
+      right <- replace(x, which(cen == 0), rep(NA, length(which(cen == 0))))
+      xx <- data.frame(left = left, right = right)
+      hes <- fitdistrplus::mledist(xx, "lnorm", silent = TRUE)$hessian      # using plotdistrplus
+      OI <- solve(hes)
+      se <- sqrt(OI)
+      theta1ase <- se[1]    # mu
+      theta2ase <- se[4]    # sigma
+    }
+    else if (distn == "weibull") {
+      khat <- theta1.hat
+      lhat <- theta2.hat
+      # 2nd partial derivatives at MLE (ref: pg 247 Reliability text):
+      p2kap <- r / (khat ^ 2) + sum((lhat * x) ^ khat * (log(lhat * x))^2)
+      p2lam <- khat * r / (lhat ^ 2) + khat *(khat - 1) * lhat ^ (khat - 2) * sum(x ^ khat)
+      p2lamkap <- -length(x) / lhat + (lhat ^ (khat - 1)) * (khat * sum(x ^ khat * log(x)) +
+                                                               (1 + khat * log(lhat)) * sum(x ^ khat))
+      # asymptotic standard error
+      hes <- matrix(c(p2kap, p2lamkap, p2lamkap, p2lam), nrow = 2)
+      OI <- solve(hes)
+      se_kappa <- sqrt(OI[1])
+      se_lambda <- sqrt(OI[4])
+      theta1ase <- se_kappa
+      theta2ase <- se_lambda
+    }
+    ase.list <- list("theta1.ase" = theta1ase, "theta2.ase" = theta2ase)
+    invisible(ase.list)
+  }
+
+
 
   ######################################################################################
 
@@ -580,145 +739,155 @@ crplot <- function(dataset,
   # g <- uniroot(llrsolve, lower = 0, upper = tempUpper, phi = phi[i], MLE = MLEHAT, x = samp,
   #             cen = cen, chi2 = qchisq(1-alpha, 2))
   llrsolve = function(d, phi, MLEHAT, mleLLvalue, x, cen, chi2){
-    n <- length(x)
-    r <- sum(cen)
+    n <- length(x)                     # sample size (censored and uncensored)
+    r <- sum(cen)                      # number of uncensored values
+    temp <- mleLLvalue - (chi2 / 2)    # for later use with respect to loglikelihood ratio eqn
+
+    # Cauchy distribution
+    if (distn == "cauchy") {
+      a.hat <- MLEHAT[1, ]
+      alpha.hat <- MLEHAT[2, ]
+      a <- a.hat + (d * cos(phi))
+      alpha <- alpha.hat + (d * sin(phi))
+      # this option isn't cooperative (possibly because fitditrplus functions?)
+      #llfn <- sum(cen * log(fitdistrplus::dcauchy(x, scale = alpha, location = a))) +
+      #  sum(as.numeric(cen==0) * log((1 - fitdistrplus::pnorm(x, scale = alpha, location = a))))
+      # written out log likelihood function
+      #llfn <- sum(cen * (log(2 * alpha * (alpha ^ 2 - 2 * x * a + a ^ 2 + x ^ 2) ^ (-1) * (pi + 2 * atan((a - x) / alpha)) ^ (-1)))) -
+      #               sum(log(2 * pi) - log(pi + 2 * atan((a - x) / alpha)))
+      llfn <- sum(cen * (log(2 * alpha))) - sum(cen * log(alpha ^ 2 - 2 * x * a + a ^ 2 + x ^ 2)) - sum(cen * log(pi + 2 * atan((a - x) / alpha))) -
+        sum(log(2 * pi) - log(pi + 2 * atan((a - x) / alpha)))
+      valuereturn <- llfn - temp   # ID d such that 0 = (log likelihood fn) -  (mleLLvalue - (chi2 / 2))
+    }
 
     # Weibull distribution
     if (distn == "weibull") {
       kappa.hat <- MLEHAT[1, ]
       lambda.hat <- MLEHAT[2, ]
-      #if (bartlett == FALSE) {
-      temp <- mleLLvalue - (chi2 / 2)
-      #}
-      #else {
-      #  c <- 1 / (1 + ((1 / n) * 1.73482) / 2)
-      #  temp <- mleLLvalue - (chi2 / (2 * c))
-      #}
       kappa <- kappa.hat + (d * cos(phi))
       lambda <- lambda.hat + (d * sin(phi))
-      n <- length(x)
-      r <- sum(cen)
       temp1 <- sum(x ^ kappa)
-      temp2 <- 0
-      for(i in 1:n){
-        if(cen[i] == 1){
-          temp2 <- temp2 + log(x[i])
-        }
-      }
-      valuereturn <- (r * log(kappa) + (kappa * r * log(lambda)) + ((kappa - 1) * temp2) - (lambda ^ kappa * temp1) - temp)
+      temp2 <- sum(cen * log(x))
+      llfn <- r * log(kappa) + (kappa * r * log(lambda)) + ((kappa - 1) * temp2) - (lambda ^ kappa * temp1)
+      valuereturn <- llfn - temp   # ID d such that 0 = (log likelihood fn) -  (mleLLvalue - (chi2 / 2))
     }
 
     # inverse Gaussian distribution
     if(distn == "invgauss"){
       mu.hat <- MLEHAT[1, ]
       lambda.hat <- MLEHAT[2, ]
-
-      # plug mleLL and chisquare values into loglikelihood ratio eqn
-      temp <- mleLLvalue - (chi2 / 2)
       mu <- mu.hat + (d * cos(phi))
       lambda <- lambda.hat + (d * sin(phi))
-      temp1 <- 0
-      temp2 <- 0
-      for(i in 1:n){
-        if(cen[i] == 1){
-          temp1 <- temp1 + log(x[i])
-          temp2 <- temp2 + ((x[i] - mu) ^ 2) / x[i]
-        }
+      if (n == r) {     # no censored values; use this formulation because it is more robust
+        temp1 <- sum(log(x))
+        temp2 <- sum((x - mu) ^ 2 / x)
+        # return value for invgauss distn (positive when inside conf region, neg outside)
+        # original formulation (without censoring):
+        llfn <- (n / 2) * log(lambda) - (n / 2) * log(2 * pi) - (3 / 2) * temp1 - (lambda / (2 * mu ^ 2)) * temp2
       }
-
-      # return value for invgauss distn (positive when inside conf region, neg outside)
-      valuereturn <- ((n / 2) * log(lambda) - (n / 2) * log(2 * pi) - (3 / 2) * temp1 -
-                  (lambda / (2 * mu ^ 2)) * temp2 - temp)
+      else {            # with censored values
+        # note: conf shape parameter (lambda) = (1 / sigma2) from STAR package
+        llfn <- sum(cen * log(STAR::dinvgauss(x, mu = mu, sigma2 = 1 / lambda))) +
+          sum(as.numeric(cen==0) * log((1 - STAR::pinvgauss(x, mu = mu, sigma2 = 1 / lambda))))
+      }
+      valuereturn <- llfn - temp   # ID d such that 0 = (log likelihood fn) -  (mleLLvalue - (chi2 / 2))
     }
 
     # normal distribution
     if (distn == "norm") {
       mu.hat <- MLEHAT[1, ]
       sigma.hat <- MLEHAT[2, ]
-      temp <- mleLLvalue - (chi2 / 2)
       mu <- mu.hat + (d * cos(phi))
       sigma <- sigma.hat + (d * sin(phi))
-
-      temp1 <- 0
-      for (i in 1:n){
-        if (cen[i] == 1){
-          temp1 <- temp1 + (x[i] - mu)^2
-        }
+      if (n == r) {     # no censored values
+        temp1 <- sum((x - mu) ^ 2)
+        llfn <- (-n / 2) * log(2 * pi) - (n / 2) * log(sigma^2) - (1 / (2*sigma^2)) * temp1
       }
-
-      valuereturn <- (-n / 2) * log(2 * pi) - (n / 2) * log(sigma^2) - (1 / (2*sigma^2)) * temp1 - temp
+      else {            # no censored values:
+        llfn <- sum(cen * log(dnorm(x, mean = mu, sd = sigma))) +
+                    sum(as.numeric(cen==0) * log((1 - pnorm(x, mean = mu, sd = sigma))))
+      }
+      valuereturn <- llfn - temp   # ID d such that 0 = (log likelihood fn) -  (mleLLvalue - (chi2 / 2))
     }
 
     # lognormal distribution
     if (distn == "lnorm") {
       mu.hat <- MLEHAT[1, ]
       sigma.hat <- MLEHAT[2, ]
-      temp <- mleLLvalue - (chi2 / 2)
       mu <- mu.hat + (d * cos(phi))
       sigma <- sigma.hat + (d * sin(phi))
+      temp1 <- sum(log(x))
+      temp2 <- sum((log(x) - mu) ^ 2)
+      #if (n == r) {     # no censored values
+      #  llfn <- (-n / 2) * log(2 * pi) - (n / 2) * log(sigma^2) - temp1 - (1 / (2*sigma^2)) * temp2
+      #}
+      #else {            # with censored values:
+      llfn <- sum(cen * log(dlnorm(x, meanlog = mu, sdlog = sigma))) +
+        sum(as.numeric(cen==0) * log((1 - plnorm(x, meanlog = mu, sdlog = sigma))))
+      valuereturn <- llfn - temp   # ID d such that 0 = (log likelihood fn) -  (mleLLvalue - (chi2 / 2))
+      #}
+    }
 
-      temp1 <- 0
-      temp2 <- 0
-
-      for (i in 1:n){
-        if (cen[i] == 1){
-          temp1 <- temp1 + log(x[i])
-          temp2 <- temp2 + (log(x[i]) - mu)^2
-        }
-      }
-
-      valuereturn <- (-n / 2) * log(2 * pi) - (n / 2) * log(sigma^2) - temp1 - (1 / (2*sigma^2)) * temp2 - temp
+    # logistic distribution
+    if (distn == "logis") {
+      mu.hat <- MLEHAT[1, ]
+      sigma.hat <- MLEHAT[2, ]
+      mu <- mu.hat + (d * cos(phi))
+      sigma <- sigma.hat + (d * sin(phi))
+      llfn <- sum(cen * log(dlogis(x, location = mu, scale = sigma))) +
+        sum(as.numeric(cen==0) * log((1 - plogis(x, location = mu, scale = sigma))))
+      valuereturn <- llfn - temp   # ID d such that 0 = (log likelihood fn) -  (mleLLvalue - (chi2 / 2))
     }
 
     # loglogistic distribution
     if (distn == "llogis") {
       lambda.hat <- MLEHAT[1, ]
       kappa.hat <- MLEHAT[2, ]
-      temp <- mleLLvalue - (chi2 / 2)
       lambda <- lambda.hat + (d * cos(phi))
       kappa <- kappa.hat + (d * sin(phi))
-
-      temp1 <- 0
-      temp2 <- 0
-      for (i in 1:n){
-        if (cen[i] == 1){
-          temp1 <- temp1 + log(x[i])
-          temp2 <- temp2 + log(1 + (x[i] / (1 / lambda))^kappa)
-        }
+      if (n == r) {     # no censored values; use this formulation because it is more robust
+        temp1 <- sum(log(x))
+        temp2 <- sum(log(1 + (x / (1 / lambda)) ^ kappa))
+        llfn <- n * log(kappa) + n * kappa * log(lambda) + (kappa - 1) * temp1 - 2 * temp2
       }
-      valuereturn <- n * log(kappa) - n * kappa * log(1 / lambda) + (kappa - 1) * temp1 - 2 * temp2 - temp
+      else {            # with censored values
+        temp1 <- (kappa - 1) * sum(cen * log(lambda * x))
+        temp2 <- log(1 + (lambda * x) ^ kappa)
+        llfn <- r * (log(lambda) + log(kappa)) + temp1 - sum(cen * temp2) - sum(temp2)
+      }
+      valuereturn <- llfn - temp   # ID d such that 0 = (log likelihood fn) -  (mleLLvalue - (chi2 / 2))
     }
 
     # gamma distribution
     if (distn == "gamma") {
       theta.hat <- MLEHAT[1, ]
       kappa.hat <- MLEHAT[2, ]
-      temp <- mleLLvalue - (chi2 / 2)
       theta <- theta.hat + (d * cos(phi))
       kappa <- kappa.hat + (d * sin(phi))
-
-      temp1 <- 0
-      temp2 <- 0
-
-      for (i in 1:n){
-        if (cen[i] == 1){
-          temp1 <- temp1 + log(x[i])
-          temp2 <- temp2 + (x[i] / theta)
-        }
+      temp1 <- sum(log(x))
+      temp2 <- sum(x / theta)
+      if (n == r) {     # no censored values; use this formulation because it is more robust
+        llfn <- -n * kappa * log(theta) + (kappa - 1) * temp1 - temp2 - n * log(gamma(kappa))
       }
-
-      valuereturn <- -n * kappa * log(theta) + (kappa - 1) * temp1 - temp2 - n * log(gamma(kappa)) - temp
+      else {            # with censored values
+        llfn <- sum(cen * log(dgamma(x, scale = theta, shape = kappa))) +
+          sum(as.numeric(cen==0) * log((1 - pgamma(x, scale = theta, shape = kappa))))
+        #llfn <- sum(cen * log(dgamma(x, scale = theta, shape = kappa) /
+        #              (1 - pgamma(x, scale = theta, shape = kappa)))) +
+        #              sum(log(1 - pgamma(x, scale = theta, shape = kappa)))
+      }
+      valuereturn <- llfn - temp   # ID d such that 0 = (log likelihood fn) -  (mleLLvalue - (chi2 / 2))
     }
 
     # uniform distribution
     if (distn == "unif") {
       a.hat <- MLEHAT[1, ]
       b.hat <- MLEHAT[2, ]
-      temp <- mleLLvalue - (chi2 / 2)
       a <- a.hat + (d * cos(phi))
       b <- b.hat + (d * sin(phi))
-
-      valuereturn <- -n * log(b - a) - temp
+      #llfn <- -n * log(b - a)      # original formulation (without censoring)
+      llfn <- sum(log(b - x)[cen == 0]) - n * log(b - a)  # with censoring
+      valuereturn <- llfn - temp   # ID d such that 0 = (log likelihood fn) -  (mleLLvalue - (chi2 / 2))
     }
 
     invisible(valuereturn)
@@ -746,10 +915,15 @@ crplot <- function(dataset,
       done <- 0
       for (umult in c(10, 100, 500)) {   # uniroot 'upper' argument will use this multiplier to set >> upper bounds in search of root
         if (done == 0) {
-          if ((phi[j] <= pi / 2) || (distn %in% c("norm", "lnorm", "unif") && phi[j] <= pi)) {                              # phi angles of 0 to pi / 2
+          # future improvement note: location param distns such as norm & cauchy need variance account for tempUpper estimate; low var & high magnitude location will be problematic
+          # if: arbitrary upper bound for 1st quad relative to MLE, or 1st & 2nd quad for distns with (-inf, inf) x-domain
+          # else if: distiguish upper bound along y-axis assuming x-domain isn't (-inf, inf)
+          # else: upper bound along x-axis
+          xinfdomain <- c("cauchy", "norm", "lnorm", "logis", "unif")
+          if ((phi[j] <= pi / 2) || ((distn %in% xinfdomain) && (phi[j] <= pi))) {              # phi angles of 0 to pi / 2
             tempUpper <- umult * max(theta1.hat, theta2.hat)
           }
-          else if ((phi[j] <= pi +  atan(theta2.hat/theta1.hat)) && !(distn %in% c("norm", "lnorm)"))) {                 # phi angles of pi / 2 through intercept with origin
+          else if ((phi[j] <= pi +  atan(theta2.hat/theta1.hat))  && !(distn %in% xinfdomain)) {    # phi angles of pi / 2 through intercept with origin
             temp <- theta1.hat / (-cos(phi[j]))    # an upper bound for confidence region feasible points; -cos() because cos(phi[i]) < 0
             tempUpper <- temp * 0.99               # set search limit just before upper limit (y-axis)
           }
@@ -763,10 +937,9 @@ crplot <- function(dataset,
           #print(theta2.hat)
           #print(paste0("phi is: ", phi[j]))
           #print(paste0("tempUpper is: ", tempUpper))
-          g <- suppressWarnings(try(g1 <- uniroot(llrsolve, lower = 0, upper = tempUpper,
+          g <- suppressWarnings(try(g1 <- uniroot(llrsolve, lower = 0, upper = abs(tempUpper),
                                                   phi = phi[j], MLE = MLEHAT, mleLLvalue = mleLLvalue, x = samp,
                                                   cen = cen, chi2 = qchisq(1 - alpha, 2), tol = tol), silent = TRUE))
-
           # errors in uniroot (calculating "g") are possible, and a result of poor upper bound selection
           # the next section of code troubleshoots those errors in two ways:
           # 1. it decreases the upper value by a factor of 1/2 (per iteration), and also
@@ -776,19 +949,22 @@ crplot <- function(dataset,
           z <- 0                       # counter for "try-error" recovery attempts below
           tempUpperLo <- 0             # initialize; will incrementally push upward seeking uniroot upper param
           tempUpperHi <- tempUpper     # initialize; will incrementally push upward seeking uniroot upper param
+          #print(phi[j])
+          #print(j)
+          #if(class(g) == "list") {print(g$root)}
           while ((class(g) == "try-error") && (z < 6) && (tempUpperLo < tempUpperHi)) {
-            #print(paste0("-------------- problematic phi value: ", phi[j]))
             z <- z + 1
             tempUpperHi <- tempUpper * (0.5 ^ z)
-            tempUpperLo <- 5 ^ (z - 1) * min(c(theta1.hat, theta2.hat))
+            tempUpperLo <- 5 ^ (z - 1) * min(c(abs(theta1.hat), abs(theta2.hat)))
+            #print(paste0("-------------- problematic phi value: ", phi[j]))
             #print(paste0(z, " ****************************"))
-            #print(paste0("Error; correction is sought with uniroot upper bound modifications... ", tempUpperHi))
-            g <- suppressWarnings(try(g1 <- uniroot(llrsolve, lower = 0, upper = tempUpperHi,
+            #print(paste0("Error; correction sought with uniroot upper bound modifications... ", tempUpperLo, " and ", tempUpperHi)))
+            g <- suppressWarnings(try(g1 <- uniroot(llrsolve, lower = 0, upper = abs(tempUpperHi),
                                      phi = phi[j], MLE = MLEHAT, mleLLvalue = mleLLvalue, x = samp,
                                      cen = cen, chi2 = qchisq(1 - alpha, 2), tol = tol), silent = TRUE))
             if (class(g) == "try-error") {
               #print(paste0("...............try pushing up the min value to ", tempUpperLo))
-              g <- suppressWarnings(try(g1 <- uniroot(llrsolve, lower = 0, upper = tempUpperLo,
+              g <- suppressWarnings(try(g1 <- uniroot(llrsolve, lower = 0, upper = abs(tempUpperLo),
                            phi = phi[j], MLE = MLEHAT, mleLLvalue = mleLLvalue, x = samp,
                            cen = cen, chi2 = qchisq(1 - alpha, 2), tol = tol), silent = TRUE))
             }
@@ -801,10 +977,13 @@ crplot <- function(dataset,
           }
         }   # end if (done == 0)
       }     # end for (umult in ...)
+
       if (class(g) == "try-error") {
-        print("------------------------------------------------------------------------------------------")
-        print("Uniroot failure.  Challenging parameters and/or shape requires customizing uniroot bounds.")
-        print("------------------------------------------------------------------------------------------")
+        print("-------------------------------------------------------------------------------------------------")
+        print("R uniroot failure searching for confidence region boundary---challenging parameters and/or shape.")
+        print("Unable to produce a confidence region for the given sample and/or parameterization.")
+        #print("Uniroot failure.  Challenging parameters and/or shape requires customizing uniroot bounds.")
+        print("-------------------------------------------------------------------------------------------------")
       }
       d_phi[j] <- g$root                                                    # saves radial length per phi
       cartesian[j,] <- MLEHAT + d_phi[j] * (c(cos(phi[j]), sin(phi[j])))    # saves CR coordinates per phi
@@ -841,7 +1020,13 @@ crplot <- function(dataset,
       phi <- phi[2:length(phi)]             # eliminate redundant point
     }
     else{
-      phi <- angles(a = theta1.hat, b = theta2.hat, npoints = ellipse_n)
+      #if !(distn %in% c("list_distns_here_WITHOUT_asesolve_ability")) {    # use if distn arises where ASE not possible
+      ase <- asesolve(x = dataset, cen, theta1.hat, theta2.hat)
+      phi <- angles(a = ase$theta1.ase, b = ase$theta2.ase, npoints = ellipse_n)
+      #}
+      #else {                                                                  # estimate aspect ratio from MLE
+      #  phi <- angles(a = theta1.hat, b = theta2.hat, npoints = ellipse_n)
+      #}
     }
     #}
 
@@ -1352,7 +1537,7 @@ crplot <- function(dataset,
 
   #ballbearing <- c(17.88, 28.92, 33.00, 41.52, 42.12, 45.60, 48.48, 51.84, 51.96, 54.12, 55.56,
   #  67.80, 68.64, 68.64, 68.88, 84.12, 93.12, 98.64, 105.12, 105.84, 127.92, 128.04, 173.40)
-  cen <- c(rep(1, length(dataset)))
+  #cen <- c(rep(1, length(dataset)))  # delete after censering successfully incorporated
   mydata <- dataset
   mle.list <- mlesolve(mydata, cen = cen)
   theta1.hat <- mle.list$theta1.hat
@@ -1372,7 +1557,13 @@ crplot <- function(dataset,
                        repairpass = FALSE, repaircrlist = NULL, repairq = NULL)
   }
   else if (heuristic == 0) {
-    phi <- angles(a = theta1.hat, b = theta2.hat, npoints = ellipse_n)
+    #if !(distn %in% c("list_distns_here_WITHOUT_asesolve_ability")) {    # use if distn arises where ASE not possible
+    ase <- asesolve(x = dataset, cen, theta1.hat, theta2.hat)
+    phi <- angles(a = ase$theta1.ase, b = ase$theta2.ase, npoints = ellipse_n)
+    #}
+    #else {                                                                  # estimate aspect ratio from MLE
+    #  phi <- angles(a = theta1.hat, b = theta2.hat, npoints = ellipse_n)
+    #}
     cr <- crsolve(samp = dataset, cen = cen, alpha = alpha, mle.list = mle.list, phi = phi)
     crlist <- list("x" = cr[, 1], "y" = cr[, 2], "phi" = phi)
   }
@@ -1413,11 +1604,11 @@ crplot <- function(dataset,
   }
 
   # label axes appropriately in the absence of a user specified label
-  disttype <- c("gamma", "invgauss", "llogis", "lnorm", "norm", "unif", "weibull")
+  disttype <- c("gamma", "invgauss", "llogis", "lnorm", "norm", "unif", "weibull", "cauchy", "logis")
   xaxislabel <- c(expression(theta), expression(mu), expression(lambda), expression(mu),
-                  expression(mu), expression(a), expression(kappa))
+                  expression(mu), expression(a), expression(kappa), expression(a), expression(mu))
   yaxislabel <- c(expression(kappa), expression(lambda), expression(kappa), expression(sigma),
-                  expression(sigma), expression(b), expression(lambda))
+                  expression(sigma), expression(b), expression(lambda), expression(s), expression(sigma))
   if (!is.expression(xlab)) {
     if (xlab == "") {
       if (xyswap == FALSE) {
@@ -1555,6 +1746,11 @@ crplot <- function(dataset,
       crlist <- list("mu" = crlist$x, "sigma" = crlist$y, "phi" = crlist$phi,
                      "muhat" = mle.list$theta1.hat, "sigmahat" = mle.list$theta2.hat)
     }
+    else if (distn == "logis") {
+      #print(paste0("MLE value is: (mu.hat = ", theta1.hat, ", sigma.hat = ", theta2.hat,")"))
+      crlist <- list("mu" = crlist$x, "sigma" = crlist$y, "phi" = crlist$phi,
+                     "muhat" = mle.list$theta1.hat, "sigmahat" = mle.list$theta2.hat)
+    }
     else if (distn == "llogis") {
       #print(paste0("MLE value is: (lambda.hat = ", theta1.hat, ", kappa.hat = ", theta2.hat,")"))
       crlist <- list("lambda" = crlist$x, "kappa" = crlist$y, "phi" = crlist$phi,
@@ -1565,10 +1761,15 @@ crplot <- function(dataset,
       crlist <- list("theta" = crlist$x, "kappa" = crlist$y, "phi" = crlist$phi,
                      "thetahat" = mle.list$theta1.hat, "kappahat" = mle.list$theta2.hat)
     }
-    else if (distn == "uniform") {
+    else if (distn == "unif") {
       #print(paste0("MLE value is: (a.hat = ", theta1.hat, ", b.hat = ", theta2.hat,")"))
       crlist <- list("a" = crlist$x, "b" = crlist$y, "phi" = crlist$phi,
                      "ahat" = mle.list$theta1.hat, "bhat" = mle.list$theta2.hat)
+    }
+    else if (distn == "cauchy") {
+      #print(paste0("MLE value is: (a.hat = ", theta1.hat, ", s.hat = ", theta2.hat,")"))
+      crlist <- list("a" = crlist$x, "s" = crlist$y, "phi" = crlist$phi,
+                     "ahat" = mle.list$theta1.hat, "shat" = mle.list$theta2.hat)
     }
     return(crlist)
   }

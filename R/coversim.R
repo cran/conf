@@ -8,18 +8,21 @@
 #' See the CRAN website https://CRAN.R-project.org/package=conf for a link to a \code{coversim} vignette.
 #'
 #' @param alpha significance level; scalar or vector; resulting plot illustrates a 100(1 - alpha)\% confidence region.
-#' @param distn distribution to fit the dataset to; accepted values: \code{'gamma'}, \code{'invgauss'},
-#' \code{'lnorm'}, \code{'llogis'}, \code{'norm'}, \code{'weibull'}.
+#' @param distn distribution to fit the dataset to; accepted values: \code{'cauchy'}, \code{'gamma'}, \code{'invgauss'},
+#' \code{'logis'}, \code{'llogis'}, \code{'lnorm'}, \code{'norm'}, \code{'unif'}, \code{'weibull'}.
 #' @param n trial sample size (producing each confidence region); scalar or vector; needed if a dataset is not given.
-#' @param iter iterations of individual trials per parameterization; needed if a dataset is not given.
+#' @param iter iterations (or replications) of individual trials per parameterization; needed if a dataset is not given.
 #' @param dataset a \code{'n'} x \code{'iter'} matrix of dataset values, or a vector of length \code{'n'} (for a
 #' single iteration).
 #' @param point coverage is assessed relative to this point.
 #' @param seed random number generator seed.
+#' @param a distribution parameter (when applicable).
+#' @param b distribution parameter (when applicable).
 #' @param kappa distribution parameter (when applicable).
 #' @param lambda distribution parameter (when applicable).
 #' @param mu distribution parameter (when applicable).
 #' @param sigma distribution parameter (when applicable).
+#' @param s distribution parameter (when applicable).
 #' @param theta distribution parameter (when applicable).
 #' @param heuristic numeric value selecting method for plotting: 0 for elliptic-oriented point distribution, and
 #' 1 for smoothing boundary search heuristic.
@@ -64,6 +67,8 @@
 #' and/or \code{returnquant = TRUE} will result in an \code{n} row, \code{iter} column maxtix of sample and/or sample cdf values.
 #' @concept confidence region plot
 #' @keywords Graphical Methods, Parameter Estimation, Numerical Optimization
+#' @references Weld, C., Loh, A., Leemis, L. (in press), "Plotting Likelihood-Ratio Based Confidence Regions for
+#' Two-Parameter Univariate Probability Models, The American Statistician.
 #' @seealso \code{\link{crplot}}, \code{\link{uniroot}}
 #' @author Christopher Weld (\email{ceweld@email.wm.edu})
 #' @author Lawrence Leemis (\email{leemis@math.wm.edu})
@@ -76,9 +81,12 @@
 #'                 dataset   = NULL,
 #'                 point     = NULL,
 #'                 seed      = NULL,
+#'                 a         = NULL,
+#'                 b         = NULL,
 #'                 kappa     = NULL,
 #'                 lambda    = NULL,
 #'                 mu        = NULL,
+#'                 s         = NULL,
 #'                 sigma     = NULL,
 #'                 theta     = NULL,
 #'                 heuristic = 1,
@@ -105,10 +113,31 @@
 #'                 delay     = 0 )
 #'
 #' @details
-#' This package uses the following parameterization for its supported distributions, and illustrates
-#' the corresponding confidence regions accordingly:
+#' Parameterizations for supported distributions are given following
+#' the default axes convention in use by \code{crplot} and \code{coversim}, which are:
+#'
+#' \tabular{lcc}{
+#' \tab Horizontal \tab Vertical\cr
+#' Distribution  \tab  Axis  \tab Axis\cr
+#' Caucy \tab \eqn{a} \tab \eqn{s}\cr
+#' gamma \tab \eqn{\theta} \tab \eqn{\kappa}\cr
+#' inverse Gaussian \tab \eqn{\mu} \tab \eqn{\lambda}\cr
+#' log logistic \tab \eqn{\lambda} \tab \eqn{\kappa}\cr
+#' log normal \tab \eqn{\mu} \tab \eqn{\sigma}\cr
+#' logistic \tab \eqn{\mu} \tab \eqn{\sigma}\cr
+#' normal \tab \eqn{\mu} \tab \eqn{\sigma}\cr
+#' uniform \tab \eqn{a} \tab \eqn{b}\cr
+#' Weibull \tab \eqn{\kappa} \tab \eqn{\lambda}
+#' }
+#'
+#' Each respective distribution is defined below.
 #'
 #' \itemize{
+#' \item The Cauchy distribution
+#' for the real-numbered location parameter \eqn{a}, scale parameter \eqn{s}, and \eqn{x} is a real number,
+#' has the probability density function
+#' \deqn{1 / (s \pi (1 + ((x - a) / s) ^ 2)).}
+#'
 #' \item The gamma distribution
 #' for shape parameter \eqn{\kappa > 0}, scale parameter \eqn{\theta > 0}, and \eqn{x > 0},
 #' has the probability density function
@@ -130,6 +159,11 @@
 #' has the probability density function
 #' \deqn{1 / (x \sigma \sqrt(2 \pi)) exp(-(\log x - \mu) ^ 2 / (2 \sigma ^ 2)).}
 #'
+#' \item The logistic distribution
+#' for the real-numbered location parameter \eqn{\mu}, scale parameter \eqn{\sigma}, and \eqn{x} is a real number,
+#' has the probability density function
+#' \deqn{(1 / \sigma) exp((x - \mu) / \sigma) (1 + exp((x - \mu) / \sigma)) ^ -2}
+#'
 #' \item The normal distribution
 #' for the real-numbered mean \eqn{\mu}, standard deviation \eqn{\sigma > 0}, and \eqn{x} is a real number,
 #' has the probability density function
@@ -144,31 +178,6 @@
 #' for scale parameter \eqn{\lambda > 0}, shape parameter \eqn{\kappa > 0}, and \eqn{x > 0},
 #' has the probability density function
 #' \deqn{\kappa (\lambda ^ \kappa) x ^ {(\kappa - 1)} exp(-(\lambda x) ^ \kappa).}
-#' }
-#'
-#' The confidence region horizontal and vertical axis convention in use by \code{crplot} for each
-#' distribution is:
-#' \itemize{
-#' \item The gamma distribution confidence region plot shows \eqn{\theta} on its horizontal axis,
-#' and \eqn{\kappa} on its vertical axis.
-#'
-#' \item The inverse Gaussian distribution confidence region plot shows \eqn{\mu} on its horizontal
-#' axis, and \eqn{\lambda} on its vertical axis.
-#'
-#' \item The log normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis,
-#' and \eqn{\sigma} on its vertical axis.
-#'
-#' \item The log logistic distribution confidence region plot shows \eqn{\lambda} on its
-#' horizontal axis, and \eqn{\kappa} on its vertical axis.
-#'
-#' \item The normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis, and
-#' \eqn{\sigma} on its vertical axis.
-#'
-#' \item The uniform distribution confidence region plot shows \eqn{a} on its horizontal axis, and
-#' \eqn{b} on its vertical axis.
-#'
-#' \item The Weibull distribution confidence region plot shows \eqn{\kappa} on its horizontal axis,
-#' and \eqn{\lambda} on its vertical axis.
 #' }
 #'
 #'
@@ -198,9 +207,12 @@ coversim <- function(alpha,
                      dataset = NULL,
                      point =   NULL,
                      seed =    NULL,
+                     a =       NULL,
+                     b =       NULL,
                      kappa =   NULL,
                      lambda =  NULL,
                      mu =      NULL,
+                     s =       NULL,
                      sigma =   NULL,
                      theta =   NULL,
                      heuristic = 1,
@@ -231,6 +243,10 @@ coversim <- function(alpha,
 
   if (missing(alpha)) stop ("argument 'alpha' is missing, with no default")
   if (missing(distn)) stop ("argument 'distn' is missing, with no default")
+
+  if ((!is.null(iter)) && ((length(iter) != 1) || (floor(iter) != iter))) {
+    stop("'iter' must be a scalar integer value")
+  }
 
   if (is.null(dataset) && (is.null(n) || is.null(iter)))
     stop ("both 'n' and 'iter', or 'dataset' are required to parameterize the simulation")
@@ -268,8 +284,14 @@ coversim <- function(alpha,
   if (!is.null(point) && (length(point) !=2 || !is.numeric(point)))
     stop("'point' must be a numeric vector with length 2")
 
-  if (!is.element(distn, c("weibull", "invgauss", "norm", "lnorm", "llogis", "gamma")))
-    stop("'distn' invalid; only 'gamma', 'invgauss', 'lnorm', 'llogis', 'norm', 'weibull' are supported")
+  if (!is.element(distn, c("weibull", "invgauss", "norm", "lnorm", "logis", "llogis", "gamma", "unif", "cauchy")))
+    stop("'distn' invalid; supported are: 'cauchy', 'gamma', 'invgauss', 'lnorm', 'logis', 'llogis', 'norm', 'unif', 'weibull'")
+
+  if ((distn == "cauchy") && is.null(dataset)) {
+    if (is.null(a) || is.null(s)) {
+      stop("gamma distribution requires 'a' and 's' arguments (use ?crplot to view corresponding pdf)")
+    }
+  }
 
   if ((distn == "gamma") && is.null(dataset)) {
     if (is.null(kappa) || is.null(theta)) {
@@ -292,6 +314,12 @@ coversim <- function(alpha,
   if (distn == "invgauss" && !is.null(dataset)) {
     if (min(dataset) <= 0) {
       stop("'dataset' parameter contains infeasible inverse Gaussian distribution outcome(s) <= 0")
+    }
+  }
+
+  if ((distn == "logis") && is.null(dataset)) {
+    if (is.null(mu) || is.null(sigma)) {
+      stop("logistic distribution requires 'mu' and 'sigma' arguments (use ?crplot to view corresponding pdf)")
     }
   }
 
@@ -318,6 +346,24 @@ coversim <- function(alpha,
       stop("normal distribution requires 'mu' and 'sigma' arguments (use ?crplot to view corresponding pdf)")
     }
   }
+
+  if ((distn == "unif") && is.null(dataset)) {
+    if (is.null(a) || is.null(b)) {
+      stop("uniform distribution requires 'a' and 'b' arguments (use ?crplot to view corresponding pdf)")
+    }
+  }
+
+  if ((distn == "unif") && is.null(dataset)) {
+    if (a >= b) {
+      stop("uniform distribution requires that a < b (use ?crplot to view corresponding pdf)")
+    }
+  }
+
+  #if ((distn == "unif") && (sum(cen) != length(dataset))) {
+  #  if (max(as.numeric(dataset[which(cen == 0)] %in% max(dataset))) == 1) {
+  #    stop("undefined 'unif' confidence region when max(dataset) corresponds to a (cen = 0) censored value")
+  #  }
+  #}
 
   if ((distn == "weibull") && is.null(dataset)) {
     if (is.null(kappa) || is.null(lambda)) {
@@ -432,7 +478,10 @@ coversim <- function(alpha,
   # existing plot.  It leverages the pnt.in.poly function from SDMTools.
 
   checkpoint <- function(p = c(0, 0), x = 0) {
-    if (distn == "gamma") {
+    if (distn == "cauchy") {
+      xy <- c(x$a, x$s)
+    }
+    else if (distn == "gamma") {
       xy <- c(x$theta, x$kappa)
     }
     else if (distn == "invgauss") {
@@ -441,13 +490,21 @@ coversim <- function(alpha,
     else if (distn == "llogis") {
       xy <- c(x$lambda, x$kappa)
     }
-    else if (distn %in% c("lnorm", "norm")) {
+    else if (distn %in% c("lnorm", "norm", "logis")) {
       xy <- c(x$mu, x$sigma)
+    }
+    else if (distn == "unif") {
+      xy <- c(x$a, x$b)
     }
     else if (distn == "weibull") {
       xy <- c(x$kappa, x$lambda)
     }
-    pgon <- matrix(xy, nrow = length(x$phi), ncol = 2)
+    if (distn == "unif") {
+      pgon <- matrix(xy, nrow = 3, ncol = 2)
+    }
+    else {
+      pgon <- matrix(xy, nrow = length(x$phi), ncol = 2)
+    }
     p <- matrix(p, nrow = 1, ncol = 2)
     result <- SDMTools::pnt.in.poly(p, pgon)
     if (showplot == TRUE) {
@@ -497,9 +554,9 @@ coversim <- function(alpha,
   # note: some functionallity is commented-out to speed calculations when those features are note needed
   for (samp in n) {
     print(paste0("------------------ ", samp, " samples in each of ", iter, " iterations ---------------------"))
-    for (a in alpha) {
+    for (this_alpha in alpha) {
       cat("\n")
-      print(paste0("...now using alpha: ", a))
+      print(paste0("...now using alpha: ", this_alpha))
       count <- count + 1
       errors <- 0
       incount <- 0
@@ -518,9 +575,13 @@ coversim <- function(alpha,
         }
       }
       else {
-        if (distn == "gamma") {
-         samples <- matrix(rgamma(samp * iter, shape = kappa, scale = theta), nrow = samp)
-         ru01 <- pgamma(samples, shape = kappa, scale = theta)
+        if (distn == "cauchy") {
+         samples <- matrix(rcauchy(samp * iter, location = a, scale = s), nrow = samp)
+         ru01 <- pcauchy(samples, location = a, scale = s)
+        }
+        else if (distn == "gamma") {
+          samples <- matrix(rgamma(samp * iter, shape = kappa, scale = theta), nrow = samp)
+          ru01 <- pgamma(samples, shape = kappa, scale = theta)
         }
         else if (distn == "invgauss") {
           samples <- matrix(statmod::rinvgauss(samp * iter, mean = mu, shape = lambda), nrow = samp)
@@ -530,6 +591,10 @@ coversim <- function(alpha,
           samples <- matrix(STAR::rllogis(samp * iter, location = log(1 / lambda), scale = 1 / kappa), nrow = samp)
           ru01 <- STAR::pllogis(samples, location = log(1 / lambda), scale = 1 / kappa)
         }
+        else if (distn == "logis") {
+          samples <- matrix(rlogis(samp * iter, location = mu, scale = sigma), nrow = samp)
+          ru01 <- plogis(samples, location = mu, scale = sigma)
+        }
         else if (distn == "norm") {
           samples <- matrix(rnorm(samp * iter, mean = mu, sd = sigma), nrow = samp)
           ru01 <- pnorm(samples, mean = mu, sd = sigma)
@@ -537,6 +602,10 @@ coversim <- function(alpha,
         else if (distn == "lnorm") {
           samples <- matrix(rlnorm(samp * iter, meanlog = mu, sdlog = sigma), nrow = samp)
           ru01 <- pnorm(samples, mean = mu, sd = sigma)
+        }
+        else if (distn == "unif") {
+          samples <- matrix(runif(samp * iter, min = a, max = b), nrow = samp)
+          ru01 <- punif(samples, min = a, max = b)
         }
         else if (distn == "weibull") {
           samples <- matrix(rweibull(samp * iter, shape = kappa, scale = 1 / lambda), nrow = samp)
@@ -547,8 +616,8 @@ coversim <- function(alpha,
       assessed <- 0           # initialize counter to record number of m.c. sims assessed (does not count errors)
       for (i in 1:iter) {
         invisible(utils::capture.output(
-          x <- try(crplot(dataset = samples[, i],
-                          alpha = a,
+          x <- suppressMessages(try(crplot(dataset = samples[, i],
+                          alpha = this_alpha,
                           distn = distn,
                           heuristic = heuristic,
                           maxdeg = maxdeg,
@@ -567,7 +636,7 @@ coversim <- function(alpha,
                           repair = repair,
                           showplot = showplot,
                           info = TRUE),
-                   silent = TRUE)
+                   silent = TRUE))
         ))
 
 
@@ -581,17 +650,23 @@ coversim <- function(alpha,
           allresults[count, i] <- result
         }
         else {
-          if (distn == "gamma") {
+          if (distn == "cauchy") {
+            p <- c(a, s)
+          }
+          else if (distn == "gamma") {
             p <- c(theta, kappa)
           }
           else if (distn == "invgauss") {
             p <- c(mu, lambda)
           }
-          else if (distn %in% c("lnorm", "norm"))  {
+          else if (distn %in% c("lnorm", "norm", "logis"))  {
             p = c(mu, sigma)
           }
           else if (distn == "llogis") {
             p = c(lambda, kappa)
+          }
+          else if (distn == "unif") {
+            p = c(a, b)
           }
           else if (distn == "weibull") {
             p <- c(kappa, lambda)
@@ -617,9 +692,17 @@ coversim <- function(alpha,
       #print(paste0(incount / iter, " contained the true parameters
       #             (assumes errors associate with misses, as typically the case)."))
       allcoverage[count] <- incount / (iter - sum(allerrors[count, ]))
-    }                # end alpha for-loop
+    }                # end this_alpha for-loop
     cat("\n")
   }                  # end n for-loop
+
+  # assemble a summary matrix to print to the screen
+  alab <- rep(alpha, length(n))
+  nlab <- rep(n, each = length(alpha))
+  matrixsummary <- matrix(c(alab, nlab, allcoverage, rowSums(allerrors)), ncol = 4)
+  colnames(matrixsummary) <- c("alpha", "n", "coverage", "errors")
+  print(paste0("coverage simulation summary (", iter, " replications per parameterization):"))
+  print(matrixsummary)
 
   if (main == "") {
     if (length(n) <= length(alpha)) {
@@ -685,8 +768,8 @@ coversim <- function(alpha,
 
   if (info) {
     # return coverage results; include samples and runif(0, 1) quantiles upon request
-    alab <- rep(alpha, length(n))
-    nlab <- rep(n, each = length(alpha))
+    #alab <- rep(alpha, length(n))
+    #nlab <- rep(n, each = length(alpha))
     if (returnsamp && returnquant) {
       return(list("alab" = alab, "nlab" = nlab, "results" = allresults, "errors" = allerrors, "coverage" = allcoverage,
                   "quantiles" = ru01, "samples" = samples))
@@ -713,5 +796,7 @@ coversim <- function(alpha,
     return(list("quantiles" = ru01))
   }
 
-
 }  # end coversim function
+
+
+

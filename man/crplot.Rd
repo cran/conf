@@ -5,13 +5,14 @@
 \title{Plotting Two-Dimensional Confidence Regions}
 \usage{
 crplot(dataset, alpha, distn,
+                cen       = rep(1, length(dataset)),
                 heuristic = 1,
                 maxdeg    = 5,
                 ellipse_n = 4,
                 pts       = TRUE,
                 mlelab    = TRUE,
                 sf        = c(5, 5),
-                mar       = c(4, 4.5, 2, 1.5),
+                mar       = c(4, 5, 2, 1.5),
                 xyswap    = FALSE,
                 xlab      = "",
                 ylab      = "",
@@ -33,8 +34,10 @@ crplot(dataset, alpha, distn,
 
 \item{alpha}{significance level; resulting plot illustrates a 100(1 - alpha)\% confidence region.}
 
-\item{distn}{distribution to fit the dataset to; accepted values: \code{'gamma'}, \code{'invgauss'},
-\code{'llogis'}, \code{'lnorm'}, \code{'norm'}, \code{'unif'}, \code{'weibull'}.}
+\item{distn}{distribution to fit the dataset to; accepted values: \code{'cauchy'}, \code{'gamma'}, \code{'invgauss'},
+\code{'logis'}, \code{'llogis'}, \code{'lnorm'}, \code{'norm'}, \code{'unif'}, \code{'weibull'}.}
+
+\item{cen}{a vector of binary values specifying right-censored values as 0, and 1 (default) otherwise}
 
 \item{heuristic}{numeric value selecting method for plotting: 0 for elliptic-oriented point distribution, and
 1 for smoothing boundary search heuristic.}
@@ -92,9 +95,9 @@ if the optional argument \code{info = TRUE} is included then a list of plot coor
 }
 \description{
 Plots the two-dimensional confidence region for probability distribution parameters (supported distribution
-suffixes: gamma, invgauss, lnorm, llogis, norm, unif, weibull) corresponding to a user given dataset and level
-of significance.  See the CRAN website https://CRAN.R-project.org/package=conf for a link to a \code{crplot}
-vignette.
+suffixes: cauchy, gamma, invgauss, lnorm, llogis, logis, norm, unif, weibull) corresponding to a user given
+dataset and level of significance.  See the CRAN website https://CRAN.R-project.org/package=conf for a link
+to a \code{crplot} vignette.
 }
 \details{
 This function plots confidence regions for a variety of two-parameter distributions.  It requires
@@ -135,10 +138,30 @@ asymptotic results associated with the ratio test statistic \eqn{-2 [log L(\thet
 which converges in distribution to the chi-square distribution with two degrees of freedom (for
 a two parameter distribution).
 
-This package uses the following parameterization for its supported distributions, and illustrates
-the corresponding confidence regions accordingly:
+The default axes convention in use by \code{crplot} are
+
+\tabular{lcc}{
+\tab Horizontal \tab Vertical\cr
+Distribution  \tab  Axis  \tab Axis\cr
+Caucy \tab \eqn{a} \tab \eqn{s}\cr
+gamma \tab \eqn{\theta} \tab \eqn{\kappa}\cr
+inverse Gaussian \tab \eqn{\mu} \tab \eqn{\lambda}\cr
+log logistic \tab \eqn{\lambda} \tab \eqn{\kappa}\cr
+log normal \tab \eqn{\mu} \tab \eqn{\sigma}\cr
+logistic \tab \eqn{\mu} \tab \eqn{\sigma}\cr
+normal \tab \eqn{\mu} \tab \eqn{\sigma}\cr
+uniform \tab \eqn{a} \tab \eqn{b}\cr
+Weibull \tab \eqn{\kappa} \tab \eqn{\lambda}
+}
+
+where each respective distribution is defined below.
 
 \itemize{
+\item The Cauchy distribution
+for the real-numbered location parameter \eqn{a}, scale parameter \eqn{s}, and \eqn{x} is a real number,
+has the probability density function
+\deqn{1 / (s \pi (1 + ((x - a) / s) ^ 2)).}
+
 \item The gamma distribution
 for shape parameter \eqn{\kappa > 0}, scale parameter \eqn{\theta > 0}, and \eqn{x > 0},
 has the probability density function
@@ -160,6 +183,11 @@ of the logarithm, and \eqn{x > 0},
 has the probability density function
 \deqn{1 / (x \sigma \sqrt(2 \pi)) exp(-(\log x - \mu) ^ 2 / (2 \sigma ^ 2)).}
 
+\item The logistic distribution
+for the real-numbered location parameter \eqn{\mu}, scale parameter \eqn{\sigma}, and \eqn{x} is a real number,
+has the probability density function
+\deqn{(1 / \sigma) exp((x - \mu) / \sigma) (1 + exp((x - \mu) / \sigma)) ^ -2}
+
 \item The normal distribution
 for the real-numbered mean \eqn{\mu}, standard deviation \eqn{\sigma > 0}, and \eqn{x} is a real number,
 has the probability density function
@@ -174,31 +202,6 @@ has the probability density function
 for scale parameter \eqn{\lambda > 0}, shape parameter \eqn{\kappa > 0}, and \eqn{x > 0},
 has the probability density function
 \deqn{\kappa (\lambda ^ \kappa) x ^ {(\kappa - 1)} exp(-(\lambda x) ^ \kappa).}
-}
-
-The confidence region horizontal and vertical axis convention in use by \code{crplot} for each
-distribution is:
-\itemize{
-\item The gamma distribution confidence region plot shows \eqn{\theta} on its horizontal axis,
-and \eqn{\kappa} on its vertical axis.
-
-\item The inverse Gaussian distribution confidence region plot shows \eqn{\mu} on its horizontal
-axis, and \eqn{\lambda} on its vertical axis.
-
-\item The log logistic distribution confidence region plot shows \eqn{\lambda} on its
-horizontal axis, and \eqn{\kappa} on its vertical axis.
-
-\item The log normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis,
-and \eqn{\sigma} on its vertical axis.
-
-\item The normal distribution confidence region plot shows \eqn{\mu} on its horizontal axis, and
-\eqn{\sigma} on its vertical axis.
-
-\item The uniform distribution confidence region plot shows \eqn{a} on its horizontal axis, and
-\eqn{b} on its vertical axis.
-
-\item The Weibull distribution confidence region plot shows \eqn{\kappa} on its horizontal axis,
-and \eqn{\lambda} on its vertical axis.
 }
 }
 \examples{
@@ -225,6 +228,9 @@ crplot(dataset = ballbearing, distn = "invgauss", alpha = 0.05,
 \references{
 Jaeger, A. (2016), "Computation of Two- and Three-Dimensional Confidence Regions with the Likelihood Ratio",
 The American Statistician, 49, 48--53.
+
+Weld, C., Loh, A., Leemis, L. (in press), "Plotting Likelihood-Ratio Based Confidence Regions for
+Two-Parameter Univariate Probability Models, The American Statistician.
 }
 \seealso{
 \code{\link{coversim}}, \code{\link{uniroot}}
