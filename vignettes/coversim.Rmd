@@ -65,7 +65,7 @@ The `coversim` function can automate and record coverage assessments for numerou
 
 ```{r, fig.width = 7.5, fig.height = 3.5, fig.show = 'hold'}
 par(mfrow = c(2, 5))
-coversim(alpha = 0.5, distn = "gamma", n = 16, iter = 10, theta = 1, kappa = 2, showplot = TRUE, mlelab = FALSE, xlim = c(0, 2), ylim = c(0, 4.5))
+coversim(alpha = 0.5, distn = "gamma", n = 16, iter = 10, theta = 1, kappa = 2, showplot = TRUE, mlelab = FALSE, xlim = c(0, 2), ylim = c(0, 4.5), sf = c(1, 2), ylas = 1)
 ```
 
 Both the console output and the plots indicate that 6 of 10 iterations produce confidence regions covering the true population parameters, and 4 of 10 iterations result in confidence regions that miss the population parameters.  The actual coverage for this simulation is therefore 0.6, whereas its nominal (or stated) coverage is 0.5.
@@ -222,7 +222,8 @@ Suppose five samples of the aforementioned ball bearing dataset were each collec
 set.seed(1)              # ensure consistent results will illustrate in this vignette
 par(mfrow = c(2, 2))     # display resulting plots in a 2 row by 2 column grid
 samplematrix <- matrix(sample(ballbearing, 20), ncol = 4)   # subset 20 samples into four groups (columns)
-coversim(alpha = 0.1, distn = "weibull", dataset = samplematrix, point = c(1, 0.015), showplot = TRUE, origin = TRUE)
+coversim(alpha = 0.1, distn = "weibull", dataset = samplematrix, point = c(1, 0.015), 
+         sf = c(2, 3), ylas = 1, showplot = TRUE, origin = TRUE)
 ```
 
 Three of four $90\%$ confidence regions cover the point $\kappa = 1, \lambda = 0.015$.  This is partially a consequence of reducing the sample size used to plot each confidence region (from $23$ to $5$), which in-turn increases uncertainty surrounding its maximum likelihood estimator (the area contained within the $90\%$ confidence region).

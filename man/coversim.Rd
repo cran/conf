@@ -28,12 +28,12 @@ coversim(alpha, distn,
                 xlab      = "",
                 ylab      = "",
                 main      = "",
-                xlas      = 1,
-                ylas      = 2,
+                xlas      = 0,
+                ylas      = 0,
                 origin    = FALSE,
                 xlim      = NULL,
                 ylim      = NULL,
-                tol       = .Machine$double.eps ^ 0.5,
+                tol       = .Machine$double.eps ^ 1,
                 info      = FALSE,
                 returnsamp  = FALSE,
                 returnquant = FALSE,
@@ -42,7 +42,7 @@ coversim(alpha, distn,
                 delay     = 0 )
 }
 \arguments{
-\item{alpha}{significance level; scalar or vector; resulting plot illustrates a 100(1 - alpha)\% confidence region.}
+\item{alpha}{significance level; scalar or vector; resulting plot illustrates a 100(1 - \code{alpha})\% confidence region.}
 
 \item{distn}{distribution to fit the dataset to; accepted values: \code{'cauchy'}, \code{'gamma'}, \code{'invgauss'},
 \code{'logis'}, \code{'llogis'}, \code{'lnorm'}, \code{'norm'}, \code{'unif'}, \code{'weibull'}.}
@@ -88,7 +88,8 @@ exploits symmetry in the quadrants of an ellipse).}
 \item{mlelab}{logical argument to include the maximum likelihood estimate coordinate point (default is \code{TRUE},
 applies to confidence region plots when \code{showplot = TRUE}).}
 
-\item{sf}{specifies the number of significant figures on axes labels (applies to confidence region plots when \code{showplot = TRUE}).}
+\item{sf}{significant figures in axes labels specified using sf = c(x, y), where x and y represent the optional digits argument
+in the R function \code{\link{round}} as it pertains the horizontal and vertical labels.}
 
 \item{mar}{specifies margin values for \code{par(mar = c( ))} (see \code{mar} in \code{\link{par}}).}
 
@@ -114,7 +115,7 @@ when \code{showplot = TRUE}).}
 
 \item{tol}{the \code{\link{uniroot}} parameter specifying its required accuracy.}
 
-\item{info}{logical argument to return coverage information in a list; includes alpha value(s), \code{n} value(s), coverage
+\item{info}{logical argument to return coverage information in a list; includes \code{alpha} value(s), \code{n} value(s), coverage
 and error results per iteration, and \code{returnsamp} and/or \code{returnquant} when requested.}
 
 \item{returnsamp}{logical argument; if \code{TRUE} returns random samples used in a matrix with \code{n} rows, \code{iter} cols.}
@@ -129,7 +130,7 @@ and error results per iteration, and \code{returnsamp} and/or \code{returnquant}
 }
 \value{
 If the optional argument \code{info = TRUE} is included then a list of coverage results is returned.  That list
-includes alpha value(s), n value(s), coverage and error results per iteration.  Additionally, \code{returnsamp = TRUE}
+includes \code{alpha} value(s), \code{n} value(s), coverage and error results per iteration.  Additionally, \code{returnsamp = TRUE}
 and/or \code{returnquant = TRUE} will result in an \code{n} row, \code{iter} column maxtix of sample and/or sample cdf values.
 }
 \description{
@@ -219,7 +220,7 @@ origin = TRUE)
 }
 \references{
 Weld, C., Loh, A., Leemis, L. (in press), "Plotting Likelihood-Ratio Based Confidence Regions for
-Two-Parameter Univariate Probability Models, The American Statistician.
+Two-Parameter Univariate Probability Models", The American Statistician.
 }
 \seealso{
 \code{\link{crplot}}, \code{\link{uniroot}}

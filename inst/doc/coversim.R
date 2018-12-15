@@ -17,7 +17,7 @@ coversim(alpha = 0.1, distn = "norm", n = 10, iter = 1, mu = 5, sigma = 10, show
 
 ## ---- fig.width = 7.5, fig.height = 3.5, fig.show = 'hold'---------------
 par(mfrow = c(2, 5))
-coversim(alpha = 0.5, distn = "gamma", n = 16, iter = 10, theta = 1, kappa = 2, showplot = TRUE, mlelab = FALSE, xlim = c(0, 2), ylim = c(0, 4.5))
+coversim(alpha = 0.5, distn = "gamma", n = 16, iter = 10, theta = 1, kappa = 2, showplot = TRUE, mlelab = FALSE, xlim = c(0, 2), ylim = c(0, 4.5), sf = c(1, 2), ylas = 1)
 
 ## ---- eval = FALSE-------------------------------------------------------
 #  # Note: due to its long runtime, plot results pictured below were imported.  Code producing analogous (but not identical) results is none-the-less given here:
@@ -123,5 +123,6 @@ coversim(alpha = 0.1, distn = "weibull", dataset = ballbearing, point = c(1, 0.0
 set.seed(1)              # ensure consistent results will illustrate in this vignette
 par(mfrow = c(2, 2))     # display resulting plots in a 2 row by 2 column grid
 samplematrix <- matrix(sample(ballbearing, 20), ncol = 4)   # subset 20 samples into four groups (columns)
-coversim(alpha = 0.1, distn = "weibull", dataset = samplematrix, point = c(1, 0.015), showplot = TRUE, origin = TRUE)
+coversim(alpha = 0.1, distn = "weibull", dataset = samplematrix, point = c(1, 0.015), 
+         sf = c(2, 3), ylas = 1, showplot = TRUE, origin = TRUE)
 

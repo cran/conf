@@ -11,33 +11,37 @@ crplot(dataset, alpha, distn,
                 ellipse_n = 4,
                 pts       = TRUE,
                 mlelab    = TRUE,
-                sf        = c(5, 5),
-                mar       = c(4, 5, 2, 1.5),
+                sf        = NULL,
+                mar       = c(4, 4.5, 2, 1.5),
                 xyswap    = FALSE,
                 xlab      = "",
                 ylab      = "",
                 main      = "",
-                xlas      = 1,
-                ylas      = 2,
+                xlas      = 0,
+                ylas      = 0,
                 origin    = FALSE,
                 xlim      = NULL,
                 ylim      = NULL,
-                tol       = .Machine$double.eps ^ 0.5,
+                tol       = .Machine$double.eps ^ 1,
                 info      = FALSE,
+                maxcount  = 30,
                 repair    = TRUE,
                 jumpshift = 0.5,
                 jumpuphill = min(alpha, 0.01),
+                jumpinfo  = FALSE,
+                showjump  = FALSE,
                 showplot  = TRUE )
 }
 \arguments{
 \item{dataset}{a 1 x n vector of dataset values.}
 
-\item{alpha}{significance level; resulting plot illustrates a 100(1 - alpha)\% confidence region.}
+\item{alpha}{significance level; resulting plot illustrates a 100(1 - \code{alpha})\% confidence region.}
 
 \item{distn}{distribution to fit the dataset to; accepted values: \code{'cauchy'}, \code{'gamma'}, \code{'invgauss'},
 \code{'logis'}, \code{'llogis'}, \code{'lnorm'}, \code{'norm'}, \code{'unif'}, \code{'weibull'}.}
 
-\item{cen}{a vector of binary values specifying right-censored values as 0, and 1 (default) otherwise}
+\item{cen}{a vector of binary values specifying if the corresponding data values are right-censored (0), or
+observed (1, default); its length must match length(dataset).}
 
 \item{heuristic}{numeric value selecting method for plotting: 0 for elliptic-oriented point distribution, and
 1 for smoothing boundary search heuristic.}
@@ -53,7 +57,8 @@ exploits symmetry in the quadrants of an ellipse).}
 \item{mlelab}{logical argument to include the maximum
 likelihood estimate coordinate point (default is \code{TRUE}).}
 
-\item{sf}{specifies the number of significant figures on axes labels.}
+\item{sf}{significant figures in axes labels specified using sf = c(x, y), where x and y represent the optional
+digits argument in the R function \code{\link{round}} as it pertains to the horizontal and vertical labels.}
 
 \item{mar}{specifies margin values for \code{par(mar = c( ))} (see \code{mar} in \code{\link{par}}).}
 
@@ -80,12 +85,24 @@ likelihood estimate coordinate point (default is \code{TRUE}).}
 \item{info}{logical argument to return plot information: MLE prints to screen; (x, y) plot point coordinates
 and corresponding phi angles (with respect to MLE) are returned as a list.}
 
+\item{maxcount}{integer value specifying the number of smoothing search iterations before terminating with \code{maxdeg} not met.}
+
 \item{repair}{logical argument to repair regions inaccessible using a radial angle from its MLE due to multiple
 roots at select \eqn{\phi} angles.}
 
-\item{jumpshift}{\% of vertical or horizontal "gap" (near uncharted region) to angle jump-center location towards}
+\item{jumpshift}{see vignette "conf Advanced Options" for details; location (as a fractional value between 0 and 1) along the
+vertical or horizontal "gap" (near an uncharted region) to locate a jump-center toward; can be either a scalar value (uniformly
+applied to all jump-centers) or vector of length four (with unique values for its respective quadrants, relative to the MLE).}
 
-\item{jumpuphill}{significance level increase to alpha ("uphill" on confidence region) to locate the jump-center}
+\item{jumpuphill}{see vignette "conf Advanced Options" for details; significance level increase to \code{alpha} for the jump-center
+(corresponds to an "uphill" location on its likelihood function); can be either a scalar value (uniformly applied to all jump-centers)
+or vector of length four (with unique values for its respective quadrants, relative to the MLE).}
+
+\item{jumpinfo}{logical argument to return plot info (see \code{info} argument) and jump-center info; returned within `repair`
+attribute are \code{jumpuphill} value, \code{jumpshift} value, "|" or "-" gap type, jump-center(s) coordinates, and coordinates
+of points left & right of the inaccessible region.}
+
+\item{showjump}{logical argument specifying if jump-center repair reference points appear on the confidence region plot.}
 
 \item{showplot}{logical argument specifying if a plot is output; altering from its default of \code{TRUE} is
 only logical assuming \code{crplot} is run for its data only (see the \code{info} argument).}
@@ -96,11 +113,11 @@ if the optional argument \code{info = TRUE} is included then a list of plot coor
 \description{
 Plots the two-dimensional confidence region for probability distribution parameters (supported distribution
 suffixes: cauchy, gamma, invgauss, lnorm, llogis, logis, norm, unif, weibull) corresponding to a user given
-dataset and level of significance.  See the CRAN website https://CRAN.R-project.org/package=conf for a link
-to a \code{crplot} vignette.
+complete or right-censored dataset and level of significance.  See the CRAN website
+https://CRAN.R-project.org/package=conf for a link to two \code{crplot} vignettes.
 }
 \details{
-This function plots confidence regions for a variety of two-parameter distributions.  It requires
+This function plots confidence regions for a variety of two-parameter distributions.  It requires:
 \itemize{
 \item a vector of dataset values,
 \item the level of significance (alpha), and
@@ -230,7 +247,7 @@ Jaeger, A. (2016), "Computation of Two- and Three-Dimensional Confidence Regions
 The American Statistician, 49, 48--53.
 
 Weld, C., Loh, A., Leemis, L. (in press), "Plotting Likelihood-Ratio Based Confidence Regions for
-Two-Parameter Univariate Probability Models, The American Statistician.
+Two-Parameter Univariate Probability Models", The American Statistician.
 }
 \seealso{
 \code{\link{coversim}}, \code{\link{uniroot}}

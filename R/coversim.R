@@ -7,7 +7,7 @@
 #' matrix (\code{'n'} samples per column, \code{'iter'} columns) and returns the corresponding actual coverage results.
 #' See the CRAN website https://CRAN.R-project.org/package=conf for a link to a \code{coversim} vignette.
 #'
-#' @param alpha significance level; scalar or vector; resulting plot illustrates a 100(1 - alpha)\% confidence region.
+#' @param alpha significance level; scalar or vector; resulting plot illustrates a 100(1 - \code{alpha})\% confidence region.
 #' @param distn distribution to fit the dataset to; accepted values: \code{'cauchy'}, \code{'gamma'}, \code{'invgauss'},
 #' \code{'logis'}, \code{'llogis'}, \code{'lnorm'}, \code{'norm'}, \code{'unif'}, \code{'weibull'}.
 #' @param n trial sample size (producing each confidence region); scalar or vector; needed if a dataset is not given.
@@ -33,7 +33,8 @@
 #' @param pts displays confidence region boundary points if \code{TRUE} (applies to confidence region plots when \code{showplot = TRUE}).
 #' @param mlelab logical argument to include the maximum likelihood estimate coordinate point (default is \code{TRUE},
 #' applies to confidence region plots when \code{showplot = TRUE}).
-#' @param sf specifies the number of significant figures on axes labels (applies to confidence region plots when \code{showplot = TRUE}).
+#' @param sf significant figures in axes labels specified using sf = c(x, y), where x and y represent the optional digits argument
+#' in the R function \code{\link{round}} as it pertains the horizontal and vertical labels.
 #' @param mar specifies margin values for \code{par(mar = c( ))} (see \code{mar} in \code{\link{par}}).
 #' @param xlab string specifying the x axis label (applies to confidence region plots when \code{showplot = TRUE}).
 #' @param ylab string specifying the y axis label (applies to confidence region plots when \code{showplot = TRUE}).
@@ -48,7 +49,7 @@
 #' @param ylim two element vector containing vertical axis minimum and maximum values (applies to confidence region plots
 #' when \code{showplot = TRUE}).
 #' @param tol the \code{\link{uniroot}} parameter specifying its required accuracy.
-#' @param info logical argument to return coverage information in a list; includes alpha value(s), \code{n} value(s), coverage
+#' @param info logical argument to return coverage information in a list; includes \code{alpha} value(s), \code{n} value(s), coverage
 #' and error results per iteration, and \code{returnsamp} and/or \code{returnquant} when requested.
 #' @param returnsamp logical argument; if \code{TRUE} returns random samples used in a matrix with \code{n} rows, \code{iter} cols.
 #' @param returnquant logical argument; if \code{TRUE} returns random quantiles used in a matrix with \code{n} rows, \code{iter} cols.
@@ -63,12 +64,12 @@
 #' @importFrom statmod dinvgauss pinvgauss qinvgauss rinvgauss
 #' @export
 #' @return If the optional argument \code{info = TRUE} is included then a list of coverage results is returned.  That list
-#' includes alpha value(s), n value(s), coverage and error results per iteration.  Additionally, \code{returnsamp = TRUE}
+#' includes \code{alpha} value(s), \code{n} value(s), coverage and error results per iteration.  Additionally, \code{returnsamp = TRUE}
 #' and/or \code{returnquant = TRUE} will result in an \code{n} row, \code{iter} column maxtix of sample and/or sample cdf values.
 #' @concept confidence region plot
 #' @keywords Graphical Methods, Parameter Estimation, Numerical Optimization
 #' @references Weld, C., Loh, A., Leemis, L. (in press), "Plotting Likelihood-Ratio Based Confidence Regions for
-#' Two-Parameter Univariate Probability Models, The American Statistician.
+#' Two-Parameter Univariate Probability Models", The American Statistician.
 #' @seealso \code{\link{crplot}}, \code{\link{uniroot}}
 #' @author Christopher Weld (\email{ceweld@email.wm.edu})
 #' @author Lawrence Leemis (\email{leemis@math.wm.edu})
@@ -99,12 +100,12 @@
 #'                 xlab      = "",
 #'                 ylab      = "",
 #'                 main      = "",
-#'                 xlas      = 1,
-#'                 ylas      = 2,
+#'                 xlas      = 0,
+#'                 ylas      = 0,
 #'                 origin    = FALSE,
 #'                 xlim      = NULL,
 #'                 ylim      = NULL,
-#'                 tol       = .Machine$double.eps ^ 0.5,
+#'                 tol       = .Machine$double.eps ^ 1,
 #'                 info      = FALSE,
 #'                 returnsamp  = FALSE,
 #'                 returnquant = FALSE,
@@ -225,12 +226,12 @@ coversim <- function(alpha,
                      xlab = "",
                      ylab = "",
                      main = "",
-                     xlas = 1,
-                     ylas = 2,
+                     xlas = 0,
+                     ylas = 0,
                      origin = FALSE,
                      xlim = NULL,
                      ylim = NULL,
-                     tol = .Machine$double.eps ^ 0.5,
+                     tol = .Machine$double.eps ^ 1,
                      info = FALSE,
                      returnsamp = FALSE,
                      returnquant = FALSE,
@@ -377,7 +378,7 @@ coversim <- function(alpha,
     }
   }
 
-  if (is.null(alpha) || alpha <= 0 || alpha >= 1 || !is.numeric(alpha))
+  if (is.null(alpha) || all(alpha <= 0) || all(alpha >= 1) || !is.numeric(alpha))
     stop("'alpha' numeric significance level parameter required such that 0 < alpha < 1")
 
   if (is.null(heuristic) || !is.numeric(heuristic) || (heuristic != 0 && heuristic != 1))
@@ -404,10 +405,10 @@ coversim <- function(alpha,
   if (length(mar) != 4 || !is.numeric(mar) || min(mar) < 0)
     stop("'mar' must be a vector of length four with positive numeric entries")
 
-  if (!(xlas %in% c(1, 2, 3, 4)))
+  if (!(xlas %in% c(0, 1, 2, 3)))
     stop("'xlas' must be a numeric value in {0, 1, 2, 3}")
 
-  if (!(ylas %in% c(1, 2, 3, 4)))
+  if (!(ylas %in% c(0, 1, 2, 3)))
     stop("'ylas' must be a numeric value in {0, 1, 2, 3}")
 
   if (!is.logical(origin) || length(origin) != 1)
@@ -629,6 +630,8 @@ coversim <- function(alpha,
                           xlab = xlab,
                           ylab = ylab,
                           main = main,
+                          xlas = xlas,
+                          ylas = ylas,
                           origin = origin,
                           xlim = xlim,
                           ylim = ylim,

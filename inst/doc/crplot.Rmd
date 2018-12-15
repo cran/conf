@@ -19,7 +19,9 @@ knitr::opts_chunk$set(
 
 ## Introduction   
   
-The `crplot` function is part of the [conf](https://CRAN.R-project.org/package=conf) package.  It generates a two-dimensional confidence region plot for the specified two-parameter parametric distribution, fitted to a dataset.
+The `crplot` function is part of the [conf](https://CRAN.R-project.org/package=conf) package.  It generates a two-dimensional confidence region plot for the specified two-parameter parametric distribution, fitted to a dataset.  Details of the plot algorithm employed by `crplot` are available in its corresponding publication^[Weld, C., Loh, A., and Leemis, L. (in press), "Plotting Likelihood-Ratio Based Confidence Regions for Two-Parameter Univariate Probability Models", *The American Statistician*].
+
+A second `crplot` vignette titled *crplot Advanced Options* is available via a link found on the [conf](https://CRAN.R-project.org/package=conf) package webpage.  It focuses on `crplot` optional arguments that are helpful to troubleshoot plot issues.  The default `crplot` algorithm, however, is robust over a wide range of plot circumstances with varying levels of difficulty and its users should therefore familiarize with this vignette first.
 
 ## Installation Instructions
 
@@ -44,18 +46,17 @@ crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull")
 
 In addition to the $95\%$ confidence region plot, output informs the user that its smoothing boundary search heuristic (default heuristic) uses 102 points to complete the plot.  The maximum likelihood estimator values are plotted as a + within the confidence region.
 
-Valuable perspective is often given if the origin is included within a plot.  The argument `origin = TRUE` in the plot below invokes this change.  Alternatively, the user can specify a unique frame of reference using optional `xlim` and/or `ylim` arguments.  Two additional modifications complete the plot below: its points are hidden using `pts = FALSE`, and significant figures for the respective horizontal and vertical axes are specified using `sf = c(2, 4)`.
+Valuable perspective is often given if the origin is included within a plot.  The argument `origin = TRUE` in the plot below invokes this change.  Alternatively, the user can specify a unique frame of reference using optional `xlim` and/or `ylim` arguments.  Three additional modifications complete the plot below: its points are hidden using `pts = FALSE`, significant figures for the respective horizontal and vertical axes are specified using `sf = c(2, 4)`, and the orientation of the y-axis labels are set horizontal using `las = 1`.
 
 ```{r, fig.width = 4, fig.height = 4, fig.show = 'hold'}
 crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", 
-       pts = FALSE, sf = c(2, 4), origin = TRUE)
+       pts = FALSE, sf = c(2, 4), ylas = 1, origin = TRUE)
 ```
     
 Setting `info = TRUE` allows the user to access data pertinent to the resulting plot for subsequent analysis and/or plot customization.  This is shown next; also note the assignment `x <- crplot(...)`, which is necessary to collect plot data for future use.
 
 ```{r, fig.height = 4, fig.width = 4, fig.keep = 'none'}
-x <- crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", 
-       pts = FALSE, sf = c(2, 4), origin = TRUE, info = TRUE)
+x <- crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", info = TRUE)
 names(x)
 ```
 
@@ -84,7 +85,7 @@ crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", xlab = "shape",
        ylab = " ", main = paste0("Confidence Region"),
        pts = FALSE, mlelab = FALSE, sf = c(2, 4), origin = TRUE)
 par(xpd = TRUE)
-text(-1.2, 0.007, "scale")
+text(-1.2, 0.007, "scale", srt = 90)
 
 # 1st analysis plot: overlay phi angles (as line segments) on the confidence region plot
 par(xpd = FALSE)
@@ -102,14 +103,14 @@ All confidence region plots to this point are made using the default smoothing s
 The default `maxdeg = 5` is appropriate for most circumstances.  Values of `maxdeg` < $3^\circ$ are not permitted to avoid numeric approximation complications implicit with populating too many confidence region boundary points. The plots below illustrate confidence region plot results with increased and decreased resolution.
 
 ```{r, fig.show = 'hold'}
-crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", 
-       maxdeg = 3, main = "maxdeg = 3")
-crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", 
-       maxdeg = 3, main = "maxdeg = 3 (pts hidden)", pts = FALSE)
-crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", 
-       maxdeg = 20, main = "maxdeg = 20")
-crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", 
-       maxdeg = 20, main = "maxdeg = 20 (pts hidden)", pts = FALSE)
+crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", ylas = 1,
+       maxdeg = 3, main = "maxdeg = 3", sf = c(5, 5))
+crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", ylas = 1,
+       maxdeg = 3, main = "maxdeg = 3 (pts hidden)", sf = c(5, 5), pts = FALSE)
+crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", ylas = 1,
+       maxdeg = 20, main = "maxdeg = 20", sf = c(5, 5))
+crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", ylas = 1,
+       maxdeg = 20, main = "maxdeg = 20 (pts hidden)", sf = c(5, 5), pts = FALSE)
 ```
 
 An alternative plot heuristic is available using the optional argument `heuristic = 0`.  It plots a predetermined number of confidence region points (user specified using `ellipse_n`) in a roughly uniform fashion along its boundary using an elliptic-oriented plotting technique.  Its name references the method its algorithm uses to draw an ellipse---known as the parallelogram method; a result of the Theorem of Steiner^[Meserve, B. E. (2014), *Fundamental Concepts of Geometry*, Courier Corporation]---that identifies approximately equidistant points along the confidence region boundary regardless of the relative scales of its axes.
@@ -118,9 +119,9 @@ The next pair of plots illustrate differences between the default smoothing sear
 
 ```{r, fig.show = 'hold'}
 crplot(dataset = ballbearing, alpha = 0.05, distn = "invgauss", sf = c(2, 2),
-       main = "default; heuristic = 1")
+       ylas = 1, main = "default; heuristic = 1")
 crplot(dataset = ballbearing, alpha = 0.05, distn = "invgauss", sf = c(2, 2), 
-       heuristic = 0, ellipse_n = 100, main = "heuristic = 0")
+       ylas = 1, heuristic = 0, ellipse_n = 100, main = "heuristic = 0")
 ```
 
 An `ellipse_n` value must always accompany use of `heuristic = 0`.  Additionally, `ellipse_n` must be a positive integer multiple of four $\geq 8$.  This requirement enables its algorithm to exploit computational efficiencies associated with ellipse symmetry throughout its respective quadrants.
@@ -143,11 +144,25 @@ crplot(dataset = ballbearing, alpha = 0.05, distn = "invgauss", sf = c(2, 2),
        maxdeg = 10, main = "default (heuristic = 1)")
 ```
 
+## Right-Censored Data
+
+Use the `crplot` optional argument `cen` to identify right-censored data values.  The `cen` argument is a binary vector whose length matches `length(dataset)`.  It specifies if the corresponding values in `dataset` are right-censored (0), or observed (1).
+
+Consider the 6-MP dataset^[Gehan, Edmund A. (1965), A Generalized Wilcoxon Test for Comparing Arbitrarily Singly-Censored Samples, Biometrika, 52, 650--653] of cancer remission lengths.  Its values represent the length of time (in weeks) until a cancer returns.  Some patients remain cancer-free at the conclusion of the study; they comprise the dataset's right-censored values.  Among its 21 patients who were administered the 6-MP medication, nine experienced a remission (the observed values) and the remaining 12 remained cancer-free at the conclusion of the study (its right-censored data values).  Its values, and the corresponding Weibull $95\%$ confidence region plot completed using `crplot`, are given below.
+
+```{r, fig.show = 'hold', fig.height = 3.8, fig.width = 4}
+mp6_obs <- c(6, 6, 6, 7, 10, 13, 16, 22, 23)                # time of cancer remission
+mp6_cen <- c(6, 9, 10, 11, 17, 19, 20, 25, 32, 32, 34, 35)  # right-censored time
+mp6 <- c(mp6_obs, mp6_cen)
+cen <- c(rep(1, length(mp6_obs)), rep(0, length(mp6_cen)))
+crplot(dataset = mp6, alpha = 0.05, distn = "weibull", cen = cen, sf = c(4, 4))
+```
+
 ## Repairing Radially Inaccessible Regions
 
 The default plot technique, known as the smoothing search heuristic and given by `heuristic = 1`, can fail to achieve its maximum apparent angle constraint (`maxdeg`, whose default is $5^\circ$).  This issue arises when plotting non-convex confidence regions whose shape results in multiple confidence region boundary points at select angles from its MLE.  This is often a consequence of small sample size and/or small significance level `alpha`.  The optional argument `repair` corrects such circumstance.  Its default is `repair = TRUE`, however, it is set to `repair = FALSE` below to illustrate these issues.
 
-```{r, fig.show = 'hold'}
+```{r, fig.show = 'hold', warning = FALSE}
 X <- seq(1, 2.5, by = 0.25)
 crplot(dataset = X, alpha = 0.01, distn = "gamma", sf = c(2, 2), pts = FALSE, repair = FALSE, main = "without repair")
 x <- crplot(seq(1, 2.5, by = 0.25), 0.01, "gamma", sf = c(2, 2), info = TRUE, repair = FALSE, main = "without repair")
@@ -159,13 +174,15 @@ lines(c(x$thetahat, x$theta[index2]), c(x$kappahat, x$kappa[index2]), col = "red
 
 The solid red lines in the right figure above represent the boundary to an inaccessible confidence region area.  Multiple indicators lead to this conclusion.  They include: (1) noticeable and relatively "sharp" vertex angles in the left figure above, (2) the absence of plot points in two "gap" regions along the red line in the right figure above, and (3) the Warning message output specifying the `maxdeg` constraint is not met.
 
-When its default `repair = TRUE` is kept, the smoothing search heuristic iterates to address each region requiring repair.  These successive iterations effectively re-locate the point-of-reference for radial angles away from the MLE and toward the inaccessible region(s) such that uncharted areas become radially accessible.  A message notifying use of these "alternate-centerpoint(s)" displays to the screen when this feature of the plot algorithm is employed (shown in the example that follows).  
+When its default `repair = TRUE` is kept, the smoothing search heuristic iterates to address each region requiring repair.  These successive iterations effectively re-locate the point-of-reference for radial angles away from the MLE and toward the inaccessible region(s) such that uncharted areas become radially accessible.  A message notifying use of these "alternate-centerpoint(s)" displays to the screen when this feature of the plot algorithm is employed (shown in the example that follows).   
 
-Revisiting our previous example, the complete confidence region is successfully plot below given the default argument `repair = TRUE` is unaltered.  The red lines in the example above are also included below for reference.
+Alternate-centerpoint(s) are known as "jump-center(s)".  Information regarding the jump-center(s) is returned to the user using the optional argument `jumpinfo = TRUE`.  For more details regarding the jump-center algorithm and its parameters, please see the "Plotting Likelihood-Ratio Based Confidence Regions for Two-Parameter Univariate Probability Models" publication^1^ and the `crplot_advanced` vignette via its link at the [conf](https://CRAN.R-project.org/package=conf) webpage.
 
-```{r, fig.show = 'hold'}
+Revisiting our previous example, the complete confidence region is successfully plot below given the default argument `repair = TRUE` is unaltered.  The red lines in the example above are also included below for reference.  Additionally, jump-center reference points are annotated using the optional argument `showjump = TRUE`.
+
+```{r, fig.show = 'hold', warning = FALSE}
 crplot(seq(1, 2.5, by = 0.25), 0.01, "gamma", sf = c(2, 2), pts = FALSE, main = "with repair")
-crplot(seq(1, 2.5, by = 0.25), 0.01, "gamma", sf = c(2, 2), main = "with repair")
+crplot(seq(1, 2.5, by = 0.25), 0.01, "gamma", sf = c(2, 2), main = "with repair", showjump = TRUE)
 lines(c(x$thetahat, x$theta[index1]), c(x$kappahat, x$kappa[index1]), col = "red")
 lines(c(x$thetahat, x$theta[index2]), c(x$kappahat, x$kappa[index2]), col = "red")
 ```
@@ -174,17 +191,19 @@ Two notable difference between the above result and the previous attempt when `r
 
 The absence of the Warning message seen when `maxdeg` constraints are not met is indicative that they are met; the maximum apparent angle between any two successive plot points is within the `maxdeg` apparent angle tolerance of $5 ^\circ$.  This is true even at the bottom-right and top-left confidence region extremes where it appears a sharp point is possible.  This fact is confirmed by zooming-in on those respective areas below:
 
-```{r, fig.show = 'hold'}
+```{r, fig.show = 'hold', warning = FALSE}
 crplot(seq(1, 2.5, by = 0.25), 0.01, "gamma", sf = c(2, 2), pts = TRUE, main = "max(theta) zoom", xlim = c(1.25, 1.5), ylim = c(1.4, 2.4))
 crplot(seq(1, 2.5, by = 0.25), 0.01, "gamma", sf = c(2, 2), pts = TRUE, main = "max(kappa) zoom", xlim = c(0.04, 0.05), ylim = c(37, 41))
 ```
 
 The final examples below demonstrate how repairs are necessary for some (log logistic and Weibull distributions) but not all (normal) distributions given this particular small sample of $n = 2$ values.  
-```{r, fig.show = 'hold'}
+```{r, fig.show = 'hold', warning = FALSE}
   x <- crplot(c(2, 2.5), 0.01, "llogis", sf = c(2, 2), info = TRUE, pts = FALSE, main = "llogis")
   x <- crplot(c(2, 2.5), 0.01, "weibull", sf = c(2, 2), info = TRUE, pts = FALSE, main = "weibull")
   x <- crplot(c(2, 2.5), 0.01, "norm", sf = c(2, 2), info = TRUE, pts = FALSE, main = "norm")
 ```
 
 Overriding the default with `repair = FALSE` is not typically recommended, but possible for two reasons.  First, repairs require additional computation time that circumstance may warrant avoiding for a quicker (albeit less-precise) solution.  Second, occasionally `crplot` fails to complete a confidence region plot due an R uniroot or other numeric failure.  In such cases, turning off repairs can enable an otherwise unobtainable plot to return to the user.  
+
+## 
 

@@ -17,9 +17,10 @@ user-specified dataset and point of interest, and
 \item calculating confidence intervals and the associated actual coverage for binomial proportions.
 }
 
-\bold{Request from authors}: We welcome and appreciate your feedback and insights
-as to how this resource is being leveraged to improve whatever it is you do.  Please include your name
-and adedemic and/or business affiliation in your correspondance.
+\bold{Request from authors}:  Please properly cite any use of this package.  Additionally, we
+welcome and appreciate your feedback and insights as to how this resource is being leveraged
+to improve whatever it is you do.  Please include your name and adedemic and/or business
+affiliation in your correspondance.
 }
 \details{
 This package includes the functions:

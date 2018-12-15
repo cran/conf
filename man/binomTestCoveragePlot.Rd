@@ -5,7 +5,7 @@
 \description{
   Generates plots for the actual coverage of a binomial proportion
   using different types of confidence intervals. Plots the actual
-  coverage for a given sample size and stated coverage 1 - alpha.
+  coverage for a given sample size and stated nominal coverage \eqn{1 -} \code{alpha}.
 }
 \usage{
   binomTestCoveragePlot(n,
@@ -29,7 +29,7 @@
   \item{clo}{lower limit for coverage (y-axis)}
   \item{chi}{upper limit for coverage (y-axis)}
   \item{points}{number of points plotted in each segment of the plot; if default, varies with 'n' (see above)}
-  \item{showTrueCoverage}{logical; if \code{TRUE} (default), a solid red line will appear at 1 - alpha}
+  \item{showTrueCoverage}{logical; if \code{TRUE} (default), a solid red line will appear at \eqn{1 -} \code{alpha}}
   \item{gridCurves}{logical; if \code{TRUE}, display acceptance curves in gray}
   }
 
@@ -46,7 +46,7 @@
     \item the y-axis is the actual coverage percentage at each percentile, that is,
     the probability that the true value at a percentile is contained in the corresponding
     confidence interval, and
-    \item the solid red line is the stated coverage of 1 - alpha.
+    \item the solid red line is the stated coverage of \eqn{1 -} \code{alpha}.
   }
   The actual coverage for a particular value of \eqn{p}, the percentile of interest, is
   \deqn{actual coverage(p) = \sum_{x=0}^n {I(x,p) {n \choose x} p^x (1-p)^{(n-x)}},}
