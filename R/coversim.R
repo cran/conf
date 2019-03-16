@@ -30,14 +30,14 @@
 #' @param ellipse_n number of roughly equidistant confidence region points to plot using the
 #' elliptic-oriented point distribution (must be a multiple of four because its algorithm
 #' exploits symmetry in the quadrants of an ellipse).
-#' @param pts displays confidence region boundary points if \code{TRUE} (applies to confidence region plots when \code{showplot = TRUE}).
+#' @param pts displays confidence region boundary points if \code{TRUE} (applies to confidence region plots in which \code{showplot = TRUE}).
 #' @param mlelab logical argument to include the maximum likelihood estimate coordinate point (default is \code{TRUE},
 #' applies to confidence region plots when \code{showplot = TRUE}).
 #' @param sf significant figures in axes labels specified using sf = c(x, y), where x and y represent the optional digits argument
 #' in the R function \code{\link{round}} as it pertains the horizontal and vertical labels.
 #' @param mar specifies margin values for \code{par(mar = c( ))} (see \code{mar} in \code{\link{par}}).
-#' @param xlab string specifying the x axis label (applies to confidence region plots when \code{showplot = TRUE}).
-#' @param ylab string specifying the y axis label (applies to confidence region plots when \code{showplot = TRUE}).
+#' @param xlab string specifying the horizontal axis label (applies to confidence region plots when \code{showplot = TRUE}).
+#' @param ylab string specifying the vertical axis label (applies to confidence region plots when \code{showplot = TRUE}).
 #' @param main string specifying the plot title (applies to confidence region plots when \code{showplot = TRUE}).
 #' @param xlas numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}},
 #' applies to confidence region plots when \code{showplot = TRUE}).
@@ -54,6 +54,9 @@
 #' @param returnsamp logical argument; if \code{TRUE} returns random samples used in a matrix with \code{n} rows, \code{iter} cols.
 #' @param returnquant logical argument; if \code{TRUE} returns random quantiles used in a matrix with \code{n} rows, \code{iter} cols.
 #' @param repair logical argument to repair regions inaccessible using a radial angle from its MLE (multiple root azimuths).
+#' @param exact logical argument specifying if alpha value is adjusted to compensate for negative coverage bias in order to achieve
+#' (1 - alpha) coverage probability using previously recorded Monte Carlo simulation results; available for limited values of
+#' alpha (roughly <= 0.2--0.3), n (typically n = 4, 5, ..., 50) and distributions (distn suffixes: weibull, llogis, norm).
 #' @param showplot logical argument specifying if each coverage trial produces a plot.
 #' @param delay numeric value of delay (in seconds) between trials so its plot can be seen (applies when \code{showplot = TRUE}).
 #' @import stats
@@ -110,6 +113,7 @@
 #'                 returnsamp  = FALSE,
 #'                 returnquant = FALSE,
 #'                 repair    = TRUE,
+#'                 exact     = FALSE,
 #'                 showplot  = FALSE,
 #'                 delay     = 0 )
 #'
@@ -120,7 +124,7 @@
 #' \tabular{lcc}{
 #' \tab Horizontal \tab Vertical\cr
 #' Distribution  \tab  Axis  \tab Axis\cr
-#' Caucy \tab \eqn{a} \tab \eqn{s}\cr
+#' Cauchy \tab \eqn{a} \tab \eqn{s}\cr
 #' gamma \tab \eqn{\theta} \tab \eqn{\kappa}\cr
 #' inverse Gaussian \tab \eqn{\mu} \tab \eqn{\lambda}\cr
 #' log logistic \tab \eqn{\lambda} \tab \eqn{\kappa}\cr
@@ -163,7 +167,7 @@
 #' \item The logistic distribution
 #' for the real-numbered location parameter \eqn{\mu}, scale parameter \eqn{\sigma}, and \eqn{x} is a real number,
 #' has the probability density function
-#' \deqn{(1 / \sigma) exp((x - \mu) / \sigma) (1 + exp((x - \mu) / \sigma)) ^ -2}
+#' \deqn{(1 / \sigma) exp((x - \mu) / \sigma) (1 + exp((x - \mu) / \sigma)) ^ {-2}}
 #'
 #' \item The normal distribution
 #' for the real-numbered mean \eqn{\mu}, standard deviation \eqn{\sigma > 0}, and \eqn{x} is a real number,
@@ -236,6 +240,7 @@ coversim <- function(alpha,
                      returnsamp = FALSE,
                      returnquant = FALSE,
                      repair = TRUE,
+                     exact = FALSE,
                      showplot = FALSE,
                      delay = 0) {
 
@@ -444,6 +449,12 @@ coversim <- function(alpha,
   if (!is.logical(repair) || length(repair) != 1)
     stop("'repair' must be a single logical parameter")
 
+  if (!is.logical(exact) || length(exact) != 1)
+    stop("'exact' must be a single logical parameter")
+
+  if (exact && !(distn %in% c("weibull", "llogis", "norm")))
+    warning("'exact' not available for this distn; proceeding without it")
+
   if (!is.logical(showplot) || length(showplot) != 1)
     stop("'showplot' must be a single logical parameter")
 
@@ -548,7 +559,8 @@ coversim <- function(alpha,
 
   # initialize counter & variables to store results:
   count <- 0
-  allcoverage <- rep(0, length(n) * length(alpha))           # store % coverage per parameterization
+  addtosummary <- FALSE
+  allcoverage <- alpha_adjust_record <- rep(0, length(n) * length(alpha))   # store % coverage per parameterization
   allerrors <- allresults <- matrix(rep(0, length(n) * length(alpha) * iter), nrow = length(n) * length(alpha))
 
   # iterate through parameterization permutations and record results next
@@ -614,7 +626,8 @@ coversim <- function(alpha,
         }
       }
 
-      assessed <- 0           # initialize counter to record number of m.c. sims assessed (does not count errors)
+      assessed <- 0                 # initialize counter to record number of m.c. sims assessed (does not count errors)
+      exact2 <- exact   # set exact2 to user input value (exact2 is subsequently subject to change)
       for (i in 1:iter) {
         invisible(utils::capture.output(
           x <- suppressMessages(try(crplot(dataset = samples[, i],
@@ -637,11 +650,31 @@ coversim <- function(alpha,
                           ylim = ylim,
                           tol = tol,
                           repair = repair,
+                          exact = exact2,
                           showplot = showplot,
+                          silent = TRUE,
                           info = TRUE),
                    silent = TRUE))
         ))
 
+        # record adjusted alpha value when 'exact = TRUE' (done within first iteration only)
+        if ((typeof(x) == "list") && (i == 1) && (exact) && !is.null(x$alpha_adjusted)) {    # adjust alpha value during first iteration only to reduce runtime
+          alphadj3dig <- round(x$alpha_adjusted, digits = 3)
+          print(paste0("...adjusting alpha to ", alphadj3dig, " to achieve an actual coverage ", 1 - this_alpha))
+          this_alpha <- x$alpha_adjusted            # record adjusted alpha value to use next iter
+          alpha_adjust_record[count] <- this_alpha  # record to return in summary matrix
+          exact2 <- FALSE                     # turn-off exact for subsequent iter b/c it is recorded in this_alpha
+          addtosummary <- TRUE
+        }
+        else if ((typeof(x) == "list") && (i == 1) && (exact) && is.null(x$alpha_adjusted)) {
+          print("...cannot adjust alpha for exact coverage ({n, alpha} combination and/or distn not supported); proceeding anyhow")
+          alpha_adjust_record[count] <- this_alpha  # record to return in summary matrix
+          exact2 <- FALSE                     # turn-off exact for subsequent iter b/c it is recorded in this_alpha
+        }
+        else if ((typeof(x) != "list") && (i == 1) && (exact)) {
+          print("error within the first plot when 'exact = TRUE' adjustments are made; therefore terminating so seed can re-set")
+          stop()
+        }
 
         # if error, record as error, otherwise assess actual coverage of "point"
         # (if given) or population parameters o.w.
@@ -702,8 +735,18 @@ coversim <- function(alpha,
   # assemble a summary matrix to print to the screen
   alab <- rep(alpha, length(n))
   nlab <- rep(n, each = length(alpha))
-  matrixsummary <- matrix(c(alab, nlab, allcoverage, rowSums(allerrors)), ncol = 4)
-  colnames(matrixsummary) <- c("alpha", "n", "coverage", "errors")
+  notexact <- unique(alpha[alpha_adjust_record == alpha])
+  if ((exact) && (length(notexact) > 1)) {
+    cat("Note: adjusted alpha for exact coverage is not currently available for alpha value(s):", notexact, "\n")
+  }
+  if ((exact) && (!is.null(alpha_adjust_record)) && (addtosummary)) {
+    matrixsummary <- matrix(c(alab, alpha_adjust_record, nlab, allcoverage, rowSums(allerrors)), ncol = 5)
+    colnames(matrixsummary) <- c("alpha", "adjusted_alpha", "n", "coverage", "errors")
+  }
+  else {
+    matrixsummary <- matrix(c(alab, nlab, allcoverage, rowSums(allerrors)), ncol = 4)
+    colnames(matrixsummary) <- c("alpha", "n", "coverage", "errors")
+  }
   print(paste0("coverage simulation summary (", iter, " replications per parameterization):"))
   print(matrixsummary)
 
@@ -725,7 +768,7 @@ coversim <- function(alpha,
       lines(c(min(c(1-alpha, allcoverage)), max(c(1-alpha, allcoverage))), c(min(c(1-alpha, allcoverage)), max(c(1-alpha, allcoverage))), lty = 3)
     }
     else if (length(alpha) == 1) {
-      plot(n, allcoverage, main = main, ##################paste0("alpha: ", a, " (iter: ", iter, ")"),
+      plot(n, allcoverage, main = main, ###paste0("alpha: ", a, " (iter: ", iter, ")"),
            ylab = "actual coverage", xlab = "sample size")
       lines(c(min(n), max(n)), c(1 - alpha, 1 - alpha), lty = 3)
     }
@@ -751,7 +794,7 @@ coversim <- function(alpha,
     if ((nplots > 1) && (length(n) <= length(alpha))) {      # plot nominal vs actual coverage
       marker <- 1       # use to annotate the start location of results for "current" parameterization
       for (i in 1:min(length(n), 9)) {
-        plot(1 - alpha, allcoverage[marker:(marker + length(alpha) - 1)], main = main[i], ##############paste0("n: ", n[i], " (iter: ", iter, ")"),
+        plot(1 - alpha, allcoverage[marker:(marker + length(alpha) - 1)], main = main[i], ###paste0("n: ", n[i], " (iter: ", iter, ")"),
              ylab = "actual coverage", xlab = "nominal coverage", xlim = c(0, 1), ylim = c(0, 1))
         lines(c(0, 1), c(0, 1), lty = 3)
         marker <- marker + length(alpha)
@@ -761,7 +804,7 @@ coversim <- function(alpha,
     else if ((nplots > 1) && (length(n) > length(alpha))) {   # plot n vs actual coverage
       marker <- seq(1, (length(alpha) * length(n)), by = length(alpha))     # use to annotate the start location of results for "current" parameterization
       for (i in 1:min(length(alpha), 9)) {
-        plot(n, allcoverage[marker + i - 1], main = main[i],   #############paste0("alpha: ", alpha[i], " (iter: ", iter, ")"),
+        plot(n, allcoverage[marker + i - 1], main = main[i],   ###paste0("alpha: ", alpha[i], " (iter: ", iter, ")"),
              ylab = "actual coverage", xlab = "sample size")
         lines(c(min(n), max(n)), c(1 - alpha[i], 1 - alpha[i]), lty = 3)
       }

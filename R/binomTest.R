@@ -43,6 +43,8 @@ binomTest <- function(n, x,
       shat <- x / n
       l <- shat - crit * sqrt(shat * (1 - shat) / n)
       u <- shat + crit * sqrt(shat * (1 - shat) / n)
+      if (l < 0) l = 0
+      if (u > 1) u = 1
       return(c(l, u))
   }
 
@@ -65,7 +67,7 @@ binomTest <- function(n, x,
 
   if (intervalType == "Agresti-Coull") {
     crit <- qnorm(1 - alpha / 2)
-    nhat <- n + crit^2
+    nhat <- n + crit ^ 2
     phat <- (x + (1 / 2) * crit ^ 2) / nhat
     l <- phat - crit * sqrt((phat * (1 - phat)) / nhat)
     u <- phat + crit * sqrt((phat * (1 - phat)) / nhat)
@@ -96,10 +98,10 @@ binomTest <- function(n, x,
       lower <- 0
       upper <- 1
       if (x != 0) {lower <- qbeta((1 - level) / 2, x, n - x + 1)
-      while (acceptbin(x, n, lower) < (1 - level)) lower <- lower + tolerance
+        while (acceptbin(x, n, lower) < (1 - level)) lower <- lower + tolerance
       }
       if (x != n) {upper <- qbeta(1 - (1 - level) / 2, x + 1, n - x)
-      while (acceptbin(x, n, upper) < (1 - level)) upper <- upper - tolerance
+        while (acceptbin(x, n, upper) < (1 - level)) upper <- upper - tolerance
       }
       return(c(lower, upper))
     }
@@ -111,7 +113,7 @@ binomTest <- function(n, x,
       if (x == n) {
       l <- acceptinterval(x, n, 1 - alpha)[1]
       u <- 1
-      }
+    }
       else {
       l <- acceptinterval(x, n, 1 - alpha)[1]
       u <- acceptinterval(x, n, 1 - alpha)[2]

@@ -6,7 +6,7 @@
 #' complete or right-censored dataset and level of significance.  See the CRAN website
 #' https://CRAN.R-project.org/package=conf for a link to two \code{crplot} vignettes.
 #'
-#' @param dataset a 1 x n vector of dataset values.
+#' @param dataset a 1 x n vector of data values.
 #' @param alpha significance level; resulting plot illustrates a 100(1 - \code{alpha})\% confidence region.
 #' @param distn distribution to fit the dataset to; accepted values: \code{'cauchy'}, \code{'gamma'}, \code{'invgauss'},
 #' \code{'logis'}, \code{'llogis'}, \code{'lnorm'}, \code{'norm'}, \code{'unif'}, \code{'weibull'}.
@@ -31,8 +31,8 @@
 #' @param xlas numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}}).
 #' @param ylas numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}}).
 #' @param origin logical argument to include the plot origin (default is \code{FALSE}).
-#' @param xlim two element vector containing horizontal axis minimum and maximum values.
-#' @param ylim two element vector containing vertical axis minimum and maximum values.
+#' @param xlim two-element vector containing horizontal axis minimum and maximum values.
+#' @param ylim two-element vector containing vertical axis minimum and maximum values.
 #' @param tol the \code{\link{uniroot}} parameter specifying its required accuracy.
 #' @param info logical argument to return plot information: MLE prints to screen; (x, y) plot point coordinates
 #' and corresponding phi angles (with respect to MLE) are returned as a list.
@@ -51,6 +51,11 @@
 #' @param showjump logical argument specifying if jump-center repair reference points appear on the confidence region plot.
 #' @param showplot logical argument specifying if a plot is output; altering from its default of \code{TRUE} is
 #' only logical assuming \code{crplot} is run for its data only (see the \code{info} argument).
+#' @param animate logical argument specifying if an animated plot build will display; the annimation sequence is given in successive plots.
+#' @param exact logical argument specifying if alpha value is adjusted to compensate for negative coverage bias to achieve
+#' (1 - alpha) coverage probability using previously recorded Monte Carlo simulation results; available for limited values of
+#' alpha (roughly <= 0.2--0.3), n (typically n = 4, 5, ..., 50) and distributions (distn suffixes: weibull, llogis, norm).
+#' @param silent logical argument specifying if console output should be suppressed.
 #' @import stats
 #' @import graphics
 #' @importFrom fitdistrplus mledist
@@ -95,14 +100,17 @@
 #'                 jumpuphill = min(alpha, 0.01),
 #'                 jumpinfo  = FALSE,
 #'                 showjump  = FALSE,
-#'                 showplot  = TRUE )
+#'                 showplot  = TRUE,
+#'                 animate  = FALSE,
+#'                 exact     = FALSE,
+#'                 silent    = FALSE )
 #'
 #' @details
-#' This function plots confidence regions for a variety of two-parameter distributions.  It requires:
+#' This function plots a confidence region for a variety of two-parameter distributions.  It requires:
 #' \itemize{
 #' \item a vector of dataset values,
 #' \item the level of significance (alpha), and
-#' \item a distribution to fit the data to.
+#' \item a population distribution to fit the data to.
 #' }
 #' Plots display according to probability density function parameterization given later in this section.
 #' Two heuristics (and their associated combination) are available to plot confidence regions.  Along
@@ -141,7 +149,7 @@
 #' \tabular{lcc}{
 #' \tab Horizontal \tab Vertical\cr
 #' Distribution  \tab  Axis  \tab Axis\cr
-#' Caucy \tab \eqn{a} \tab \eqn{s}\cr
+#' Cauchy \tab \eqn{a} \tab \eqn{s}\cr
 #' gamma \tab \eqn{\theta} \tab \eqn{\kappa}\cr
 #' inverse Gaussian \tab \eqn{\mu} \tab \eqn{\lambda}\cr
 #' log logistic \tab \eqn{\lambda} \tab \eqn{\kappa}\cr
@@ -184,7 +192,7 @@
 #' \item The logistic distribution
 #' for the real-numbered location parameter \eqn{\mu}, scale parameter \eqn{\sigma}, and \eqn{x} is a real number,
 #' has the probability density function
-#' \deqn{(1 / \sigma) exp((x - \mu) / \sigma) (1 + exp((x - \mu) / \sigma)) ^ -2}
+#' \deqn{(1 / \sigma) exp((x - \mu) / \sigma) (1 + exp((x - \mu) / \sigma)) ^ {-2}}
 #'
 #' \item The normal distribution
 #' for the real-numbered mean \eqn{\mu}, standard deviation \eqn{\sigma > 0}, and \eqn{x} is a real number,
@@ -260,7 +268,10 @@ crplot <- function(dataset,
                    jumpuphill = min(alpha, 0.01),
                    jumpinfo = FALSE,
                    showjump = FALSE,
-                   showplot = TRUE) {
+                   showplot = TRUE,
+                   animate = FALSE,
+                   exact = FALSE,
+                   silent = FALSE) {
 
   # parameter error checking ###########################################################
 
@@ -378,8 +389,23 @@ crplot <- function(dataset,
   if (!is.logical(showplot) || length(showplot) != 1)
     stop("'showplot' must be a single logical parameter")
 
-  if (!showplot && !info && !jumpinfo)
-    warning("'showplot', 'info', and 'jumpinfo' are all FALSE; without these, crplot returns nothing to its user")
+  if (!showplot && !info && !jumpinfo && !animate)
+    warning("'showplot', 'info', 'jumpinfo', and 'animate' are all FALSE; without these, crplot returns nothing to its user")
+
+  if (!is.logical(animate) || length(animate) != 1)
+    stop("'animate' must be a single logical parameter")
+
+  if (animate && (heuristic == 0))
+    warning("'animate' is not applicable when 'heuristic = TRUE' (not an iterative build process)")
+
+  if (!is.logical(exact) || length(exact) != 1)
+    stop("'exact' must be a single logical parameter")
+
+  if (exact && !(distn %in% c("weibull", "llogis", "norm")))
+    warning("'exact' not available for this distn; proceeding without it")
+
+  if (!is.logical(silent) || length(silent) != 1)
+    stop("'silent' must be a single logical parameter")
 
   ######################################################################################
 
@@ -417,6 +443,11 @@ crplot <- function(dataset,
   #                    contains a recursive routine to identify and fix "deadspace" inaccessible by a
   #                    radial angle from the MLE by identifying and smoothing the CR from an alternate
   #                    off-MLE jump-center location within the CR.
+  #
+  # 8. nomadjust.      Adjusts nominal value (1 - alpha) to compensate for negative bias inherent in small
+  #                    sample sizes.  Uses tables assembled via 20 million Monte Carlo simulation replications
+  #                    of the conf coversim() function.  Available for a limited range of alpha values
+  #                    (roughly <= 0.25) and distributions (distn suffixes: weibull, llogis, norm).
   #
   # Utilizing the above listed functions, a short block of code at the bottom of this file then creates
   # the confidence region plot.
@@ -1304,6 +1335,7 @@ crplot <- function(dataset,
       # 2 = next point is              valid, current and previous invalid   (insert 1 before)
       # 1 = current point              valid, previous and next are invalid  (insert 0 points)
       # 0 = current, previous, and next points all invalid                   (insert 2 points)
+      if (count != 1) {philast <- phinew}                   # store previous phi additions for plotting
       phinew <- c(0)
       for (i in 1:(length(phi))) {                          # cycle through points, adding phi where necessary
         phinewi <- c(0)
@@ -1323,14 +1355,72 @@ crplot <- function(dataset,
         }
       }
 
+      ######### subsection to create .gif of a plot build
+      # setwd("/Users/insert_path_here")
+      #
+      # # # after all png files are in place, to create the .gif run ImageMagick with:
+      # # library(magick)
+      # my_command <- 'convert *.png -delay 100 -loop 0 animation3.gif'
+      # system(my_command)
+      # # # then go to: https://ezgif.com/speed to slow down the speed
+      #
+      # # rename function creates file name with leading zeros
+      # # makes it easier to process them sequentially
+      # rename <- function(x, y){
+      #   if (x < 10) {
+      #     return(name <- paste('000', x,'plot.png',sep=''))
+      #   }
+      #   if (x < 100 && x >= 10) {
+      #     return(name <- paste('00', x,'plot.png', sep=''))
+      #   }
+      #   if (x >= 100) {
+      #     return(name <- paste('0', x,'plot.png', sep=''))
+      #   }
+      # }
+      #
+      # # Name & Save .png file for this snapshot of the build
+      # # note: to capture jump-center repairs, it is necessary to record multiple times and increase count (i.e. to count + 30) to capture successive regions using different file names
+      # name <- rename(count)   # name the next plot in the plot-build sequence
+      # # if (repairpass && (repairq == 4)) {stop()}  # with multiple jump-center repairs, may need to use something like this to capture specific quadrants
+      # png(name)               # saves the plot as a .png file in the working directory
+      #
+      ######### (end of png file save setup; NOTE: also need to un-commend next dev.off() below)
+
       # this sub-section plots the progression of added points, showing interim steps:
-      #plot(cr, main = "in-progress build of confidence region", cex = 0.7, pch = 4, col = goodtot,
-      #     axes = FALSE, xlab = xlab, ylab = ylab, xlim = c(0.15, 0.26), ylim = c(0, 1.2 * 10^-12))
-      #lines(cr, col = 'yellow3', lty = 4)
-      #segments(cr[dim(cr)[1], 1], cr[dim(cr)[1], 2], cr[1, 1], cr[1, 2], col = 'yellow3', lty = 4)
-      #points(theta1.hat, theta2.hat, pch = 8, cex = 0.8, col = 'gray30')
-      #axis(side = 1)
-      #axis(side = 2)
+      if (animate) {
+        par(xpd = FALSE)
+        if (repairpass) {
+          plot(c(repaircrlist$x, cr[,1]), c(repaircrlist$y, cr[,2]),
+               main = "in-progress build of confidence region\n(jump-center repairs)",
+               axes = FALSE, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim)
+        }
+        else {
+          plot(cr, main = "in-progress build of confidence region",
+               axes = FALSE, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim)
+        }
+        lines(cr, lty = 4, col = "black", lwd = 0.9)
+        big <- max(theta1.hat, theta2.hat) * 100
+        if (count != 1) {
+          segments(rep(theta1.hat, length(philast)), rep(theta2.hat, length(philast)),
+                   theta1.hat + big * cos(philast), theta2.hat + big * sin(philast), col = "yellow3")
+        }
+        else {
+          segments(rep(theta1.hat, 4), rep(theta2.hat, 4),
+                   c(theta1.hat + big, theta1.hat, theta1.hat - big, theta1.hat),
+                   c(theta2.hat, theta2.hat + big, theta2.hat, theta2.hat - big), col = "yellow3")
+        }
+        points(cr, pch = 21, bg = c("red", "blue", "red", "blue", "red", "blue", "red", "green")[goodtot + 1],
+               col = c("firebrick4", "blue4", "firebrick4", "blue4", "firebrick4", "blue4", "firebrick4", "chartreuse4")[goodtot + 1])
+        segments(cr[dim(cr)[1], 1], cr[dim(cr)[1], 2], cr[1, 1], cr[1, 2], col = 'black', lty = 4) # connect first and last points
+        points(theta1.hat, theta2.hat, pch = 8, cex = 0.8, col = 'gray30')
+        legend("topright", legend = c("complete", "near-complete", "incomplete"), lty = 4, pch = c(21, 21, 21),
+               col = c("chartreuse4", "blue4", "firebrick4"), pt.bg = c("green", "blue", "red"), cex = 0.8)
+        axis(side = 1)
+        axis(side = 2)
+        Sys.sleep(0.5)      # pause to view plot
+      }                     # end if (animate)
+
+      # dev.off()           # uncomment when saving .png for .gif annimation build
 
       crlist <- list("x" = cr[, 1], "y" = cr[, 2], "phi" = phi)
       phinew <- sort(unique(phinew))
@@ -1352,7 +1442,7 @@ crplot <- function(dataset,
         # jump-center locations away from the MLE but within the CR where a similar smoothing
         # algorithm is done using the radial log likelihood approach.  Recursively calls crsmooth.
         ############################################################################################
-        if ((!repairpass) && (repair)) {     # (repairpass != TRUE) && (repair == TRUE)
+        if ((!repairpass) && (repair)) {        # enter if repairs requested; repairs are done within this if statement
 
         xrepair <- xrepair + 1
         # identify all areas needing repair and their points to facilitate reconstruction
@@ -1557,8 +1647,10 @@ crplot <- function(dataset,
         repairinfo <- rbind(leftphi, leftx, lefty, rightphi, rightx, righty, jumpphi, jumpx, jumpy, phi1, phi2, done, gaptype)
         #print(repairinfo)
         #print(jumpxy)
-        warning("alternate-centerpoint(s) used to repair plot regions inaccessible via a radial angle from its MLE")
-        #message("alternate-centerpoint(s) used to repair plot regions inaccessible via a radial angle from its MLE")
+        if (!silent) {
+          warning("alternate-centerpoint(s) used to repair plot regions inaccessible via a radial angle from its MLE")
+          #message("alternate-centerpoint(s) used to repair plot regions inaccessible via a radial angle from its MLE")
+        }
         }                                    # end if xrepair == 1
         else {                               # all iterations following 1st pass must re-assume repair parameters
           # each column in repairinfo represents a quadrant (with respect to the MLE)
@@ -2051,6 +2143,213 @@ crplot <- function(dataset,
   }                          # end crsmooth
 
 
+  ######################################################################################
+
+  # nomadjust -------------------------------------------------------------------
+  # Adjusts nominal value (1 - alpha) to compensate for negative bias inherent in small
+  # sample sizes.  Uses tables assembled via 20 million Monte Carlo simulation replications
+  # of the conf coversim() function.  Available for a limited range of alpha values
+  # (roughly <= 0.25) and distributions (distn suffixes: weibull, llogis, norm).
+  nomadjust = function(distn = distn, target_alpha = alpha, this_n = length(dataset)){
+
+    # confirm distn is supported with MC sim table of results
+    if (!(distn %in% c("weibull", "llogis", "norm"))) {
+      return(invisible(alpha))     # stop function execution and return alpha value unchanged
+      #print("cannot correct alpha for exact coverage; this distribution is not supported")
+    }
+
+    # when n >= 4 and n <= 50 use MC simulation table values
+    # Monte Carlo simulation results:
+    # Weibull MC results (coverage over 20 million replications)
+    w_ac_a80 <- c(0.7035459, 0.72582845, 0.7398501, 0.7491972, 0.7560088, 0.76158625, 0.7655136, 0.77743695, 0.7833055, 0.786756, 0.7887199, 0.7902545, 0.79157055, 0.7925772, 0.79311415)
+    w_ac_a85 <- c(0.7613011, 0.78229525, 0.79511275, 0.8039439, 0.81035855, 0.8150749, 0.81904215, 0.8297237, 0.83495145, 0.8380563, 0.84012485, 0.8414208, 0.84241, 0.8432222, 0.8441716)
+    w_ac_a90 <- c(0.8239086, 0.84278945, 0.8538984, 0.86167525, 0.8670003, 0.87113315, 0.8742291, 0.8834281, 0.88758865, 0.89024785, 0.89195575, 0.89302095, 0.893891, 0.89452935, 0.89508435)
+    w_ac_a95 <- c(0.8952844, 0.90955215, 0.91806025, 0.9236672, 0.9274081, 0.9303495, 0.9326231, 0.9387996, 0.9418163, 0.9434903, 0.94459105, 0.9454118, 0.9460034, 0.9464411, 0.9468038)
+    w_ac_a99 <- c(0.96813145, 0.9749135, 0.9783814, 0.9805481, 0.9821339, 0.98329625, 0.98412775, 0.98633785, 0.98734695, 0.9879734, 0.98832405, 0.98857495, 0.98873545, 0.9888664, 0.9889654)
+    mc_weibull <- c(w_ac_a80, w_ac_a85, w_ac_a90, w_ac_a95, w_ac_a99)
+    # normal MC results (coverage over 20 million replications)
+    n_ac_a80 <- c(0.7067501, 0.7287328, 0.74250665, 0.7517541, 0.75846435, 0.763348, 0.7673942, 0.7788696, 0.78439315, 0.7875951, 0.7897189, 0.79112585, 0.7921908, 0.79308715, 0.79377625)
+    n_ac_a85 <- c(0.7640325, 0.78500925, 0.79780445, 0.80634185, 0.8126448, 0.8170626, 0.82075875, 0.83109545, 0.8361931, 0.83912065, 0.84089535, 0.84204465, 0.8431295, 0.843756, 0.8445106)
+    n_ac_a90 <- c(0.82648165, 0.8450147, 0.85624205, 0.86372445, 0.86887655, 0.87280995, 0.8757599, 0.8843581, 0.888553, 0.8909364, 0.892516, 0.89367145, 0.89439125, 0.89508815, 0.89557665)
+    n_ac_a95 <- c(0.89732245, 0.9115436, 0.91965495, 0.92503545, 0.92878295, 0.93150815, 0.93374385, 0.93971525, 0.9424231, 0.94405625, 0.94503705, 0.9457903, 0.94634395, 0.94663605, 0.9470519)
+    n_ac_a99 <- c(0.9695351, 0.9757233, 0.9792197, 0.98130455, 0.98279225, 0.98369775, 0.98447425, 0.98661625, 0.98757105, 0.9881173, 0.98843675, 0.9887229, 0.9888389, 0.98894865, 0.98910405)
+    mc_norm <- c(n_ac_a80, n_ac_a85, n_ac_a90, n_ac_a95, n_ac_a99)
+    # log-logistic MC results (coverage over 20 million replications)
+    ll_ac_a80 <- c(0.7185017, 0.73881295, 0.75085615, 0.75882015, 0.76458925, 0.76908515, 0.77242395, 0.7823134, 0.7866679, 0.7893375, 0.791194, 0.79257775, 0.79349415, 0.79407755, 0.79468935)
+    ll_ac_a85 <- c(0.77326175, 0.7933564, 0.8049081, 0.81234855, 0.8177637, 0.821871, 0.82502725, 0.8341202, 0.83820135, 0.8404987, 0.8422028, 0.84331675, 0.84418595, 0.84473095, 0.84529455)
+    ll_ac_a90 <- c(0.830719, 0.85042615, 0.8613384, 0.86850905, 0.87290365, 0.8764745, 0.8790613, 0.8868219, 0.8903339, 0.8921646, 0.89358425, 0.8945531, 0.89519575, 0.8957709, 0.89627705)
+    ll_ac_a95 <- c(0, 0.9093955, 0.921372, 0.9271494, 0.930939, 0.93366255, 0.9356201, 0.9410063, 0.94345935, 0.94487485, 0.94571615, 0.94632005, 0.946788, 0.9471269, 0.9474715)
+    ll_ac_a99 <- c(0, 0.59821, 0.898577, 0.969455, 0.980772, 0.9834805, 0.98458495, 0.98695035, 0.98782425, 0.98833965, 0.98859545, 0.98882365, 0.9889766, 0.9891222, 0.98919195)
+    # zero-out invalid entries having prohibitive MC sim errors
+    ll_ac_a90[1] <- 0
+    ll_ac_a95[1:3] <- rep(0, 3)
+    ll_ac_a99[1:5] <- rep(0, 5)
+    mc_llogis <- c(ll_ac_a80, ll_ac_a85, ll_ac_a90, ll_ac_a95, ll_ac_a99)
+
+    # parameters and labels corresponding to MC sim results
+    lab_alpha <- c("0.8", "0.85", "0.9", "0.95", "0.99")
+    lab_n <- c("4", "5", "6", "7", "8", "9", "10", "15", "20", "25", "30", "35", "40", "45", "50")
+    ci_type <- c("Clopper-Pearson", "Wald", "Wilson-Score", "Jeffreys", "Agresti-Coull", "Arcsine", "Blaker")
+    alpha_seq <- rep(c(seq(0.2, 0.05, by = -0.05), 0.01), each = length(lab_n))
+    n_all <- c(4:10, seq(15, 50, by = 5))
+    n_seq <- rep(n_all, length(lab_alpha))
+    alpha_matrix <- matrix(alpha_seq, nrow = 5, byrow = TRUE, dimnames = list(lab_alpha, lab_n))
+    n_matrix <- matrix(n_seq, nrow = length(lab_alpha), byrow = TRUE, dimnames = list(lab_alpha, lab_n))
+
+    # assemble MC sim summaries in matrix form
+    weibull_matrix <- matrix(mc_weibull, ncol = length(lab_n), byrow = TRUE, dimnames = list(lab_alpha, lab_n))
+    llogis_matrix <- matrix(mc_llogis, ncol = length(lab_n), byrow = TRUE, dimnames = list(lab_alpha, lab_n))
+    norm_matrix <- matrix(mc_norm, ncol = length(lab_n), byrow = TRUE, dimnames = list(lab_alpha, lab_n))
+
+    # create confidence intervals
+    mcreps <- rep(2 * 10 ^ 7, length(mc_weibull))     # each value represents 20 million replications
+    ciw_max <- matrix(rep(0, 3 * length(ci_type)), ncol = 3, dimnames = list(ci_type, c("weibull", "llogis", "norm")))
+    for (i in 1:3) {                                  # assess each distn (weibull, llogis, norm)
+      if (i == 1) {
+        use_this <- mc_weibull
+        #mcreps <- mcreps_weibull
+        this_distn <- "Weibull"
+      }
+      else if (i == 2) {
+        use_this <- mc_llogis
+        #mcreps <- mcreps_llogis
+        this_distn <- "log-logistic"
+      }
+      else if (i == 3) {
+        use_this <- mc_norm
+        #mcreps <- mcreps_norm
+        this_distn <- "normal"
+      }
+      mcnresults <- mcreps * use_this
+      mc_ci <- matrix(rep(0, 2 * length(mcnresults)), ncol = 2)
+      for (j in 1:length(ci_type)) {
+        ci_t <- ci_type[j]
+        a <- 0.05
+        for (k in 1:length(mcnresults)) {
+          if (as.integer(mcnresults[k]) != 0) {   # skip if no MC sim result recorded
+            mc_ci[k, ] <- binomTest(mcreps[k], as.integer(mcnresults[k]), alpha = a, intervalType = ci_t)
+          }
+        }
+        this_summary <- data.frame(cbind(n_seq, alpha_seq,
+                                         mcnresults / mcreps, mc_ci,
+                                         mcnresults, mcreps))
+        colnames(this_summary) = c("n", "alpha", "coverage", "lower", "upper", "covered", "reps")
+        this_summary <- this_summary[order(this_summary$n, this_summary$alpha),]   # sort by n, then alpha
+        this_summary$reps[this_summary$coverage == 0] <- 0     # (no coversim data)
+        this_summary[this_summary == 0] <- "NA"                # replace 0s with a blank (no coversim data)
+        rownames(this_summary) <- 1:length(this_summary$n)
+        if (i == 1) {
+          summary_weibull <- this_summary
+        }
+        else if (i == 2) {
+          summary_llogis <- this_summary
+        }
+        else if (i == 3) {
+          summary_norm <- this_summary
+        }
+        ciw_max[j, i] <- max(mc_ci[,2] - mc_ci[,1])             # record max CI width
+      }
+      #if (i == 3) {           # print summary of maximum CI width and half-width among all parameterizations
+      #  print("max CI widths:")
+      #  print(ciw_max)
+      #  print("max CI half-widths:")
+      #  print(ciw_max / 2)
+      #  print(paste0("Weibull min(max(CI width)): ", ci_type[which(ciw_max[,1] == min(ciw_max[,1]))]))
+      #  print(paste0("llogis  min(max(CI width)): ", ci_type[which(ciw_max[,2] == min(ciw_max[,2]))]))
+      #  print(paste0("normal  min(max(CI width)): ", ci_type[which(ciw_max[,3] == min(ciw_max[,3]))]))
+      #}
+    }    # end of create confidence intervals section
+
+    # linear interpolation between "5s" to expand tables from (10, 15, 20, ..., 50) to (10, 11, 12, ..., 50)
+    # so "get" matrices can be formed for any n (note, ideally MC sim later run on ALL values rather than interpolation route)
+    # assemble "expanded" tables via linear interpolation between MC sim values & assemble in data.frame format
+    norm_expanded <- as.data.frame(norm_matrix)
+    llogis_expanded<- as.data.frame(llogis_matrix)
+    for (k in 1:3) {
+      if (k == 1) {
+        this_matrix <- weibull_matrix
+      } else if (k == 2) {
+        this_matrix <- llogis_matrix
+      } else if (k == 3) {
+        this_matrix <- norm_matrix
+      }
+      this_expanded <- data.frame("n" = as.numeric(lab_n), "a0.8" = this_matrix[1,], "a0.85" = this_matrix[2,],
+                                  "a0.9" = this_matrix[3,], "a0.95" = this_matrix[4,], "a0.99" = this_matrix[5,])
+      rownames(this_expanded) <- 1:nrow(this_expanded)
+      for (i in 0:7) {
+        thisrow <- which(this_expanded$n == (10 + i * 5))
+        slp <- as.numeric((this_expanded[thisrow + 1, 2:6] - this_expanded[thisrow, 2:6]) / 5)
+        for (j in 1:4) {
+          n <- as.numeric(10 + i * 5 + j)
+          newrow <- as.numeric(this_expanded[thisrow, 2:6]) + slp * j
+          this_expanded[nrow(this_expanded) + 1,] = list("n" = n, "a0.8" = newrow[1], "a0.85" = newrow[2],
+                                                         "a0.9" = newrow[3], "a0.95" = newrow[4],
+                                                         "a0.99" = newrow[5])
+        }
+      }
+      this_expanded <- this_expanded[order(this_expanded$n),]   # sort by n
+      rownames(this_expanded) <- 1:length(this_expanded$n)
+      # store results in distn_expanded named data.frame
+      if (k == 1) {
+        weibull_get <- this_expanded
+      } else if (k == 2) {
+        llogis_get <- this_expanded
+      } else if (k == 3) {
+        norm_get <- this_expanded
+      }
+    }
+
+    # calculate adjustment to alpha value necessary to compensate for negative bias and acheive actual coverage probability = 1 - alpha
+    if (distn == "weibull") {
+      this_get <- weibull_get
+    } else if (distn == "llogis") {
+      this_get <- llogis_get
+    } else if (distn == "norm") {
+      this_get <- norm_get
+    }
+    row_id <- which(this_get$n == this_n)
+    # ensure target_alpha value is acheivable via interpolation of "known" points
+    if ((length(as.numeric(which(this_get$n == this_n))) == 0) ||   # n value outside of table values
+        (1 - target_alpha) < min(replace(this_get[row_id, 2:6], this_get[row_id, 2:6] == 0, 1)) || # alpha outside table values
+        (distn == "llogis") &&                                      # llogis restrictions due to MC sim errors
+        ((this_n <= 4) ||
+         ((this_n == 5) && (target_alpha < 0.15)) ||
+         ((this_n == 6) && (target_alpha < 0.15)) ||
+         ((this_n == 7) && (target_alpha < 0.10)) ||
+         ((this_n == 8) && (target_alpha < 0.10)))) {
+      print("cannot correct alpha for exact coverage; extrapolation outside of known coverage values is necessary")
+      return(invisible(alpha))      # return alpha value unchanged
+    } else {
+      #print("adjusting alpha to compensate for coverage bias")
+      if (((this_n %% 5) != 0 ) && (n > 10) && (!silent)) {
+        print(paste0("estimating n = ", this_n, " via linear interpolation of n = ", this_n - (this_n %% 5),
+                     " and n = ", this_n + 5 - (this_n %% 5), " Monte Carlo simulation results"))
+      }
+      indx2 <- which.max(this_get[row_id, 2:6] > (1 - target_alpha)) + 1  # ID index 'after' target (+1 compensates for 2:6 range)
+      if (all(FALSE == (this_get[row_id, 2:6] > (1 - target_alpha)))) {   # > 0.99 entry
+        indx2 <- 7
+        slp <- (1 - this_get[row_id, indx2 - 1]) / 0.01
+        a <- 0.99
+      }
+      else if (indx2 == 6) {    # between 0.95 and 0.99 entries
+        slp <- (this_get[row_id, indx2] - this_get[row_id, indx2 - 1]) / 0.04
+        a <- 0.95
+      }
+      else {                    # between 0.8 and 0.95 entries
+        slp <- (this_get[row_id, indx2] - this_get[row_id, indx2 - 1]) / 0.05
+        a <- c(0, seq(0.8, 0.95, by = 0.05))[indx2 - 1]
+      }
+      miss <- (1 - target_alpha) - this_get[row_id, indx2 - 1]    # delta y (in nominal vs actual coverage plot)
+      add <- miss / slp                                                # delta x
+      get_target <- a + add
+      get_target3 <- round(get_target, digits = 3)
+      if (!silent) {
+        print(paste0("using nominal coverage of ", get_target3, " (alpha = ", 1 - get_target3, ") to achieve an actual coverage ", 1 - target_alpha))
+      }
+      return(invisible(1 - get_target))   # return adjusted alpha value
+    }
+  }
+
   ############################################################################################
   ### end of functions; function calls below determine and then plot the confidence region ###
   ############################################################################################
@@ -2063,6 +2362,12 @@ crplot <- function(dataset,
   theta1.hat <- mle.list$theta1.hat
   theta2.hat <- mle.list$theta2.hat
   mleLLvalue <- mle.list$mleLLvalue
+
+  # make adjustment for alpha value to compensate for coverage bias
+  if (exact == TRUE) {
+    alpha_target <- alpha      # store original alpha value, which will be adjusted in nomadjust() call
+    alpha <- nomadjust(distn = distn, target_alpha = alpha, this_n = length(dataset))
+  }
 
   # defaults are set to:
   #jumpshift <- 0.5                   # % along available shift range for phi to locate jump point
@@ -2265,7 +2570,7 @@ crplot <- function(dataset,
   #print("dataset was: ")
   #print(dataset)
   # returned values (if requested), otherwise only output to screen # boundary points.
-  if ((length(dataset) <= 5) && (distn != "unif")) {
+  if ((length(dataset) <= 5) && (distn != "unif") && (!silent)) {
     warning("small sample size is ill-suited to invoke the asymptotic properties assumed by the confidence region plot")
     #print("WARNING: small sample sizes can yield irregular confidence region shapes that are unatainable using crplot.")
     #print("WARNING: small sample sizes violate the asymptotic properties assumption used to produce the confidence region.")
@@ -2411,18 +2716,31 @@ crplot <- function(dataset,
       points(pL, pch = 24, bg = "green")    # points on left-side of inaccessible region
       points(pR, pch = 24, bg = "yellow")   # points on right-side of inaccessible region
       points(pJ, pch = 24, bg = "red")      # jump-center
-      legend("topright", legend = c("CR boundary points", "jump-center (JC)", "JC left boundary", "JC right boundary", "JC repair points"),
-             pch = c(1, rep(24, 3), 21), pt.bg = c("black", "red", "green", "yellow", "blue"), pt.cex = c(1, 1, 1, 1, 0.7),
-             bty = "n", cex = 0.8)
+      if (pts) {
+        legend("topright", legend = c("CR boundary points", "jump-center (JC)", "JC left boundary", "JC right boundary", "JC repair points"),
+               pch = c(1, rep(24, 3), 21), pt.bg = c("black", "red", "green", "yellow", "blue"), pt.cex = c(1, 1, 1, 1, 0.7),
+               bty = "n", cex = 0.8)
+      }
+      else {
+        legend("topright", legend = c("jump-center (JC)", "JC left boundary", "JC right boundary", "JC repair points"),
+               pch = c(rep(24, 3), 21), pt.bg = c("red", "green", "yellow", "blue"), pt.cex = c(1, 1, 1, 0.7),
+               bty = "n", cex = 0.8)
+      }
     }
-
   }   # end of:  if ((repair) && (TRUE %in% crlist$repairinfo["done",]))
 
+  if ((info) && (exact) && (alpha != alpha_target)) {
+    return_crlist$alpha_adjusted <- alpha
+    return_crlist$alpha_target <- alpha_target
+  }
+
   if ((info) || (jumpinfo)) {
-    print(paste0("Confidence region plot complete; made using ", length(phi)," boundary points."))
+    if (!silent) {
+      print(paste0("Confidence region plot complete; made using ", length(phi)," boundary points."))
+    }
     return(return_crlist)
   }
-  else if ((!info) && (!jumpinfo)) {
+  else if ((!info) && (!jumpinfo) && (!silent)) {
     return(paste0("Confidence region plot complete; made using ", length(phi)," boundary points."))
   }
 }

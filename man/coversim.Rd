@@ -38,6 +38,7 @@ coversim(alpha, distn,
                 returnsamp  = FALSE,
                 returnquant = FALSE,
                 repair    = TRUE,
+                exact     = FALSE,
                 showplot  = FALSE,
                 delay     = 0 )
 }
@@ -83,7 +84,7 @@ single iteration).}
 elliptic-oriented point distribution (must be a multiple of four because its algorithm
 exploits symmetry in the quadrants of an ellipse).}
 
-\item{pts}{displays confidence region boundary points if \code{TRUE} (applies to confidence region plots when \code{showplot = TRUE}).}
+\item{pts}{displays confidence region boundary points if \code{TRUE} (applies to confidence region plots in which \code{showplot = TRUE}).}
 
 \item{mlelab}{logical argument to include the maximum likelihood estimate coordinate point (default is \code{TRUE},
 applies to confidence region plots when \code{showplot = TRUE}).}
@@ -93,9 +94,9 @@ in the R function \code{\link{round}} as it pertains the horizontal and vertical
 
 \item{mar}{specifies margin values for \code{par(mar = c( ))} (see \code{mar} in \code{\link{par}}).}
 
-\item{xlab}{string specifying the x axis label (applies to confidence region plots when \code{showplot = TRUE}).}
+\item{xlab}{string specifying the horizontal axis label (applies to confidence region plots when \code{showplot = TRUE}).}
 
-\item{ylab}{string specifying the y axis label (applies to confidence region plots when \code{showplot = TRUE}).}
+\item{ylab}{string specifying the vertical axis label (applies to confidence region plots when \code{showplot = TRUE}).}
 
 \item{main}{string specifying the plot title (applies to confidence region plots when \code{showplot = TRUE}).}
 
@@ -124,6 +125,10 @@ and error results per iteration, and \code{returnsamp} and/or \code{returnquant}
 
 \item{repair}{logical argument to repair regions inaccessible using a radial angle from its MLE (multiple root azimuths).}
 
+\item{exact}{logical argument specifying if alpha value is adjusted to compensate for negative coverage bias in order to achieve
+(1 - alpha) coverage probability using previously recorded Monte Carlo simulation results; available for limited values of
+alpha (roughly <= 0.2--0.3), n (typically n = 4, 5, ..., 50) and distributions (distn suffixes: weibull, llogis, norm).}
+
 \item{showplot}{logical argument specifying if each coverage trial produces a plot.}
 
 \item{delay}{numeric value of delay (in seconds) between trials so its plot can be seen (applies when \code{showplot = TRUE}).}
@@ -147,7 +152,7 @@ the default axes convention in use by \code{crplot} and \code{coversim}, which a
 \tabular{lcc}{
 \tab Horizontal \tab Vertical\cr
 Distribution  \tab  Axis  \tab Axis\cr
-Caucy \tab \eqn{a} \tab \eqn{s}\cr
+Cauchy \tab \eqn{a} \tab \eqn{s}\cr
 gamma \tab \eqn{\theta} \tab \eqn{\kappa}\cr
 inverse Gaussian \tab \eqn{\mu} \tab \eqn{\lambda}\cr
 log logistic \tab \eqn{\lambda} \tab \eqn{\kappa}\cr
@@ -190,7 +195,7 @@ has the probability density function
 \item The logistic distribution
 for the real-numbered location parameter \eqn{\mu}, scale parameter \eqn{\sigma}, and \eqn{x} is a real number,
 has the probability density function
-\deqn{(1 / \sigma) exp((x - \mu) / \sigma) (1 + exp((x - \mu) / \sigma)) ^ -2}
+\deqn{(1 / \sigma) exp((x - \mu) / \sigma) (1 + exp((x - \mu) / \sigma)) ^ {-2}}
 
 \item The normal distribution
 for the real-numbered mean \eqn{\mu}, standard deviation \eqn{\sigma > 0}, and \eqn{x} is a real number,

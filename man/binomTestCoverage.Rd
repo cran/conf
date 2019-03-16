@@ -31,17 +31,17 @@
   }
 
   The actual coverage for a particular value of \eqn{p}, the probability of success of interest, is
-  \deqn{actual coverage(p) = \sum_{x=0}^n {I(x,p) {n \choose x} p^x (1-p)^{(n-x)}},}
-  where \eqn{I(x)} is an indicator function that determines if a confidence interval covers \eqn{p} when \eqn{X = x}
-  which is from Vollset(1993).
+  \deqn{c(p) = \sum_{x=0}^n {I(x,p) {n \choose x} p^x (1-p)^{n-x}},}
+  where \eqn{I(x,p)} is an indicator function that determines whether a confidence interval
+  covers \eqn{p} when \eqn{X = x} (see Vollset, 1993).
 
   The binomial distribution with arguments \code{size} = \eqn{n} and
-  \code{prob} = \eqn{p} has pmf
+  \code{prob} = \eqn{p} has probability mass function  
 
-  \deqn{p(x) = {n \choose x} p^x (1-p)^{(n-x)}}{%
+  \deqn{p(x) = {n \choose x} p^x (1-p)^{n-x}}{%
     p(x) = choose(n, x) p^x (1-p)^(n-x)}
 
-  for \eqn{x = 0, 1, \ldots, n}.
+  for \eqn{x = 0, 1, 2, \ldots, n}.
 
   The algorithm for computing the actual coverage for a particular probability of
   success begins by calculating all possible lower and upper bounds associated
@@ -52,9 +52,7 @@
 
 \examples{
   binomTestCoverage(6, 0.4)
-
   binomTestCoverage(n = 10, p = 0.3, alpha = 0.01, intervalType = "Wilson-Score")
-
 }
 
 \seealso{
@@ -72,6 +70,7 @@
 \keyword{actual coverage}
 \keyword{confidence interval}
 \keyword{binomial proportion}
+\keyword{binomial distribution}
 \keyword{Clopper-Pearson}
 \keyword{Wilson-Score}
 \keyword{Wald}

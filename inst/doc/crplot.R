@@ -17,7 +17,7 @@ crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull",
 
 ## ---- fig.height = 4, fig.width = 4, fig.keep = 'none'-------------------
 x <- crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", info = TRUE)
-names(x)
+str(x)
 
 ## ---- fig.height = 4, fig.width = 3.5, fig.show = 'asis'-----------------
 # with confidence region data stored in x, it is now available for custom graphics

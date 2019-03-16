@@ -113,13 +113,13 @@ points(x2, y2, col = "forestgreen",
 legend(0.02, 0.98, legend = rev(c("n = 100", "n = 10", "n = 5", "n = 3", "nominal coverage = actual coverage")), pch = rev(c(16, 16, 16, 16, NA)), col = c("black", "red", "orange", "blue", "forestgreen"), lty = rev(c(NA, NA, NA, NA, 1)), cex = 0.5, y.intersp = 1.5, box.col = NA, bg = NA, pt.lwd = 0.4)
 title(main = "Weibull(kappa = 3, lambda = 0.5) \n Coverage Results for Various Sample \n Sizes and Nominal Coverages \n (iter = 10,000 per datapoint)", cex.main = 0.92)
 
-## ---- fig.width = 4, fig.height = 4, fig.show = 'hold'-------------------
+## ---- fig.width = 4, fig.height = 4, fig.show = 'hold', warning = FALSE----
 ballbearing <- c(17.88, 28.92, 33.00, 41.52, 42.12, 45.60, 48.48, 51.84,
                  51.96, 54.12, 55.56, 67.80, 68.64, 68.64, 68.88, 84.12,
                  93.12, 98.64, 105.12, 105.84, 127.92, 128.04, 173.40)
 coversim(alpha = 0.1, distn = "weibull", dataset = ballbearing, point = c(1, 0.015), showplot = TRUE, origin = TRUE)
 
-## ---- fig.width = 4, fig.height = 4, fig.show = 'hold'-------------------
+## ---- fig.width = 4, fig.height = 4, fig.show = 'hold', warning = FALSE----
 set.seed(1)              # ensure consistent results will illustrate in this vignette
 par(mfrow = c(2, 2))     # display resulting plots in a 2 row by 2 column grid
 samplematrix <- matrix(sample(ballbearing, 20), ncol = 4)   # subset 20 samples into four groups (columns)

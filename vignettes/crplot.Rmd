@@ -46,7 +46,7 @@ crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull")
 
 In addition to the $95\%$ confidence region plot, output informs the user that its smoothing boundary search heuristic (default heuristic) uses 102 points to complete the plot.  The maximum likelihood estimator values are plotted as a + within the confidence region.
 
-Valuable perspective is often given if the origin is included within a plot.  The argument `origin = TRUE` in the plot below invokes this change.  Alternatively, the user can specify a unique frame of reference using optional `xlim` and/or `ylim` arguments.  Three additional modifications complete the plot below: its points are hidden using `pts = FALSE`, significant figures for the respective horizontal and vertical axes are specified using `sf = c(2, 4)`, and the orientation of the y-axis labels are set horizontal using `las = 1`.
+Valuable perspective is often given if the origin is included within a plot.  The argument `origin = TRUE` in the plot below invokes this change.  Alternatively, the user can specify a unique frame of reference using optional `xlim` and/or `ylim` arguments.  Three additional modifications complete the plot below: its points are hidden using `pts = FALSE`, significant figures for the respective horizontal and vertical axes are specified using `sf = c(2, 4)`, and the orientation of the y-axis labels are set horizontal using `ylas = 1`.
 
 ```{r, fig.width = 4, fig.height = 4, fig.show = 'hold'}
 crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", 
@@ -57,12 +57,12 @@ Setting `info = TRUE` allows the user to access data pertinent to the resulting 
 
 ```{r, fig.height = 4, fig.width = 4, fig.keep = 'none'}
 x <- crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", info = TRUE)
-names(x)
+str(x)
 ```
 
-Displaying `names(x)` confirms that `info = TRUE` directs `crplot` to return a list with respective arguments `"kappa"`, `"lambda"`, and `"phi"`.  The `"kappa"` and `"lambda"` parameters correspond to the plot horizontal and vertical axes values.  They are the Weibull distribution shape and scale parameters, respectively.  These parameters update appropriately when fitting the data to the inverse Gaussian distribution (returning mean and shape parameters, `"mu"` and `"lambda"`, respectively).  The third list argument, `"phi"`, gives angles in radians relative to the MLE, corresponding to each plot point.  These `"phi"` ($\phi$) values determined plot points using Jaeger's radial profile log likelihood technique^[Jaeger, A. (2016), "Computation of Two- and Three-Dimensional Confidence Regions With the Likelihood Ratio", *The American Statistician*, 70, 395--398].
+Displaying `str(x)` confirms that `info = TRUE` directs `crplot` to return a list with respective arguments `"kappa"`, `"lambda"`, and `"phi"`.  The `"kappa"` and `"lambda"` parameters correspond to the plot horizontal and vertical axes values.  They are the Weibull distribution shape and scale parameters, respectively.  These parameters update appropriately when fitting the data to the inverse Gaussian distribution (returning mean and shape parameters, `"mu"` and `"lambda"`, respectively).  The third list argument, `"phi"`, gives angles in radians relative to the MLE, corresponding to each plot point.  These `"phi"` ($\phi$) values determined plot points using Jaeger's radial profile log likelihood technique^[Jaeger, A. (2016), "Computation of Two- and Three-Dimensional Confidence Regions With the Likelihood Ratio", *The American Statistician*, 70, 395--398].
 
-Custom plots and analysis are possible using the data returned when `info = TRUE`.  Two examples follow.  The first shades the confidence region and alters its border line-type.  
+Custom plots and analysis are possible using the data returned when `info = TRUE`.  Two examples follow.  The first shades the confidence region and alters its border line type.  
  
 ```{r, fig.height = 4, fig.width = 3.5, fig.show = 'asis'}
 # with confidence region data stored in x, it is now available for custom graphics
@@ -115,7 +115,7 @@ crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", ylas = 1,
 
 An alternative plot heuristic is available using the optional argument `heuristic = 0`.  It plots a predetermined number of confidence region points (user specified using `ellipse_n`) in a roughly uniform fashion along its boundary using an elliptic-oriented plotting technique.  Its name references the method its algorithm uses to draw an ellipse---known as the parallelogram method; a result of the Theorem of Steiner^[Meserve, B. E. (2014), *Fundamental Concepts of Geometry*, Courier Corporation]---that identifies approximately equidistant points along the confidence region boundary regardless of the relative scales of its axes.
 
-The next pair of plots illustrate differences between the default smoothing search plot heuristic and the elliptic-oriented alternative heuristic (`heuristic = 0`).  They also illustrate a fit to the inverse Gaussian distribution, rather than the Weibull distribution shown previously.
+The next pair of plots illustrates differences between the default smoothing search plot heuristic and the elliptic-oriented alternative heuristic (`heuristic = 0`).  They also illustrate a fit to the inverse Gaussian distribution, rather than the Weibull distribution shown previously.
 
 ```{r, fig.show = 'hold'}
 crplot(dataset = ballbearing, alpha = 0.05, distn = "invgauss", sf = c(2, 2),
@@ -148,7 +148,7 @@ crplot(dataset = ballbearing, alpha = 0.05, distn = "invgauss", sf = c(2, 2),
 
 Use the `crplot` optional argument `cen` to identify right-censored data values.  The `cen` argument is a binary vector whose length matches `length(dataset)`.  It specifies if the corresponding values in `dataset` are right-censored (0), or observed (1).
 
-Consider the 6-MP dataset^[Gehan, Edmund A. (1965), A Generalized Wilcoxon Test for Comparing Arbitrarily Singly-Censored Samples, Biometrika, 52, 650--653] of cancer remission lengths.  Its values represent the length of time (in weeks) until a cancer returns.  Some patients remain cancer-free at the conclusion of the study; they comprise the dataset's right-censored values.  Among its 21 patients who were administered the 6-MP medication, nine experienced a remission (the observed values) and the remaining 12 remained cancer-free at the conclusion of the study (its right-censored data values).  Its values, and the corresponding Weibull $95\%$ confidence region plot completed using `crplot`, are given below.
+Consider the 6-MP dataset^[Gehan, Edmund A. (1965), A Generalized Wilcoxon Test for Comparing Arbitrarily Singly-Censored Samples, Biometrika, 52, 650--653] of cancer remission lengths.  Its values represent the length of time (in weeks) until a cancer returns.  Some patients remain cancer-free at the conclusion of the study; they comprise the dataset's right-censored values.  Among its 21 patients who were administered the 6-MP medication, nine experienced a remission (the observed values) and the remaining 12 remained cancer-free at the conclusion of the study (its right-censored data values).  Its values, and the corresponding Weibull $95\%$ confidence region plot completed using `crplot`, are given below.  This confidence region matches the one given on page 42 of Cox and Oaks (1984)^[Cox, D.R. and Oakes, D. (1984), Analysis of Survival Data, New York, NY: Chapman and Hall].
 
 ```{r, fig.show = 'hold', fig.height = 3.8, fig.width = 4}
 mp6_obs <- c(6, 6, 6, 7, 10, 13, 16, 22, 23)                # time of cancer remission
@@ -178,7 +178,7 @@ When its default `repair = TRUE` is kept, the smoothing search heuristic iterate
 
 Alternate-centerpoint(s) are known as "jump-center(s)".  Information regarding the jump-center(s) is returned to the user using the optional argument `jumpinfo = TRUE`.  For more details regarding the jump-center algorithm and its parameters, please see the "Plotting Likelihood-Ratio Based Confidence Regions for Two-Parameter Univariate Probability Models" publication^1^ and the `crplot_advanced` vignette via its link at the [conf](https://CRAN.R-project.org/package=conf) webpage.
 
-Revisiting our previous example, the complete confidence region is successfully plot below given the default argument `repair = TRUE` is unaltered.  The red lines in the example above are also included below for reference.  Additionally, jump-center reference points are annotated using the optional argument `showjump = TRUE`.
+Revisiting our previous example, the complete confidence region is successfully plotted below given the default argument `repair = TRUE` is unaltered.  The red lines in the example above are also included below for reference.  Additionally, jump-center reference points are annotated using the optional argument `showjump = TRUE`.
 
 ```{r, fig.show = 'hold', warning = FALSE}
 crplot(seq(1, 2.5, by = 0.25), 0.01, "gamma", sf = c(2, 2), pts = FALSE, main = "with repair")

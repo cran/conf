@@ -55,7 +55,9 @@ binomTestCoverage <- function(n, p,
     for (x in 0:n) {
       shat <- x / n
       l[x + 1] <- shat - crit * sqrt(shat * (1 - shat) / n)
+      if (l[x + 1] < 0) l[x + 1] <- 0
       u[x + 1] <- shat + crit * sqrt(shat * (1 - shat) / n)
+      if (u[x + 1] > 1) u[x + 1] <- 1
     }
     coverage <- 0
     for (x in 0:n) {
@@ -86,9 +88,9 @@ binomTestCoverage <- function(n, p,
     u <- rep(1, n + 1)
     crit <- qnorm(1 - alpha / 2)
     for (x in 1:n)
-      l[x + 1] <- qbeta(alpha / 2, x + 1/2, n - x + 1/2)
+      l[x + 1] <- qbeta(alpha / 2, x + 1 / 2, n - x + 1 / 2)
     for (x in 0:(n - 1))
-      u[x + 1] <- qbeta(1 - alpha / 2, x + 1/2, n - x + 1/2)
+      u[x + 1] <- qbeta(1 - alpha / 2, x + 1 / 2, n - x + 1 / 2)
     coverage <- 0
     for (x in 0:n) {
       if (l[x + 1] < p && p < u[x + 1]) coverage <- coverage + dbinom(x, n, p)
@@ -119,18 +121,21 @@ binomTestCoverage <- function(n, p,
 
   if (intervalType == "Arcsine") {
     l <- rep(0, n + 1)
-    u <- rep(0, n + 1)
+    u <- rep(1, n + 1)
     crit <- qnorm(1 - alpha / 2)
-    for (x in 0:n) {
+    for (x in 1:n) {
       phat <- (x + 0.375) / (n + 0.75)
       l[x + 1] <- sin(asin(sqrt(phat)) - (crit /  (2 * sqrt(n)))) ^ 2
+    }
+    for (x in 0:(n - 1)){
+      phat <- (x + 0.375) / (n + 0.75)
       u[x + 1] <- sin(asin(sqrt(phat)) + (crit /  (2 * sqrt(n)))) ^ 2
     }
     coverage <- 0
     for (x in 0:n) {
       if (l[x + 1] < p && p < u[x + 1]) coverage <- coverage + dbinom(x, n, p)
     }
-    if (p == 0 || p == 1) coverage <- 0
+    if (p == 0 || p == 1) coverage <- 1
     return(coverage)
   }
 

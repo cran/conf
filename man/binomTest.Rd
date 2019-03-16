@@ -3,7 +3,7 @@
 
 \title{Confidence Intervals for Binomial Proportions}
 \description{
-  Generates lower and upper limits for binomial proportion
+  Generates lower and upper confidence interval limits for a binomial proportion
   using different types of confidence intervals.
 }
 \usage{
@@ -20,11 +20,11 @@
 }
 
 \details{
-  Generates a lower and upper limit for binomial proportions using
+  Generates a lower and upper confidence interval limit for a binomial proportion using
   \itemize{
     \item various types of confidence intervals,
     \item various sample sizes, and
-    \item various number of successes.
+    \item various numbers of successes.
   }
 
   When the \code{binomTest} function is called, it returns a two-element vector in which
@@ -50,6 +50,7 @@
 
 \keyword{confidence interval}
 \keyword{binomial proportion}
+\keyword{binomial distribution}
 \keyword{Clopper-Pearson}
 \keyword{Wilson-Score}
 \keyword{Wald}

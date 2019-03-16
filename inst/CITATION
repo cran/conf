@@ -7,12 +7,12 @@ citEntry(entry = "Manual",
          title = "{conf}: Visualization and Analysis of Statistical Measures of Confidence",
          author = personList(as.person("Christopher Weld"), as.person("Hayeon Park"),
                              as.person("Lawrence Leemis")),
-         year = 2018,
+         year = 2019,
          note = note,
          url  = "https://CRAN.R-project.org/package=conf",
 
          textVersion =
-         paste0("Christopher Weld, Hayeon Park, and Lawrence Leemis (2018), ",
+         paste0("Christopher Weld, Hayeon Park, and Lawrence Leemis (2019), ",
                "conf: Visualization and Analysis of Statistical Measures of Confidence, ",
                "R package version ", meta$Version,
                ", http://CRAN.R-project.org/package=conf.")
@@ -24,14 +24,14 @@ citEntry(entry = "Manual",
 #         author = personList(as.person("Christopher Weld"), as.person("Lawrence Leemis")),
 #         journal = "The American Statistician",
 #         publisher = "Taylor and Francis",
-#         year = "2018",
-#         note = "(in press, pending publication)",
+#         year = "2019",
+#         note = "doi:10.1080/00031305.2018.1564696",
 #
 #         textVersion =
 #         paste("Christopher Weld and Lawrence Leemis (in press),",
 #               "Plotting Likelihood-Ratio Based Confidence Regions for Two-Parameter
 #                Univariate Probability Models,",
-#               "The American Statistician.")
+#               "The American Statistician. doi:10.1080/00031305.2018.1564696")
 #)
 
 #bibentry(bibtype = "Manual",

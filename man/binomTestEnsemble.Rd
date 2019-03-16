@@ -3,7 +3,7 @@
 
 \title{Ensemble Confidence Intervals for Binomial Proportions}
 \description{
-  Generates lower and upper limits for binomial proportion
+  Generates lower and upper confidence interval limits for a binomial proportion
   using an ensemble of confidence intervals.
 }
 \usage{
@@ -28,10 +28,10 @@
 }
 
 \details{
-  Generates a lower and upper limit for binomial proportions using
+  Generates lower and upper confidence interval limits for a binomial proportions using
   \itemize{
     \item various sample sizes,
-    \item various number of successes, and
+    \item various numbers of successes, and
     \item various combinations of confidence intervals.
   }
 
@@ -72,6 +72,7 @@ The Wald confidence interval is omitted because it degenerates in actual coverag
 
 \keyword{confidence interval}
 \keyword{binomial proportion}
+\keyword{binomial distribution}
 \keyword{Clopper-Pearson}
 \keyword{Wilson-Score}
 \keyword{Wald}

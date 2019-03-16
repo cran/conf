@@ -30,10 +30,13 @@ crplot(dataset, alpha, distn,
                 jumpuphill = min(alpha, 0.01),
                 jumpinfo  = FALSE,
                 showjump  = FALSE,
-                showplot  = TRUE )
+                showplot  = TRUE,
+                animate  = FALSE,
+                exact     = FALSE,
+                silent    = FALSE )
 }
 \arguments{
-\item{dataset}{a 1 x n vector of dataset values.}
+\item{dataset}{a 1 x n vector of data values.}
 
 \item{alpha}{significance level; resulting plot illustrates a 100(1 - \code{alpha})\% confidence region.}
 
@@ -76,9 +79,9 @@ digits argument in the R function \code{\link{round}} as it pertains to the hori
 
 \item{origin}{logical argument to include the plot origin (default is \code{FALSE}).}
 
-\item{xlim}{two element vector containing horizontal axis minimum and maximum values.}
+\item{xlim}{two-element vector containing horizontal axis minimum and maximum values.}
 
-\item{ylim}{two element vector containing vertical axis minimum and maximum values.}
+\item{ylim}{two-element vector containing vertical axis minimum and maximum values.}
 
 \item{tol}{the \code{\link{uniroot}} parameter specifying its required accuracy.}
 
@@ -106,6 +109,14 @@ of points left & right of the inaccessible region.}
 
 \item{showplot}{logical argument specifying if a plot is output; altering from its default of \code{TRUE} is
 only logical assuming \code{crplot} is run for its data only (see the \code{info} argument).}
+
+\item{animate}{logical argument specifying if an animated plot build will display; the annimation sequence is given in successive plots.}
+
+\item{exact}{logical argument specifying if alpha value is adjusted to compensate for negative coverage bias to achieve
+(1 - alpha) coverage probability using previously recorded Monte Carlo simulation results; available for limited values of
+alpha (roughly <= 0.2--0.3), n (typically n = 4, 5, ..., 50) and distributions (distn suffixes: weibull, llogis, norm).}
+
+\item{silent}{logical argument specifying if console output should be suppressed.}
 }
 \value{
 if the optional argument \code{info = TRUE} is included then a list of plot coordinates and phi angles is returned
@@ -117,11 +128,11 @@ complete or right-censored dataset and level of significance.  See the CRAN webs
 https://CRAN.R-project.org/package=conf for a link to two \code{crplot} vignettes.
 }
 \details{
-This function plots confidence regions for a variety of two-parameter distributions.  It requires:
+This function plots a confidence region for a variety of two-parameter distributions.  It requires:
 \itemize{
 \item a vector of dataset values,
 \item the level of significance (alpha), and
-\item a distribution to fit the data to.
+\item a population distribution to fit the data to.
 }
 Plots display according to probability density function parameterization given later in this section.
 Two heuristics (and their associated combination) are available to plot confidence regions.  Along
@@ -160,7 +171,7 @@ The default axes convention in use by \code{crplot} are
 \tabular{lcc}{
 \tab Horizontal \tab Vertical\cr
 Distribution  \tab  Axis  \tab Axis\cr
-Caucy \tab \eqn{a} \tab \eqn{s}\cr
+Cauchy \tab \eqn{a} \tab \eqn{s}\cr
 gamma \tab \eqn{\theta} \tab \eqn{\kappa}\cr
 inverse Gaussian \tab \eqn{\mu} \tab \eqn{\lambda}\cr
 log logistic \tab \eqn{\lambda} \tab \eqn{\kappa}\cr
@@ -203,7 +214,7 @@ has the probability density function
 \item The logistic distribution
 for the real-numbered location parameter \eqn{\mu}, scale parameter \eqn{\sigma}, and \eqn{x} is a real number,
 has the probability density function
-\deqn{(1 / \sigma) exp((x - \mu) / \sigma) (1 + exp((x - \mu) / \sigma)) ^ -2}
+\deqn{(1 / \sigma) exp((x - \mu) / \sigma) (1 + exp((x - \mu) / \sigma)) ^ {-2}}
 
 \item The normal distribution
 for the real-numbered mean \eqn{\mu}, standard deviation \eqn{\sigma > 0}, and \eqn{x} is a real number,

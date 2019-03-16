@@ -1,6 +1,6 @@
 #' @export
 ###############################################################################
-# R function to calculate lower and upper limits of ensemble confidence interval
+# R function to calculate lower and upper limits of Ensemble confidence interval
 # procedures for a given sample size n and number of successes x.
 ###############################################################################
 binomTestEnsemble <- function(n, x,
@@ -64,7 +64,7 @@ binomTestEnsemble <- function(n, x,
   acac <- binomTestCoverage(n, phat, intervalType = "Agresti-Coull", alpha = alpha)
   acar <- binomTestCoverage(n, phat, intervalType = "Arcsine", alpha = alpha)
 
-  actcov <- c(accp,acws,acjf,acac,acar)
+  actcov <- c(accp, acws, acjf, acac, acar)
   actcov <- actcov[which(combination == 1)]
 
   CIleft <- c(cp[1], ws[1], jf[1], ac[1], ar[1])
@@ -130,5 +130,5 @@ binomTestEnsemble <- function(n, x,
   if (eright < 0) eright <- 0
   if (eright > 1) eright <- 1
 
-  return(c(eleft,eright))
+  return(c(eleft, eright))
 }

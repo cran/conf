@@ -12,7 +12,7 @@
 
 <meta name="author" content="Christopher Weld ceweld@email.wm.edu, Lawrence Leemis leemis@math.wm.edu" />
 
-<meta name="date" content="2018-12-15" />
+<meta name="date" content="2019-03-16" />
 
 <title>crplot Advanced Options</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">crplot Advanced Options</h1>
 <h4 class="author"><em>Christopher Weld <a href="mailto:ceweld@email.wm.edu">ceweld@email.wm.edu</a>, Lawrence Leemis <a href="mailto:leemis@math.wm.edu">leemis@math.wm.edu</a></em></h4>
-<h4 class="date"><em>2018-12-15</em></h4>
+<h4 class="date"><em>2019-03-16</em></h4>
 
 
 
@@ -88,7 +88,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <ul>
 <li><p><em>Jump-Center &amp; its Left and Right Boundaries</em>. Customization is informed by the default <span style="color:firebrick">jump-center</span> (JC) and its JC <span style="color:green">left</span> and JC <span style="color:GoldenRod">right</span> boundary reference points (pictured above). The “left” and “right” directional labels represent their location relative to the <span style="color:firebrick">jump-center</span> (when looking “out” from the <span style="color:firebrick">jump-center</span> into the inaccessible region). Maximum angle tolerance constraints are not satisfied at the left and/or right inaccessible region border points, and the jump-center repair aims to plot points within this uncharted region.</p></li>
 <li><p><em>Quadrant</em>. The <span style="color:firebrick">jump-center</span> position with respect to the MLE (<span class="math inline">\(+\)</span>) is significant. As a convenience, quadrant notation relative to the MLE is used. For example, the <span style="color:firebrick">jump-center</span> pictured above lies in the fourth quadrant relative to the MLE. <em>All future references to quadrants within this vignette adopt this perspective (quadrants defined as if the MLE were the origin)</em>.</p></li>
-<li><p><em>Gap</em>. Two inaccessible region orientations are possible: a vertical (shown above) or horizontal <span style="color:purple">gap</span>. The vertical <span style="color:purple">gap</span> shown above has an inaccessible region orientated clockwise from the MLE (<span class="math inline">\(+\)</span>). For a <span style="color:firebrick">jump-center</span> in the fourth quadrant, a clockwise inaccessible region orientation corresponds to a horizontally oriented <span style="color:purple">gap</span>.</p></li>
+<li><p><em>Gap</em>. Two inaccessible region orientations are possible: a vertical (shown above) or horizontal <span style="color:purple">gap</span>. The vertical <span style="color:purple">gap</span> shown above has an inaccessible region orientated counterclockwise from the MLE (<span class="math inline">\(+\)</span>). For a <span style="color:firebrick">jump-center</span> in the fourth quadrant, a clockwise inaccessible region orientation corresponds to a horizontally oriented <span style="color:purple">gap</span>.</p></li>
 <li><p><em>Jump-Shift</em>. The direction of the <span style="color:firebrick">jump-center</span>, relative to the MLE (<span class="math inline">\(+\)</span>), intercepts the horizontal or vertical <span style="color:purple">gap</span> according to a <span style="color:mediumblue">jump-shift</span> parameter. The <span style="color:mediumblue">jump-shift</span> parameter represents the fraction of its <span style="color:purple">gap</span> where an azimuth to the <span style="color:firebrick">jump-center</span> crosses. The default, pictured above, is a <span style="color:mediumblue">jump-shift = 0.5</span> (or bisecting its <span style="color:purple">gap</span>). For this example, decreasing this value moves the azimuth from the MLE to the <span style="color:firebrick">jump-center</span> nearer its <span style="color:GoldenRod">right</span> boundary reference point. Increasing its value would move it nearer the <span style="color:green">left</span> boundary.</p></li>
 <li><p><em>Jump-Uphill</em>. The <span style="color:firebrick">jump-center</span> must locate <em>inside</em> of the existing confidence region boundary. Considering the log-likelihood function governs the landscape from which the confidence region contour is found, points inside its region are those “uphill” from its border. The jump-uphill parameter quantifies how far uphill (given as a measure of level of significance) from its confidence region boundary the <span style="color:firebrick">jump-center</span> locates, and thus determines its distance from the MLE (or confidence region boundary). For example, consider an <span class="math inline">\(89\%\)</span> versus a <span class="math inline">\(90\%\)</span> confidence region (or levels of significance of <span class="math inline">\(0.11\)</span> and <span class="math inline">\(0.1\)</span>, respectively). The <span class="math inline">\(89\%\)</span> confidence region is smaller; its boundary is inside that of the <span class="math inline">\(90\%\)</span> region and represents a “jump-uphill” measure of <span class="math inline">\(0.01\)</span> (in level of significance). The default parameterization for jump-uphill is <span class="math inline">\(\min(\alpha, 0.01)\)</span>.</p></li>
 </ul>
