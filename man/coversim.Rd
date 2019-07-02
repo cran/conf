@@ -236,19 +236,8 @@ Christopher Weld (\email{ceweld@email.wm.edu})
 Lawrence Leemis (\email{leemis@math.wm.edu})
 }
 \concept{
-confidence region plot
+confidence region plot graphics visualization coverage parameter estimation
 }
-\keyword{Estimation,}
-\keyword{Graphical}
-\keyword{Methods,}
-\keyword{Numerical}
-\keyword{Optimization}
-\keyword{Parameter}
-\keyword{confidence}
-\keyword{coverage}
-\keyword{data}
-\keyword{graphics,}
-\keyword{intervals,}
-\keyword{region,}
-\keyword{statistical}
-\keyword{visualization,}
+\keyword{distribution}
+\keyword{models}
+\keyword{univar}

@@ -44,12 +44,17 @@ ballbearing <- c(17.88, 28.92, 33.00, 41.52, 42.12, 45.60, 48.48, 51.84,
 crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull") 
 ```
 
-In addition to the $95\%$ confidence region plot, output informs the user that its smoothing boundary search heuristic (default heuristic) uses 102 points to complete the plot.  The maximum likelihood estimator values are plotted as a + within the confidence region.
+The maximum likelihood estimator is plot as a + within the confidence region. In addition to the $95\%$ confidence region plot, output informs the user that its smoothing boundary search heuristic (default heuristic) uses 102 points to complete the plot.  The smoothing boundary search heuristic confidence region build process is illustrated using the optional argument `animate = TRUE`. 
+
+```{r, fig.width = 8, fig.height = 8, fig.show = 'hold'}
+par(mfrow = c(3, 3))
+crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", animate = TRUE)
+```
 
 Valuable perspective is often given if the origin is included within a plot.  The argument `origin = TRUE` in the plot below invokes this change.  Alternatively, the user can specify a unique frame of reference using optional `xlim` and/or `ylim` arguments.  Three additional modifications complete the plot below: its points are hidden using `pts = FALSE`, significant figures for the respective horizontal and vertical axes are specified using `sf = c(2, 4)`, and the orientation of the y-axis labels are set horizontal using `ylas = 1`.
 
 ```{r, fig.width = 4, fig.height = 4, fig.show = 'hold'}
-crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", 
+crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull",   
        pts = FALSE, sf = c(2, 4), ylas = 1, origin = TRUE)
 ```
     

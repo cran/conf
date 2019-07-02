@@ -11,8 +11,12 @@ ballbearing <- c(17.88, 28.92, 33.00, 41.52, 42.12, 45.60, 48.48, 51.84,
                  93.12, 98.64, 105.12, 105.84, 127.92, 128.04, 173.40)
 crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull") 
 
+## ---- fig.width = 8, fig.height = 8, fig.show = 'hold'-------------------
+par(mfrow = c(3, 3))
+crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", animate = TRUE)
+
 ## ---- fig.width = 4, fig.height = 4, fig.show = 'hold'-------------------
-crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull", 
+crplot(dataset = ballbearing, alpha = 0.05, distn = "weibull",   
        pts = FALSE, sf = c(2, 4), ylas = 1, origin = TRUE)
 
 ## ---- fig.height = 4, fig.width = 4, fig.keep = 'none'-------------------

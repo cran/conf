@@ -7,8 +7,8 @@
 #' https://CRAN.R-project.org/package=conf for a link to two \code{crplot} vignettes.
 #'
 #' @param dataset a 1 x n vector of data values.
-#' @param alpha significance level; resulting plot illustrates a 100(1 - \code{alpha})\% confidence region.
 #' @param distn distribution to fit the dataset to; accepted values: \code{'cauchy'}, \code{'gamma'}, \code{'invgauss'},
+#' @param alpha significance level; resulting plot illustrates a 100(1 - \code{alpha})\% confidence region.
 #' \code{'logis'}, \code{'llogis'}, \code{'lnorm'}, \code{'norm'}, \code{'unif'}, \code{'weibull'}.
 #' @param cen a vector of binary values specifying if the corresponding data values are right-censored (0), or
 #' observed (1, default); its length must match length(dataset).
@@ -34,7 +34,7 @@
 #' @param xlim two-element vector containing horizontal axis minimum and maximum values.
 #' @param ylim two-element vector containing vertical axis minimum and maximum values.
 #' @param tol the \code{\link{uniroot}} parameter specifying its required accuracy.
-#' @param info logical argument to return plot information: MLE prints to screen; (x, y) plot point coordinates
+#' @param info logical argument to return plot information: MLE is returned as a list; (x, y) plot point coordinates
 #' and corresponding phi angles (with respect to MLE) are returned as a list.
 #' @param maxcount integer value specifying the number of smoothing search iterations before terminating with \code{maxdeg} not met.
 #' @param repair logical argument to repair regions inaccessible using a radial angle from its MLE due to multiple
@@ -52,6 +52,7 @@
 #' @param showplot logical argument specifying if a plot is output; altering from its default of \code{TRUE} is
 #' only logical assuming \code{crplot} is run for its data only (see the \code{info} argument).
 #' @param animate logical argument specifying if an animated plot build will display; the annimation sequence is given in successive plots.
+#' @param delay numeric value of delay (in seconds) between successive plots when \code{animate = TRUE}.
 #' @param exact logical argument specifying if alpha value is adjusted to compensate for negative coverage bias to achieve
 #' (1 - alpha) coverage probability using previously recorded Monte Carlo simulation results; available for limited values of
 #' alpha (roughly <= 0.2--0.3), n (typically n = 4, 5, ..., 50) and distributions (distn suffixes: weibull, llogis, norm).
@@ -61,10 +62,18 @@
 #' @importFrom fitdistrplus mledist
 #' @importFrom STAR llogisMLE gammaMLE
 #' @export
-#' @return if the optional argument \code{info = TRUE} is included then a list of plot coordinates and phi angles is returned
-#' @concept confidence region plot
-#' @keywords confidence region, confidence intervals, statistical graphics, data visualization, graphical methods,
-#' parameter estimation, numerical optimization
+#' @return If the optional argument \code{info = TRUE} is included then a list is returned with:
+#' \itemize{
+#' \item parm1*: a vector containing the associated confidence region boundary values for parameter 1
+#' \item parm2*: a vector containing the associated confidence region boundary values for parameter 2
+#' \item phi: a vector containing the angles used
+#' \item parm1hat*: the MLE for parameter 1
+#' \item parm2hat*: the MLE for parameter 2
+#' }
+#' *Note: "param1" and "param2" are placeholders that will be replaced with the appropriate parameter names
+#' based on the probability distribution.
+#' @concept confidence region plot graphics visualization coverage parameter estimation
+#' @keywords distribution models univar
 #' @references Jaeger, A. (2016), "Computation of Two- and Three-Dimensional Confidence Regions with the Likelihood Ratio",
 #' The American Statistician, 49, 48--53.
 #' @references Weld, C., Loh, A., Leemis, L. (in press), "Plotting Likelihood-Ratio Based Confidence Regions for
@@ -101,7 +110,8 @@
 #'                 jumpinfo  = FALSE,
 #'                 showjump  = FALSE,
 #'                 showplot  = TRUE,
-#'                 animate  = FALSE,
+#'                 animate   = FALSE,
+#'                 delay     = 0.5,
 #'                 exact     = FALSE,
 #'                 silent    = FALSE )
 #'
@@ -270,6 +280,7 @@ crplot <- function(dataset,
                    showjump = FALSE,
                    showplot = TRUE,
                    animate = FALSE,
+                   delay = 0.5,
                    exact = FALSE,
                    silent = FALSE) {
 
@@ -397,6 +408,12 @@ crplot <- function(dataset,
 
   if (animate && (heuristic == 0))
     warning("'animate' is not applicable when 'heuristic = TRUE' (not an iterative build process)")
+
+  if (!is.numeric(delay) || length(delay) != 1 || delay < 0 )
+    stop("'delay' must be a non-negative numeric scalar value")
+
+  if (!animate && (delay != 0.5))
+    warning("'delay' is not applicable unless 'animate = TRUE'")
 
   if (!is.logical(exact) || length(exact) != 1)
     stop("'exact' must be a single logical parameter")
@@ -868,7 +885,7 @@ crplot <- function(dataset,
         temp1 <- sum((x - mu) ^ 2)
         llfn <- (-n / 2) * log(2 * pi) - (n / 2) * log(sigma^2) - (1 / (2*sigma^2)) * temp1
       }
-      else {            # no censored values:
+      else {            # censored values:
         llfn <- sum(cen * log(dnorm(x, mean = mu, sd = sigma))) +
                     sum(as.numeric(cen==0) * log((1 - pnorm(x, mean = mu, sd = sigma))))
       }
@@ -1389,13 +1406,14 @@ crplot <- function(dataset,
       # this sub-section plots the progression of added points, showing interim steps:
       if (animate) {
         par(xpd = FALSE)
+        par(mar = c(3, 3, 1.5, 1.5))
         if (repairpass) {
           plot(c(repaircrlist$x, cr[,1]), c(repaircrlist$y, cr[,2]),
-               main = "in-progress build of confidence region\n(jump-center repairs)",
+               #main = "in-progress build of confidence region\n(jump-center repairs)",
                axes = FALSE, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim)
         }
         else {
-          plot(cr, main = "in-progress build of confidence region",
+          plot(cr, #main = "in-progress build of confidence region",
                axes = FALSE, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim)
         }
         lines(cr, lty = 4, col = "black", lwd = 0.9)
@@ -1403,6 +1421,10 @@ crplot <- function(dataset,
         if (count != 1) {
           segments(rep(theta1.hat, length(philast)), rep(theta2.hat, length(philast)),
                    theta1.hat + big * cos(philast), theta2.hat + big * sin(philast), col = "yellow3")
+        }
+        else if (ellipse_n != 4) {
+          segments(rep(theta1.hat, length(phi)), rep(theta2.hat, length(phi)),
+                   theta1.hat + big * cos(phi), theta2.hat + big * sin(phi), col = "yellow3")
         }
         else {
           segments(rep(theta1.hat, 4), rep(theta2.hat, 4),
@@ -1413,11 +1435,14 @@ crplot <- function(dataset,
                col = c("firebrick4", "blue4", "firebrick4", "blue4", "firebrick4", "blue4", "firebrick4", "chartreuse4")[goodtot + 1])
         segments(cr[dim(cr)[1], 1], cr[dim(cr)[1], 2], cr[1, 1], cr[1, 2], col = 'black', lty = 4) # connect first and last points
         points(theta1.hat, theta2.hat, pch = 8, cex = 0.8, col = 'gray30')
-        legend("topright", legend = c("complete", "near-complete", "incomplete"), lty = 4, pch = c(21, 21, 21),
-               col = c("chartreuse4", "blue4", "firebrick4"), pt.bg = c("green", "blue", "red"), cex = 0.8)
+        legend("topright", legend = c("complete", "near-complete", "incomplete"), lty = c(4, 4, 4), pch = c(1, 21, 21, 21),
+               col = c("chartreuse4", "blue4", "firebrick4"), pt.bg = c("green", "blue", "red"), cex = 0.7,
+               title = paste0(length(cr[,1]), " boundary points, iteration: ", count), bty = "n")
+#        legend("topright", legend = c("complete", "near-complete", "incomplete"), lty = 4, pch = c(21, 21, 21),
+#               col = c("chartreuse4", "blue4", "firebrick4"), pt.bg = c("green", "blue", "red"), cex = 0.8)
         axis(side = 1)
         axis(side = 2)
-        Sys.sleep(0.5)      # pause to view plot
+        Sys.sleep(delay)      # pause to view plot
       }                     # end if (animate)
 
       # dev.off()           # uncomment when saving .png for .gif annimation build
@@ -1426,7 +1451,7 @@ crplot <- function(dataset,
       phinew <- sort(unique(phinew))
       # (below commented-out section is problematic for implimentation but kept here for possible future attempts)
       # Its intent was to cut off search when phinew points outside the region of interest were all that remain
-      # ...doing so, however, caused pre-mature termination in some circumstance (i.e. crplot(c(1.9, 2), 0.05, "invgauss"))
+      # ...doing so, however, caused pre-mature termination in some circumstance (i.e. crplot(c(1.9, 2), "invgauss", 0.05))
       #if (!is.null(repairinfo) && (count > 10)) {
       #  phinew <- phinew[intersect(which(phinew >= min(repairborderphis[1], repairborderphis[2])),
       #                             which(phinew <= max(repairborderphis[1], repairborderphis[2])))]
@@ -2343,9 +2368,9 @@ crplot <- function(dataset,
       add <- miss / slp                                                # delta x
       get_target <- a + add
       get_target3 <- round(get_target, digits = 3)
-      if (!silent) {
-        print(paste0("using nominal coverage of ", get_target3, " (alpha = ", 1 - get_target3, ") to achieve an actual coverage ", 1 - target_alpha))
-      }
+      #if (!silent) {
+      #  print(paste0("using nominal coverage of ", get_target3, " (alpha = ", 1 - get_target3, ") to achieve an actual coverage ", 1 - target_alpha))
+      #}
       return(invisible(1 - get_target))   # return adjusted alpha value
     }
   }
@@ -2736,11 +2761,25 @@ crplot <- function(dataset,
 
   if ((info) || (jumpinfo)) {
     if (!silent) {
-      print(paste0("Confidence region plot complete; made using ", length(phi)," boundary points."))
+      if ((exact) && (alpha != alpha_target)) {
+        newnom <- format(100 * (1 - alpha), digits = 3)
+        print(paste0(100 * (1 - alpha_target), "% exact confidence region plot complete; made using a ",
+                     newnom, "% nominal coverage value and ", length(phi)," boundary points."))
+      }
+      else {
+        print(paste0(100 * (1 - alpha), "% confidence region plot complete; made using ", length(phi)," boundary points."))
+      }
     }
     return(return_crlist)
   }
   else if ((!info) && (!jumpinfo) && (!silent)) {
-    return(paste0("Confidence region plot complete; made using ", length(phi)," boundary points."))
+    if ((exact) && (alpha != alpha_target)) {
+      newnom <- format(100 * (1 - alpha), digits = 3)
+      return(paste0(100 * (1 - alpha_target), "% exact confidence region plot complete; made using a ",
+                   newnom, "% nominal coverage value and ", length(phi)," boundary points."))
+    }
+    else {
+      return(paste0(100 * (1 - alpha), "% confidence region plot complete; made using ", length(phi)," boundary points."))
+    }
   }
 }

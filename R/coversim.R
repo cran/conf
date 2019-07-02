@@ -69,14 +69,13 @@
 #' @return If the optional argument \code{info = TRUE} is included then a list of coverage results is returned.  That list
 #' includes \code{alpha} value(s), \code{n} value(s), coverage and error results per iteration.  Additionally, \code{returnsamp = TRUE}
 #' and/or \code{returnquant = TRUE} will result in an \code{n} row, \code{iter} column maxtix of sample and/or sample cdf values.
-#' @concept confidence region plot
-#' @keywords Graphical Methods, Parameter Estimation, Numerical Optimization
+#' @concept confidence region plot graphics visualization coverage parameter estimation
+#' @keywords distribution models univar
 #' @references Weld, C., Loh, A., Leemis, L. (in press), "Plotting Likelihood-Ratio Based Confidence Regions for
 #' Two-Parameter Univariate Probability Models", The American Statistician.
 #' @seealso \code{\link{crplot}}, \code{\link{uniroot}}
 #' @author Christopher Weld (\email{ceweld@email.wm.edu})
 #' @author Lawrence Leemis (\email{leemis@math.wm.edu})
-#' @keywords confidence region, confidence intervals, statistical graphics, data visualization, coverage
 #'
 #' @usage
 #' coversim(alpha, distn,

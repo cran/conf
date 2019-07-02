@@ -31,17 +31,18 @@ crplot(dataset, alpha, distn,
                 jumpinfo  = FALSE,
                 showjump  = FALSE,
                 showplot  = TRUE,
-                animate  = FALSE,
+                animate   = FALSE,
+                delay     = 0.5,
                 exact     = FALSE,
                 silent    = FALSE )
 }
 \arguments{
 \item{dataset}{a 1 x n vector of data values.}
 
-\item{alpha}{significance level; resulting plot illustrates a 100(1 - \code{alpha})\% confidence region.}
-
-\item{distn}{distribution to fit the dataset to; accepted values: \code{'cauchy'}, \code{'gamma'}, \code{'invgauss'},
+\item{alpha}{significance level; resulting plot illustrates a 100(1 - \code{alpha})\% confidence region.
 \code{'logis'}, \code{'llogis'}, \code{'lnorm'}, \code{'norm'}, \code{'unif'}, \code{'weibull'}.}
+
+\item{distn}{distribution to fit the dataset to; accepted values: \code{'cauchy'}, \code{'gamma'}, \code{'invgauss'},}
 
 \item{cen}{a vector of binary values specifying if the corresponding data values are right-censored (0), or
 observed (1, default); its length must match length(dataset).}
@@ -85,7 +86,7 @@ digits argument in the R function \code{\link{round}} as it pertains to the hori
 
 \item{tol}{the \code{\link{uniroot}} parameter specifying its required accuracy.}
 
-\item{info}{logical argument to return plot information: MLE prints to screen; (x, y) plot point coordinates
+\item{info}{logical argument to return plot information: MLE is returned as a list; (x, y) plot point coordinates
 and corresponding phi angles (with respect to MLE) are returned as a list.}
 
 \item{maxcount}{integer value specifying the number of smoothing search iterations before terminating with \code{maxdeg} not met.}
@@ -112,6 +113,8 @@ only logical assuming \code{crplot} is run for its data only (see the \code{info
 
 \item{animate}{logical argument specifying if an animated plot build will display; the annimation sequence is given in successive plots.}
 
+\item{delay}{numeric value of delay (in seconds) between successive plots when \code{animate = TRUE}.}
+
 \item{exact}{logical argument specifying if alpha value is adjusted to compensate for negative coverage bias to achieve
 (1 - alpha) coverage probability using previously recorded Monte Carlo simulation results; available for limited values of
 alpha (roughly <= 0.2--0.3), n (typically n = 4, 5, ..., 50) and distributions (distn suffixes: weibull, llogis, norm).}
@@ -119,7 +122,16 @@ alpha (roughly <= 0.2--0.3), n (typically n = 4, 5, ..., 50) and distributions (
 \item{silent}{logical argument specifying if console output should be suppressed.}
 }
 \value{
-if the optional argument \code{info = TRUE} is included then a list of plot coordinates and phi angles is returned
+If the optional argument \code{info = TRUE} is included then a list is returned with:
+\itemize{
+\item parm1*: a vector containing the associated confidence region boundary values for parameter 1
+\item parm2*: a vector containing the associated confidence region boundary values for parameter 2
+\item phi: a vector containing the angles used
+\item parm1hat*: the MLE for parameter 1
+\item parm2hat*: the MLE for parameter 2
+}
+*Note: "param1" and "param2" are placeholders that will be replaced with the appropriate parameter names
+based on the probability distribution.
 }
 \description{
 Plots the two-dimensional confidence region for probability distribution parameters (supported distribution
@@ -269,18 +281,8 @@ Christopher Weld (\email{ceweld@email.wm.edu})
 Lawrence Leemis (\email{leemis@math.wm.edu})
 }
 \concept{
-confidence region plot
+confidence region plot graphics visualization coverage parameter estimation
 }
-\keyword{confidence}
-\keyword{data}
-\keyword{estimation,}
-\keyword{graphical}
-\keyword{graphics,}
-\keyword{intervals,}
-\keyword{methods,}
-\keyword{numerical}
-\keyword{optimization}
-\keyword{parameter}
-\keyword{region,}
-\keyword{statistical}
-\keyword{visualization,}
+\keyword{distribution}
+\keyword{models}
+\keyword{univar}
