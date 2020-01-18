@@ -3,7 +3,6 @@
 \docType{package}
 \name{conf}
 \alias{conf}
-\alias{conf-package}
 \title{conf: Visualization and Analysis of Statistical Measures of Confidence}
 \description{
 Enables:

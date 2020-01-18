@@ -235,9 +235,7 @@ Christopher Weld (\email{ceweld@email.wm.edu})
 
 Lawrence Leemis (\email{leemis@math.wm.edu})
 }
-\concept{
-confidence region plot graphics visualization coverage parameter estimation
-}
+\concept{confidence region plot graphics visualization coverage parameter estimation}
 \keyword{distribution}
 \keyword{models}
 \keyword{univar}

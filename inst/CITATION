@@ -7,12 +7,12 @@ citEntry(entry = "Manual",
          title = "{conf}: Visualization and Analysis of Statistical Measures of Confidence",
          author = personList(as.person("Christopher Weld"), as.person("Hayeon Park"),
                              as.person("Lawrence Leemis")),
-         year = 2019,
+         year = 2020,
          note = note,
          url  = "https://CRAN.R-project.org/package=conf",
 
          textVersion =
-         paste0("Christopher Weld, Hayeon Park, and Lawrence Leemis (2019), ",
+         paste0("Christopher Weld, Hayeon Park, and Lawrence Leemis (2020), ",
                "conf: Visualization and Analysis of Statistical Measures of Confidence, ",
                "R package version ", meta$Version,
                ", http://CRAN.R-project.org/package=conf.")

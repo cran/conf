@@ -61,7 +61,7 @@
 #' @param delay numeric value of delay (in seconds) between trials so its plot can be seen (applies when \code{showplot = TRUE}).
 #' @import stats
 #' @import graphics
-#' @importFrom SDMTools pnt.in.poly
+#' @importFrom pracma inpolygon
 #' @importFrom STAR rllogis pllogis
 #' @importFrom utils capture.output
 #' @importFrom statmod dinvgauss pinvgauss qinvgauss rinvgauss
@@ -486,7 +486,8 @@ coversim <- function(alpha,
   # variable x containing information from crplot (from x <- crplot(..., info = TRUE)).
   # It returns 1 when the point is contained within the confidence region, and 0 o.w.
   # It also adds the point of interst in red (missed CR) or green (in CR) to the
-  # existing plot.  It leverages the pnt.in.poly function from SDMTools.
+  # existing plot. It leverages the inpolygon function from pracma. Prior to conf v1.6.2
+  # it leveraged pnt.in.poly function from SDMTools (CRAN deleted b/c unmaintained).
 
   checkpoint <- function(p = c(0, 0), x = 0) {
     if (distn == "cauchy") {
@@ -517,9 +518,10 @@ coversim <- function(alpha,
       pgon <- matrix(xy, nrow = length(x$phi), ncol = 2)
     }
     p <- matrix(p, nrow = 1, ncol = 2)
-    result <- SDMTools::pnt.in.poly(p, pgon)
+    # inpolygon from pracma replaces pnt.in.poly from SDMTools as of conf v1.6.2
+    result <- pracma::inpolygon(x = p[1], y = p[2], xp = pgon[,1], yp = pgon[,2], boundary = TRUE)
     if (showplot == TRUE) {
-      if (result$pip == 1) {
+      if (result) {
         points(p, pch = 21, bg = 'green')
       }
       else {
@@ -528,7 +530,7 @@ coversim <- function(alpha,
       }
       Sys.sleep(delay)                 # pause to view plot
     }
-    return(result$pip)
+    return(result)
   }
 
 

@@ -27,7 +27,7 @@ The `coversim` function returns the number of replications completed, replicatio
 
 ## Methodology
 
-The `coversim` function calls the `crplot` function (also in the `conf` package) in each of its trials.  The `crplot` function plots a confidence region corresponding to the random (default) or user specified dataset (using the optional argument `dataset`).  It then leverages the `pnt.in.poly` function from the `SDMTools` package to determine if the confidence region covers or misses the point of interest (meaning the point is or is not contained within its enclosed area).  It prints a summary of the results (replications by total number, covered, and errors) to the console upon completion, with the option to return and store additional data.
+The `coversim` function calls the `crplot` function (also in the `conf` package) in each of its trials.  The `crplot` function plots a confidence region corresponding to the random (default) or user specified dataset (using the optional argument `dataset`).  It then leverages the `inpolygon` function from the `pracma` package to determine if the confidence region covers or misses the point of interest (meaning the point is or is not contained within its enclosed area).  It prints a summary of the results (replications by total number, covered, and errors) to the console upon completion, with the option to return and store additional data.
 
 ## Installation Instructions
 
