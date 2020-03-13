@@ -8,8 +8,8 @@
 #'
 #' @param dataset a 1 x n vector of data values.
 #' @param distn distribution to fit the dataset to; accepted values: \code{'cauchy'}, \code{'gamma'}, \code{'invgauss'},
-#' @param alpha significance level; resulting plot illustrates a 100(1 - \code{alpha})\% confidence region.
 #' \code{'logis'}, \code{'llogis'}, \code{'lnorm'}, \code{'norm'}, \code{'unif'}, \code{'weibull'}.
+#' @param alpha significance level; resulting plot illustrates a 100(1 - \code{alpha})\% confidence region.
 #' @param cen a vector of binary values specifying if the corresponding data values are right-censored (0), or
 #' observed (1, default); its length must match length(dataset).
 #' @param heuristic numeric value selecting method for plotting: 0 for elliptic-oriented point distribution, and
