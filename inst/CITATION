@@ -6,16 +6,18 @@ citHeader("To cite package 'conf' in publications use:")
 citEntry(entry = "Manual",
          title = "{conf}: Visualization and Analysis of Statistical Measures of Confidence",
          author = personList(as.person("Christopher Weld"), as.person("Hayeon Park"),
+                             as.person("Kexin Feng"), as.person("Heather Sasinowska"),
                              as.person("Lawrence Leemis")),
          year = 2020,
          note = note,
          url  = "https://CRAN.R-project.org/package=conf",
 
          textVersion =
-         paste0("Christopher Weld, Hayeon Park, and Lawrence Leemis (2020), ",
-               "conf: Visualization and Analysis of Statistical Measures of Confidence, ",
-               "R package version ", meta$Version,
-               ", http://CRAN.R-project.org/package=conf.")
+         paste0("Christopher Weld, Hayeon Park,  Kexin Feng, Heather Sasinowska,
+                 and Lawrence Leemis (2020), ",
+                 "conf: Visualization and Analysis of Statistical Measures of Confidence, ",
+                 "R package version ", meta$Version,
+                 ", http://CRAN.R-project.org/package=conf.")
 )
 
 #citEntry(entry = "Article",
@@ -24,20 +26,25 @@ citEntry(entry = "Manual",
 #         author = personList(as.person("Christopher Weld"), as.person("Lawrence Leemis")),
 #         journal = "The American Statistician",
 #         publisher = "Taylor and Francis",
-#         year = "2019",
+#         volume = "74",
+#         number = "2",
+#         pages = "156-168",
+#         year = "2020",
 #         note = "doi:10.1080/00031305.2018.1564696",
 #
 #         textVersion =
-#         paste("Christopher Weld and Lawrence Leemis (in press),",
-#               "Plotting Likelihood-Ratio Based Confidence Regions for Two-Parameter
-#                Univariate Probability Models,",
-#               "The American Statistician. doi:10.1080/00031305.2018.1564696")
+#         paste("Christopher Weld, Andrew Loh and Lawrence Leemis (2020),",
+#               "Plotting Likelihood-Ratio Based Confidence Regions for Two-Parameter"
+#               "Univariate Probability Models, The American Statistician,"
+#               "74:2, 156--168, DOI: 10.1080/00031305.2018.1564696.")
 #)
 
 #bibentry(bibtype = "Manual",
 #         title = "{conf}: Visualization and Analysis of Statistical Measures of Confidence",
 #         author = c(person("Christopher", "Weld"),
 #                    person("Hayeon", "Park"),
+#                    person("Kexin", "Feng"),
+#                    person("Heather", "Sasinowska"),
 #                    person("Lawrence", "Leemis")),
 #         year = year,
 #         note = note,

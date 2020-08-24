@@ -1,31 +1,31 @@
-## ----setup, include = FALSE----------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 
-## ---- fig.width = 4, fig.height = 4, fig.show = 'hold'-------------------
+## ---- fig.width = 4, fig.height = 4, fig.show = 'hold'------------------------
 library(conf)
 set.seed(1)
 crplot(rnorm(10, mean = 5, sd = 10), alpha = 0.1, distn = "norm")
 
-## ---- fig.width = 4, fig.height = 4, fig.show = 'hold'-------------------
+## ---- fig.width = 4, fig.height = 4, fig.show = 'hold'------------------------
 coversim(alpha = 0.1, distn = "norm", n = 10, iter = 1, mu = 5, sigma = 10, showplot = TRUE, seed = 1)
 
-## ---- fig.width = 4, fig.height = 4, fig.show = 'hold'-------------------
+## ---- fig.width = 4, fig.height = 4, fig.show = 'hold'------------------------
 coversim(alpha = 0.1, distn = "norm", n = 10, iter = 1, mu = 5, sigma = 10, showplot = TRUE, seed = 1, point = c(10, 6))
 
-## ---- fig.width = 7.5, fig.height = 3.5, fig.show = 'hold'---------------
+## ---- fig.width = 7.5, fig.height = 3.5, fig.show = 'hold'--------------------
 par(mfrow = c(2, 5))
 coversim(alpha = 0.5, distn = "gamma", n = 16, iter = 10, theta = 1, kappa = 2, showplot = TRUE, mlelab = FALSE, xlim = c(0, 2), ylim = c(0, 4.5), sf = c(1, 2), ylas = 1)
 
-## ---- eval = FALSE-------------------------------------------------------
+## ---- eval = FALSE------------------------------------------------------------
 #  # Note: due to its long runtime, plot results pictured below were imported.  Code producing analogous (but not identical) results is none-the-less given here:
 #  reps <- 10000      # 10,000 iterations per (alpha, n) parameterization
 #  n <- c(2:30)       # sample sizes to assess
 #  coversim(alpha = 0.1, distn = "weibull", n = n, iter = reps, kappa = 3, lambda = 1/2, main = "Weibull(kappa = 3, lambda = 0.5) \n Results at 90% Nominal Coverage \n (iter = 10,000 per datapoint)")
 
-## ---- fig.width = 4, fig.height = 4, fig.show = 'hold', echo = FALSE-----
+## ---- fig.width = 4, fig.height = 4, fig.show = 'hold', echo = FALSE----------
 x <- c(2:30)
 y <- c(0.6942082, 0.7951795, 0.8247000, 0.8416, 0.8543, 0.8589, 0.8608, 0.8724,
        0.8752, 0.8827, 0.8868, 0.8848, 0.8847,
@@ -40,14 +40,14 @@ lines(c(min(x), max(x)), c(0.9, 0.9), col = "gray40", lty = 2)
 #axis(side = 1, at = c(2, seq(5, 30, by = 5)))
 #axis(side = 2, at = seq(0.65, 1, by = 0.05), las = 2)
 
-## ---- eval = FALSE-------------------------------------------------------
+## ---- eval = FALSE------------------------------------------------------------
 #  # Note: due to its long runtime, plot results pictured below were imported (patched together from several days of recording).  Code producing analogous (but not identical) results is none-the-less given here:
 #  reps <- 10000         # 10,000 iterations per parameterization
 #  n <- 100              # sample sizes to assess
 #  a <- seq(0.1, 0.9, by = 0.01)   # alpha values to assess
 #  coversim(alpha = a, distn = "weibull", n = n, iter = reps, kappa = 3, lambda = 1/2, main = "Weibull(kappa = 3, lambda = 0.5) Coverage \n Results for n = 100 (iter = 10,000 per datapoint)")
 
-## ---- fig.width = 4, fig.height = 4, fig.show = 'hold', echo = FALSE-----
+## ---- fig.width = 4, fig.height = 4, fig.show = 'hold', echo = FALSE----------
 # n = 100
 y2 <- c(0.8969, 0.7948, 0.6927, 0.5951, 0.4973, 0.393, 0.2938, 0.2016, 0.0978)
 y2 <- rev(sort(c(y2, 0.0456, 0.1503, 0.2479, 0.3444, 0.4426, 0.5421, 0.6426, 0.7429, 0.8475, 0.9503)))
@@ -60,7 +60,7 @@ lines(c(0, 1), c(0, 1), lty = 1, col = "gray30")
 #axis(side = 2, at = seq(0, 1, by = 0.2), labels = TRUE)
 title(main = "Weibull(kappa = 3, lambda = 0.5) Coverage \n Results for n = 100 (iter = 10,000 per datapoint)", cex.main = 0.92)
 
-## ---- eval = FALSE-------------------------------------------------------
+## ---- eval = FALSE------------------------------------------------------------
 #  # Note: due to its long runtime, plot results pictured below were imported (patched together from several days of recording).  Code producing analogous (but not identical) results is none-the-less given here:
 #  reps <- 10000                       # 10,000 iterations per parameterization
 #  n1 <- c(3, 5, 10)                   # sample sizes to assess
@@ -83,7 +83,7 @@ title(main = "Weibull(kappa = 3, lambda = 0.5) Coverage \n Results for n = 100 (
 #  axis(side = 2, at = seq(0, 1, by = 0.2), labels = TRUE)
 #  legend(0.02, 0.98, legend = rev(c("n = 100", "n = 10", "n = 5", "n = 3", "nominal coverage = actual coverage")), pch = rev(c(16, 16, 16, 16, NA)), col = c("black", "red", "orange", "blue", "forestgreen"), lty = rev(c(NA, NA, NA, NA, 1)), cex = 0.5, y.intersp = 1.5, box.col = NA, bg = NA, pt.lwd = 0.4)
 
-## ---- fig.width = 4, fig.height = 4, fig.show = 'hold', echo = FALSE-----
+## ---- fig.width = 4, fig.height = 4, fig.show = 'hold', echo = FALSE----------
 a <- seq(0.01, 0.99, by = 0.01)
 coverage_targets <- 1 - a
 # simulation results
@@ -113,13 +113,13 @@ points(x2, y2, col = "forestgreen",
 legend(0.02, 0.98, legend = rev(c("n = 100", "n = 10", "n = 5", "n = 3", "nominal coverage = actual coverage")), pch = rev(c(16, 16, 16, 16, NA)), col = c("black", "red", "orange", "blue", "forestgreen"), lty = rev(c(NA, NA, NA, NA, 1)), cex = 0.5, y.intersp = 1.5, box.col = NA, bg = NA, pt.lwd = 0.4)
 title(main = "Weibull(kappa = 3, lambda = 0.5) \n Coverage Results for Various Sample \n Sizes and Nominal Coverages \n (iter = 10,000 per datapoint)", cex.main = 0.92)
 
-## ---- fig.width = 4, fig.height = 4, fig.show = 'hold', warning = FALSE----
+## ---- fig.width = 4, fig.height = 4, fig.show = 'hold', warning = FALSE-------
 ballbearing <- c(17.88, 28.92, 33.00, 41.52, 42.12, 45.60, 48.48, 51.84,
                  51.96, 54.12, 55.56, 67.80, 68.64, 68.64, 68.88, 84.12,
                  93.12, 98.64, 105.12, 105.84, 127.92, 128.04, 173.40)
 coversim(alpha = 0.1, distn = "weibull", dataset = ballbearing, point = c(1, 0.015), showplot = TRUE, origin = TRUE)
 
-## ---- fig.width = 4, fig.height = 4, fig.show = 'hold', warning = FALSE----
+## ---- fig.width = 4, fig.height = 4, fig.show = 'hold', warning = FALSE-------
 set.seed(1)              # ensure consistent results will illustrate in this vignette
 par(mfrow = c(2, 2))     # display resulting plots in a 2 row by 2 column grid
 samplematrix <- matrix(sample(ballbearing, 20), ncol = 4)   # subset 20 samples into four groups (columns)
