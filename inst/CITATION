@@ -8,7 +8,7 @@ citEntry(entry = "Manual",
          author = personList(as.person("Christopher Weld"), as.person("Hayeon Park"),
                              as.person("Kexin Feng"), as.person("Heather Sasinowska"),
                              as.person("Lawrence Leemis")),
-         year = 2020,
+         year = 2022,
          note = note,
          url  = "https://CRAN.R-project.org/package=conf",
 

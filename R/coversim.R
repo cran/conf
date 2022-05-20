@@ -62,7 +62,6 @@
 #' @import stats
 #' @import graphics
 #' @importFrom pracma inpolygon
-#' @importFrom STAR rllogis pllogis
 #' @importFrom utils capture.output
 #' @importFrom statmod dinvgauss pinvgauss qinvgauss rinvgauss
 #' @export
@@ -434,7 +433,7 @@ coversim <- function(alpha,
     stop("'tol' numeric parameter given is invalid (default .Machine$double.eps^0.3)")
 
   if (!is.logical(returnsamp) || length(returnsamp) != 1)
-      stop("'returnsamp' must be a single logical parameter")
+    stop("'returnsamp' must be a single logical parameter")
 
   if (!is.logical(returnquant) || length(returnquant) != 1)
     stop("'returnquant' must be a single logical parameter")
@@ -590,8 +589,8 @@ coversim <- function(alpha,
       }
       else {
         if (distn == "cauchy") {
-         samples <- matrix(rcauchy(samp * iter, location = a, scale = s), nrow = samp)
-         ru01 <- pcauchy(samples, location = a, scale = s)
+          samples <- matrix(rcauchy(samp * iter, location = a, scale = s), nrow = samp)
+          ru01 <- pcauchy(samples, location = a, scale = s)
         }
         else if (distn == "gamma") {
           samples <- matrix(rgamma(samp * iter, shape = kappa, scale = theta), nrow = samp)
@@ -602,8 +601,11 @@ coversim <- function(alpha,
           ru01 <- statmod::pinvgauss(samples, mean = mu, shape = lambda)
         }
         else if (distn == "llogis") {
-          samples <- matrix(STAR::rllogis(samp * iter, location = log(1 / lambda), scale = 1 / kappa), nrow = samp)
-          ru01 <- STAR::pllogis(samples, location = log(1 / lambda), scale = 1 / kappa)
+          # samples <- matrix(STAR::rllogis(samp * iter, location = log(1 / lambda), scale = 1 / kappa), nrow = samp)
+          # ru01 <- STAR::pllogis(samples, location = log(1 / lambda), scale = 1 / kappa)
+          # rllogis and pllogis code taken from the now archived STAR package
+          samples <- matrix(rllogis(samp * iter, location = log(1 / lambda), scale = 1 / kappa), nrow = samp)
+          ru01 <- pllogis(samples, location = log(1 / lambda), scale = 1 / kappa)
         }
         else if (distn == "logis") {
           samples <- matrix(rlogis(samp * iter, location = mu, scale = sigma), nrow = samp)
@@ -632,30 +634,30 @@ coversim <- function(alpha,
       for (i in 1:iter) {
         invisible(utils::capture.output(
           x <- suppressMessages(try(crplot(dataset = samples[, i],
-                          alpha = this_alpha,
-                          distn = distn,
-                          heuristic = heuristic,
-                          maxdeg = maxdeg,
-                          ellipse_n = ellipse_n,
-                          pts = pts,
-                          mlelab = mlelab,
-                          sf = sf,
-                          mar = mar,
-                          xlab = xlab,
-                          ylab = ylab,
-                          main = main,
-                          xlas = xlas,
-                          ylas = ylas,
-                          origin = origin,
-                          xlim = xlim,
-                          ylim = ylim,
-                          tol = tol,
-                          repair = repair,
-                          exact = exact2,
-                          showplot = showplot,
-                          silent = TRUE,
-                          info = TRUE),
-                   silent = TRUE))
+                                           alpha = this_alpha,
+                                           distn = distn,
+                                           heuristic = heuristic,
+                                           maxdeg = maxdeg,
+                                           ellipse_n = ellipse_n,
+                                           pts = pts,
+                                           mlelab = mlelab,
+                                           sf = sf,
+                                           mar = mar,
+                                           xlab = xlab,
+                                           ylab = ylab,
+                                           main = main,
+                                           xlas = xlas,
+                                           ylas = ylas,
+                                           origin = origin,
+                                           xlim = xlim,
+                                           ylim = ylim,
+                                           tol = tol,
+                                           repair = repair,
+                                           exact = exact2,
+                                           showplot = showplot,
+                                           silent = TRUE,
+                                           info = TRUE),
+                                    silent = TRUE))
         ))
 
         # record adjusted alpha value when 'exact = TRUE' (done within first iteration only)
@@ -714,8 +716,8 @@ coversim <- function(alpha,
         if ((((i / iter) * 100) %% 1) == 0) {
           pworking <- format(100 * sum(allresults[count, ]) / max(1, (i - sum(allerrors[count, ]))), digits = 2)
           cat(paste0("\r", ((i / iter) * 100), "% complete"))
-                     # ; covered thus far: ", pworking, "%"))
-          }
+          # ; covered thus far: ", pworking, "%"))
+        }
       }                                # end iter for-loop
 
       # record results and print to screen
