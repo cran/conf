@@ -3,27 +3,24 @@ note <- sprintf("R package version %s", meta$Version)
 
 citHeader("To cite package 'conf' in publications use:")
 
-citEntry(entry = "Manual",
+bibentry(bibtype = "Manual",
          title = "{conf}: Visualization and Analysis of Statistical Measures of Confidence",
-         author = personList(as.person("Christopher Weld"), as.person("Hayeon Park"),
-                             as.person("Kexin Feng"), as.person("Heather Sasinowska"),
-                             as.person("Lawrence Leemis")),
-         year = 2022,
+         author = c(person("Christopher", "Weld", role = c("aut", "cre")),
+                    person("Kexin", "Feng", role = "aut"),
+                    person("Hayeon", "Park", role = "aut"),
+                    person("Yuxin", "Qin", role = "aut"),
+                    person("Heather", "Sasinowska", role = "aut"),
+                    person("Lawrence", "Leemis", role = "aut")),
+         year = "2023",
          note = note,
-         url  = "https://CRAN.R-project.org/package=conf",
-
-         textVersion =
-         paste0("Christopher Weld, Hayeon Park,  Kexin Feng, Heather Sasinowska,
-                 and Lawrence Leemis (2020), ",
-                 "conf: Visualization and Analysis of Statistical Measures of Confidence, ",
-                 "R package version ", meta$Version,
-                 ", http://CRAN.R-project.org/package=conf.")
+         url = "https://CRAN.R-project.org/package=conf",
+         key = "conf-package"
 )
 
-#citEntry(entry = "Article",
+#bibentry(bibtype = "Article",
 #         title = "Plotting Likelihood-Ratio Based Confidence Regions for Two-Parameter
 #         Univariate Probability Models,",
-#         author = personList(as.person("Christopher Weld"), as.person("Lawrence Leemis")),
+#         author = c(person("Christopher", "Weld"), person("Lawrence", "Leemis")),
 #         journal = "The American Statistician",
 #         publisher = "Taylor and Francis",
 #         volume = "74",
@@ -39,14 +36,4 @@ citEntry(entry = "Manual",
 #               "74:2, 156--168, DOI: 10.1080/00031305.2018.1564696.")
 #)
 
-#bibentry(bibtype = "Manual",
-#         title = "{conf}: Visualization and Analysis of Statistical Measures of Confidence",
-#         author = c(person("Christopher", "Weld"),
-#                    person("Hayeon", "Park"),
-#                    person("Kexin", "Feng"),
-#                    person("Heather", "Sasinowska"),
-#                    person("Lawrence", "Leemis")),
-#         year = year,
-#         note = note,
-#         url = "https://CRAN.R-project.org/package=conf")
 

@@ -12,15 +12,19 @@ level of significance, and parametric probability distribution (supported distri
 cauchy, gamma, invgauss, lnorm, llogis, logis, norm, unif, weibull),
 \item coverage simulations (if a point of interest is within or outside of a confidence region
 boundary) for either random samples drawn from a user-specified parametric distribution or for a
-user-specified dataset and point of interest, and
-\item calculating confidence intervals and the associated actual coverage for binomial proportions.
+user-specified dataset and point of interest,
+\item calculating confidence intervals and the associated actual coverage for binomial proportions, and
+\item calculating the support values and the probability mass function of the Kaplan-Meier product-limit
+estimator.
 }
 
 \bold{Request from authors}:  Please properly cite any use of this package and/or its algorithms,
-which are detailed in the corresponding publication by Weld (2018)
-<doi:10.1080/00031305.2018.1564696>.  Additionally, we welcome and appreciate your feedback and
+which are detailed in the corresponding publication by Weld et al. (2018)
+<doi:10.1080/00031305.2018.1564696>, Park and Leemis (2019) <doi:10.1002/sim.8189>,
+Feng et al. (2022) <doi:10.1007/s00180-021-01183-3>, and Qin et al. (2023)
+<doi:10.1080/00031305.2022.2070279>.  Additionally, we welcome and appreciate your feedback and
 insights as to how this resource is being leveraged to improve whatever it is you do.  Please
-include your name and academic and/or business affiliation in your correspondance.
+include your name and academic and/or business affiliation in your correspondence.
 }
 \details{
 This package includes the functions:
@@ -31,6 +35,11 @@ This package includes the functions:
 \item actual coverage calculation for binomial proportions: \code{\link{binomTestCoverage}},
 \item actual coverage plots for binomial proportions: \code{\link{binomTestCoveragePlot}}, and
 \item ensemble confidence intervals for binomial proportions: \code{\link{binomTestEnsemble}}.
+\item  minimum root mean square confidence intervals for binomial proportions: \code{\link{binomTestMSE}}
+\item  Kaplan-Meier product-limit estimator support values: \code{\link{km.support}}
+\item  enumeration of Kaplan-Meier product-limit estimator outcomes: \code{\link{km.outcomes}}
+\item  probability mass function of the Kaplan-Meier product-limit estimator: \code{\link{km.pmf}}
+\item  probability mass functions of the Kaplan-Meier product-limit estimator: \code{\link{km.surv}}
 }
 }
 \section{Vignettes}{
@@ -46,7 +55,7 @@ supported this work.
 }
 
 \author{
-Christopher Weld, Hayeon Park, Larry Leemis
+Christopher Weld, Kexin Feng, Hayeon Park, Yuxin Qin, Heather Sasinowska, Larry Leemis
 
 Maintainer: Christopher Weld <ceweld@email.wm.edu>
 }
