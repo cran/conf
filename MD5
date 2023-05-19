@@ -1,4 +1,4 @@
-72972d4585c57c1a33e448676b86b284 *DESCRIPTION
+4b44182f0867afe0f02e8e994fd77ee9 *DESCRIPTION
 3a0f0af022379a4ac3a562b792f25696 *NAMESPACE
 ae47dbdfd899ac818c366a94cc0afb41 *R/STAR_package_functions.R
 191885467135476b4349a7989bdcf277 *R/binomTest.R
@@ -18,13 +18,13 @@ b6f3cbc94a8d8e82cd5046cfe966e539 *R/km.pmf.R
 7a28ffde3cf40d633e13b9ff5e44d6c2 *inst/CITATION
 0dabd911e319ff3b79b1cb5242bad4a2 *inst/doc/coversim.R
 b6320e0c32ecbbf31535c0452ac723a3 *inst/doc/coversim.Rmd
-6ecfa56159bec1c2e882a28729de6f98 *inst/doc/coversim.html
+ac11e7142ff8c0ddb14eaced09f9d0fc *inst/doc/coversim.html
 211fdd157ef71047b2ed039a46a5e6be *inst/doc/crplot.R
 6f5c7477b4a5542c12a92bd83ac0b9d4 *inst/doc/crplot.Rmd
-9e56166179c7df55a6c6208531440d27 *inst/doc/crplot.html
+c6b6ccf11762dd236bb94ae92cd2e37f *inst/doc/crplot.html
 bfb363f57925eb658ee50d2c21b361a9 *inst/doc/crplot_advanced.R
 3fe9ea2ff094afeda48167692049c6c1 *inst/doc/crplot_advanced.Rmd
-a44d3fb971f8dd03ab8599ddebdb26d6 *inst/doc/crplot_advanced.html
+095a26d5e280c7733eca51d095697bad *inst/doc/crplot_advanced.html
 0e68a04c8c6ea6bf648391fd167190ce *man/binomTest.Rd
 6a7dbcc2b6ecdf1ed5535bc0cbbfbcf0 *man/binomTestCoverage.Rd
 5a3748d88fb88763fb110accff2d0ee4 *man/binomTestCoveragePlot.Rd
