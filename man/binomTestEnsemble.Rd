@@ -60,7 +60,11 @@ If only one of the logical arguments is \code{TRUE}, the code returns a simple c
 The Wald confidence interval is omitted because it degenerates in actual coverage for \eqn{x = 0} and \eqn{x = n}.
 }
 
-\author{Hayeon Park (\email{hpark03@email.wm.edu}),
+\references{
+Park, H., Leemis, L. (2019), "Ensemble Confidence Intervals for Binomial Proportions", Statistics in Medicine, 38 (18), 3460-3475.
+}
+
+\author{Hayeon Park (\email{hpark031@gmail.com}),
   Larry Leemis (\email{leemis@math.wm.edu})
 }
 

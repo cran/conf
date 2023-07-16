@@ -3,12 +3,12 @@
 \title{Maximum Likelihood Parameter Estimation of a Gamma Model with Possibly
   Censored Data}
 \description{
-  Estimate Gamma model parameters by the maximum likelihood
+  Estimate gamma model parameters by the maximum likelihood
   method using possibly censored data. Two different parameterizations
-  of the Gamma distribution can be used.
-  The corresponding code for this function as well as the 
-  manual information included here is attributed to 
-  Christophe Pouzat's STAR Package (archived 2022-05-23). 
+  of the gamma distribution can be used.
+  The corresponding code for this function as well as the
+  manual information included here is attributed to
+  Christophe Pouzat's STAR Package (archived 2022-05-23).
 }
 \usage{
 gammaMLE(yi, ni = numeric(length(yi)) + 1,
@@ -24,7 +24,7 @@ gammaMLE(yi, ni = numeric(length(yi)) + 1,
     parameterization (\code{FALSE}) be used?}
 }
 \details{
-  There is no closed form expression for the MLE of a Gamma distribution. The
+  There is no closed form expression for the MLE of a gamma distribution. The
   numerical method implemented here uses the profile likelihood
   described by Monahan (2001) pp 210-216.
 
@@ -48,7 +48,7 @@ gammaMLE(yi, ni = numeric(length(yi)) + 1,
 }
 \references{
   Monahan, J. F. (2001) \emph{Numerical Methods of Statistics}. CUP.
-  
+
   Lindsey, J.K. (2004) \emph{Introduction to Applied Statistics: A
     Modelling Approach}. OUP.
 }
@@ -59,7 +59,7 @@ gammaMLE(yi, ni = numeric(length(yi)) + 1,
   check that the contours are reasonably close to ellipses.
 }
 \seealso{
-  \code{\link{invgaussMLE}}.}
+  \code{\link{invgaussMLE}}}
 \examples{
 \dontrun{
 ## Simulate sample of size 100 from a gamma distribution

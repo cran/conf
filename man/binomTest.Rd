@@ -36,7 +36,7 @@
   This confidence interval is constructed by calculating lower and upper bounds associated with the confidence interval procedure specified by the \code{intervalType} argument. Lower bounds that are negative are set to 0 and upper bounds that are greater than 1 are set to 1.
 }
 
-\author{Hayeon Park (\email{hpark03@email.wm.edu}),
+\author{Hayeon Park (\email{hpark031@gmail.com}),
   Larry Leemis (\email{leemis@math.wm.edu})}
 
 \seealso{

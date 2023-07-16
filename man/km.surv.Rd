@@ -83,10 +83,9 @@ Function of the Kaplan-Meier Product-Limit Estimator",
 }
 
 \examples{
-  km.surv(n = 4, h = 2/3, lambda = 100, ev = TRUE, line = TRUE)
-  km.surv(n = 5, h = 3/4, lambda = 50, graydots = TRUE, gray.cex = 0.6, gray.outline = FALSE)
-  km.surv(n = 7, h = 1/5, lambda = 30, graydots = TRUE, gray.cex = 0.6, xfrac = FALSE)
-
+km.surv(n = 4, h = 2/3, lambda = 100, ev = TRUE, line = TRUE)
+km.surv(n = 5, h = 3/4, lambda = 50, graydots = TRUE, gray.cex = 0.6, gray.outline = FALSE)
+km.surv(n = 7, h = 1/5, lambda = 30, graydots = TRUE, gray.cex = 0.6, xfrac = FALSE)
 }
 
 \keyword{Kaplan-Meier estimator}

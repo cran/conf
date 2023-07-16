@@ -36,7 +36,7 @@
   covers \eqn{p} when \eqn{X = x} (see Vollset, 1993).
 
   The binomial distribution with arguments \code{size} = \eqn{n} and
-  \code{prob} = \eqn{p} has probability mass function  
+  \code{prob} = \eqn{p} has probability mass function
 
   \deqn{p(x) = {n \choose x} p^x (1-p)^{n-x}}{%
     p(x) = choose(n, x) p^x (1-p)^(n-x)}
@@ -63,7 +63,7 @@
   Vollset, S.E. (1993). Confidence Intervals for a Binomial Proportion. Statistics in Medicine, 12, 809-824.
 }
 
-\author{Hayeon Park (\email{hpark03@email.wm.edu}),
+\author{Hayeon Park (\email{hpark031@gmail.com}),
   Larry Leemis (\email{leemis@math.wm.edu})
   }
 

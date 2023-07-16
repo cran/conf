@@ -70,10 +70,10 @@
 #' and/or \code{returnquant = TRUE} will result in an \code{n} row, \code{iter} column maxtix of sample and/or sample cdf values.
 #' @concept confidence region plot graphics visualization coverage parameter estimation
 #' @keywords distribution models univar
-#' @references Weld, C., Loh, A., Leemis, L. (in press), "Plotting Likelihood-Ratio Based Confidence Regions for
-#' Two-Parameter Univariate Probability Models", The American Statistician.
+#' @references C. Weld, A. Loh, L. Leemis (2020), "Plotting Two-Dimensional Confidence Regions",
+#' The American Statistician, Volume 72, Number 2, 156--168.
 #' @seealso \code{\link{crplot}}, \code{\link{uniroot}}
-#' @author Christopher Weld (\email{ceweld@email.wm.edu})
+#' @author Christopher Weld (\email{ceweld241@gmail.com})
 #' @author Lawrence Leemis (\email{leemis@math.wm.edu})
 #'
 #' @usage
@@ -144,15 +144,15 @@
 #' \item The gamma distribution
 #' for shape parameter \eqn{\kappa > 0}, scale parameter \eqn{\theta > 0}, and \eqn{x > 0},
 #' has the probability density function
-#' \deqn{1 / (Gamma(\kappa) \theta ^ \kappa) x ^ {(\kappa - 1)} exp(-x / \theta).}
+#' \deqn{1 / (Gamma(\kappa) \theta ^ \kappa) x ^ {(\kappa - 1)} \exp(-x / \theta).}
 #'
 #' \item The inverse Gaussian distribution
 #' for mean \eqn{\mu > 0}, shape parameter \eqn{\lambda > 0}, and \eqn{x > 0},
 #' has the probability density function
-#' \deqn{\sqrt (\lambda / (2 \pi x ^ 3)) exp( - \lambda (x - \mu) ^ 2 / (2 \mu ^ 2 x)).}
+#' \deqn{\sqrt{(\lambda / (2 \pi x ^ 3))} \exp( - \lambda (x - \mu) ^ 2 / (2 \mu ^ 2 x)).}
 #'
 #' \item The log logistic distribution
-#' for scale parameter \eqn{\lambda > 0}, shape parameter \eqn{\kappa > 0}, and \eqn{x \ge 0},
+#' for scale parameter \eqn{\lambda > 0}, shape parameter \eqn{\kappa > 0}, and \eqn{x > 0},
 #' has a probability density function
 #' \deqn{(\kappa \lambda) (x \lambda) ^ {(\kappa - 1)} / (1 + (\lambda x) ^ \kappa) ^ 2.}
 #'
@@ -160,17 +160,17 @@
 #' for the real-numbered mean \eqn{\mu} of the logarithm, standard deviation \eqn{\sigma > 0}
 #' of the logarithm, and \eqn{x > 0},
 #' has the probability density function
-#' \deqn{1 / (x \sigma \sqrt(2 \pi)) exp(-(\log x - \mu) ^ 2 / (2 \sigma ^ 2)).}
+#' \deqn{1 / (x \sigma \sqrt{2 \pi}) \exp(-(\log x - \mu) ^ 2 / (2 \sigma ^ 2)).}
 #'
 #' \item The logistic distribution
 #' for the real-numbered location parameter \eqn{\mu}, scale parameter \eqn{\sigma}, and \eqn{x} is a real number,
 #' has the probability density function
-#' \deqn{(1 / \sigma) exp((x - \mu) / \sigma) (1 + exp((x - \mu) / \sigma)) ^ {-2}}
+#' \deqn{(1 / \sigma) \exp((x - \mu) / \sigma) (1 + \exp((x - \mu) / \sigma)) ^ {-2}}
 #'
 #' \item The normal distribution
 #' for the real-numbered mean \eqn{\mu}, standard deviation \eqn{\sigma > 0}, and \eqn{x} is a real number,
 #' has the probability density function
-#' \deqn{1 / \sqrt (2 \pi \sigma ^ 2) exp(-(x - \mu) ^ 2 / (2 \sigma ^ 2)).}
+#' \deqn{1 / \sqrt{2 \pi \sigma ^ 2} \exp(-(x - \mu) ^ 2 / (2 \sigma ^ 2)).}
 #'
 #' \item The uniform distribution for real-valued parameters \eqn{a} and \eqn{b} where \eqn{a < b}
 #' and \eqn{a \le x \le b},
@@ -180,7 +180,7 @@
 #' \item The Weibull distribution
 #' for scale parameter \eqn{\lambda > 0}, shape parameter \eqn{\kappa > 0}, and \eqn{x > 0},
 #' has the probability density function
-#' \deqn{\kappa (\lambda ^ \kappa) x ^ {(\kappa - 1)} exp(-(\lambda x) ^ \kappa).}
+#' \deqn{\kappa (\lambda ^ \kappa) x ^ {(\kappa - 1)} \exp(-(\lambda x) ^ \kappa).}
 #' }
 #'
 #'

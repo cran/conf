@@ -1,0 +1,148 @@
+---
+title: "km.outcomes"
+author: "Yuxin Qin <yqin08@wm.edu>, Lawrence Leemis <leemis@math.wm.edu>, Heather Sasinowska <hdsasinowska@wm.edu>"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{km.outcomes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8} 
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+The `km.outcomes` function is part of the [conf](https://CRAN.R-project.org/package=conf) package. The Kaplan-Meier product-limit estimator (KMPLE) is used to estimate the survivor function for a data set of positive values in the presence of right censoring[^1]. The `km.outcomes` function generates a matrix with all possible combinations of observed failures and right-censored values and the resulting support values for the Kaplan-Meier product-limit estimator for a sample of size $n$. The function has only the sample size $n$ as its argument.
+
+[^1]: Kaplan, E. L., and Meier, P. (1958), "Nonparametric Estimation from Incomplete Observations," Journal of the American Statistical Association, 53, 457–481.
+
+
+
+
+
+## Installation Instructions
+
+The `km.outcomes` function is accessible following installation of the `conf` package:
+
+```         
+install.packages("conf")
+library(conf)
+```
+
+## Details
+The KMPLE is a nonparametric estimate of the survival function
+from a data set of lifetimes that includes right-censored
+observations and is used in a variety of application areas. 
+For simplicity, we will refer to the object of interest
+generically as the item and the event of interest
+as the failure.
+
+Let $n$ denote the number of items on test. 
+For a given $n$, there are $2^{n+1} -1$ different possible outcomes (failure times or censoring times) for observing an experiment at a specific time of interest.
+For any combination of failure or censored times at a specific time, the KMPLE can be calculated. 
+The KMPLE of the survival function $S(t)$ is given by
+$$
+\hat{S}(t) =
+\prod\limits_{i:t_i \leq t}\left( 1 - \frac{d_i}{n_i}\right),
+$$
+for $t \ge 0$,
+where $t_1, \, t_2, \, \ldots, \, t_k$ are the times when 
+at least one failure is observed ($k$ is an integer between
+1 and $n$, which is the number of distinct failure times in
+the data set),
+$d_1, \, d_2, \, \ldots, \, d_k$ are the
+number of failures observed at times
+$t_1, \, t_2, \, \ldots, \, t_k$, 
+and 
+$n_1, \, n_2, \, \ldots, \, n_k$ are
+the number of items at risk just prior to times 
+$t_1, \, t_2, \, \ldots, \, t_k$.
+It is common practice to have the KMPLE "cut off" after
+the largest time recorded if it corresponds to a 
+right-censored observation[^2].
+The KMPLE drops to zero after the
+largest time recorded if it is a failure;
+the KMPLE is undefined, however, after the
+largest time recorded if it is a right-censored
+observation.
+
+The support values are calculated for each number of observed events between times 0 and the observation time, listed in column $l$ for each combination of failure times or censoring times up to that time.
+The columns labeled as $d1, d2, ..., dn$ list a 0 if the event corresponds to a censored observation and a 1 if the event corresponds to a failure.
+
+The support values are listed numerically in the $S(t)$ column, and in order to keep the support values as exact fractions, the numerators and denominators are stored separately in the output columns named $num$ and $den$. 
+
+
+[^2]: Kalbfleisch, J. D., and Prentice, R. L. (2002),
+The Statistical Analysis of Failure Time Data (2nd ed.),
+Hoboken, NJ: Wiley. 
+
+## Examples
+
+To illustrate a simple case, consider the KMPLE for the experiment when there are 
+$n = 4$ items on test.
+
+### Specific Example
+
+Let's consider an experiment where failures 
+occur at times $t = 1$ and $t = 3$,
+and right censorings occur at times $t = 2$ and $t = 4$.  In
+this setting, the KMPLE is 
+
+\begin{equation*}
+  \hat{S}(t) =
+  \begin{cases}
+    1 & \qquad 0 \le t < 1 \\
+    \left(1 - \frac{1}{4}\right) =
+    \frac{3}{4} & \qquad 1 \leq t < 3 \\
+    \left(1 - \frac{1}{4}\right)
+    \left(1 - \frac{1}{2}\right) =
+    \frac{3}{8} & \qquad 3 \leq t < 4 \\
+    \text{NA} & \qquad t \geq 4,
+  \end{cases}
+\end{equation*}
+
+\noindent where NA indicates that the KMPLE is undefined[^3]. 
+
+[^3]: Qin Y., Sasinowska H. D., Leemis L. M. (2023), “The Probability Mass Function of the Kaplan–Meier Product–Limit Estimator,” The American Statistician, 77 (1), 102–110.
+
+
+
+
+
+
+```{r, fig.width = 4, fig.height = 4, fig.show = 'hold'}
+library(conf)
+#  display the outcomes and KMPLE for n = 4 items on test
+n = 4
+km.outcomes(n)
+
+``` 
+
+If we observe the experiment at time $t_0 = 2.5$, $\hat{S}(t) = 3/4$ and is represented by row 5 where $l = 2$ events have occurred: one failure $d1=1$ and one censored item $d2=0$. Notice that $d3$ and $d4$ are NA since they have not been observed yet. If instead, we choose  $t_0 = 4.5$, $\hat{S}(t) = \text{NA}$ and is represented by row 21 where $l = 4$ events have occurred: first was a failure $d1=1$, second was a censored item $d2=0$, third was a failure $d3=1$, and the fourth and last item was a censored $d4 = 0$. 
+
+### General Example
+
+Looking at the above output from the Specific Example, the
+first row corresponds to choosing a time value $t_0$ that
+satisfies $0 < t_0 < 1$, which is associated with an
+observation time prior to the occurrence of an observed
+failure or censoring time. That is, $l = 0$ events have occurred, and -1's are listed to represent these initialized values. All $n$ items are on test and $\hat{S}(t)= 1$.
+
+For the second row, $l=1$ event has occurred and that event is a censored item $d1 = 0$. We have not observed any of the other items so they are listed as NA's.
+
+The third row shows the case when only $l=1$ event has occurred and that event is a failure; that is, $d1 = 1$. Again, we have not observed any of the other items so they are listed as NA's.
+
+## Package Notes
+For more information on how the $\hat{S}(t)$ values are generated, please refer to the vignette titled *km.support* which is available via the link on the [conf](https://CRAN.R-project.org/package=conf) package webpage. 
+
+In addition, the functions `km.pmf` and `km.surv`, which are also part of the [conf](https://CRAN.R-project.org/package=conf) package, have dependencies on `km.outcomes`.
+
+
+
+

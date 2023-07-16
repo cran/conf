@@ -5,10 +5,10 @@
 \description{
   Estimate inverse Gaussian model parameters by the maximum likelihood
   method using possibly censored data. Two different parameterizations
-  of the inverse Gaussian distribution can be used. 
-  The corresponding code for this function as well as the 
-  manual information included here is attributed to   
-  Christophe Pouzat's STAR Package (archived 2022-05-23). 
+  of the inverse Gaussian distribution can be used.
+  The corresponding code for this function as well as the
+  manual information included here is attributed to
+  Christophe Pouzat's STAR Package (archived 2022-05-23).
 }
 \usage{
 invgaussMLE(yi, ni = numeric(length(yi)) + 1,
@@ -25,7 +25,7 @@ invgaussMLE(yi, ni = numeric(length(yi)) + 1,
     (default) of \code{"boundary"}.}
 }
 \details{
-  The 2 different parameterizations of the inverse Gaussian distribution
+  The two different parameterizations of the inverse Gaussian distribution
   are discussed in the manual of \code{\link{dinvgauss}}.
 
   In the absence of censored data the ML estimates are available in
@@ -46,7 +46,7 @@ invgaussMLE(yi, ni = numeric(length(yi)) + 1,
   Standard errors are obtained from the inverse of the observed
   information matrix at the MLE. They are transformed to go from the log
   scale used by the optimization routine, when the latter is used (ie,
-  for censored data) to the parameterization requested. 
+  for censored data) to the parameterization requested.
 }
 \value{
   A list of class \code{durationFit} with the following components:
@@ -68,13 +68,13 @@ invgaussMLE(yi, ni = numeric(length(yi)) + 1,
   should plot contours using function \code{r} in the returned list and
   check that the contours are reasonably close to ellipses.
 }
-\seealso{\code{\link{dinvgauss}},\code{\link{gammaMLE}},\code{\link{llogisMLE}}.}
+\seealso{\code{\link{dinvgauss}}, \code{\link{gammaMLE}}, \code{\link{llogisMLE}}}
 \examples{
 ## Simulate sample of size 100 from an inverse Gaussian
 ## distribution
 set.seed(1102006,"Mersenne-Twister")
 sampleSize <- 100
-mu.true <- 0.075 
+mu.true <- 0.075
 sigma2.true <- 3
 sampleSize <- 100
 sampIG <- rinvgauss(sampleSize,mu=mu.true,sigma2=sigma2.true)
@@ -301,7 +301,7 @@ devianceIG100 <- lapply(1:nbReplicate,
                                                   a=intervalS2(4)[1],
                                                   b=intervalS2(4)[2])
                             logMuProfFct(logMu,c(a,b)) - qchisq(CI,1)/2
-                          
+
                           logS2ProfFct <- function(logS2,...) {
                             optimise(function(x)
                                      sampIGmleIG$mll(c(x,logS2))+logLik(sampIGmleIG),...)$objective
@@ -310,7 +310,7 @@ devianceIG100 <- lapply(1:nbReplicate,
                                                   a=intervalMu(4)[1],
                                                   b=intervalMu(4)[2])
                             logS2ProfFct(logS2,c(a,b)) - qchisq(CI,1)/2
-                          
+
                           factor <- 4
                           while((logMuProfCI(intervalMu(factor)[2],0.99) *
                                  logMuProfCI(logPara[1],0.99) >= 0) ||

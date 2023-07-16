@@ -45,7 +45,8 @@ This package includes the functions:
 \section{Vignettes}{
 
 The CRAN website https://CRAN.R-project.org/package=conf contains links for vignettes on the
-\code{\link{crplot}} and \code{\link{coversim}} functions.
+\code{\link{crplot}}, \code{\link{coversim}}, \code{\link{km.outcomes}}, \code{\link{km.pmf}}, \code{\link{km.support}},
+and \code{\link{km.surv}} functions.
 }
 
 \section{Acknowledgments}{
@@ -57,5 +58,5 @@ supported this work.
 \author{
 Christopher Weld, Kexin Feng, Hayeon Park, Yuxin Qin, Heather Sasinowska, Larry Leemis
 
-Maintainer: Christopher Weld <ceweld@email.wm.edu>
+Maintainer: Christopher Weld <ceweld241@gmail.com>
 }

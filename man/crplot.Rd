@@ -37,7 +37,7 @@ crplot(dataset, alpha, distn,
                 silent    = FALSE )
 }
 \arguments{
-\item{dataset}{a 1 x n vector of data values.}
+\item{dataset}{a vector of n data values.}
 
 \item{alpha}{significance level; resulting plot illustrates a 100(1 - \code{alpha})\% confidence region.}
 
@@ -134,7 +134,7 @@ If the optional argument \code{info = TRUE} is included then a list is returned 
 based on the probability distribution.
 }
 \description{
-Plots the two-dimensional confidence region for probability distribution parameters (supported distribution
+Plotting a two-dimensional confidence region for probability distribution parameters (supported distribution
 suffixes: cauchy, gamma, invgauss, lnorm, llogis, logis, norm, unif, weibull) corresponding to a user given
 complete or right-censored dataset and level of significance.  See the CRAN website
 https://CRAN.R-project.org/package=conf for a link to two \code{crplot} vignettes.
@@ -174,7 +174,7 @@ is specified in conjunction with an \code{ellipse_n} value greater than four.
 Both of the aforementioned heuristics use a radial profile log likelihood function to identify
 points along the confidence region boundary.  It cuts the log likelihood function in a directional
 azimuth from its MLE, and locates the associated confidence region boundary point using the
-asymptotic results associated with the ratio test statistic \eqn{-2 [log L(\theta) - log L(\theta hat)]}
+asymptotic results associated with the ratio test statistic \eqn{-2 [\log L(\theta) - \log L(\hat{\theta})]}
 which converges in distribution to the chi-square distribution with two degrees of freedom (for
 a two parameter distribution).
 
@@ -266,17 +266,17 @@ crplot(dataset = ballbearing, distn = "invgauss", alpha = 0.05,
        pts = FALSE)
 }
 \references{
-Jaeger, A. (2016), "Computation of Two- and Three-Dimensional Confidence Regions with the Likelihood Ratio",
+A. Jaeger (2016), "Computation of Two- and Three-Dimensional Confidence Regions with the Likelihood Ratio",
 The American Statistician, 49, 48--53.
 
-Weld, C., Loh, A., Leemis, L. (in press), "Plotting Likelihood-Ratio Based Confidence Regions for
-Two-Parameter Univariate Probability Models", The American Statistician.
+C. Weld, A. Loh, L. Leemis (2020), "Plotting Two-Dimensional Confidence Regions",
+The American Statistician, Volume 72, Number 2, 156--168.
 }
 \seealso{
 \code{\link{coversim}}, \code{\link{uniroot}}
 }
 \author{
-Christopher Weld (\email{ceweld@email.wm.edu})
+Christopher Weld (\email{ceweld241@gmail.com})
 
 Lawrence Leemis (\email{leemis@math.wm.edu})
 }

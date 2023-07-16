@@ -1,6 +1,6 @@
 ---
 title: "crplot Advanced Options"
-author: "Christopher Weld <ceweld@email.wm.edu>, Lawrence Leemis <leemis@math.wm.edu>"
+author: "Christopher Weld <ceweld241@gmail.com>, Lawrence Leemis <leemis@math.wm.edu>"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >

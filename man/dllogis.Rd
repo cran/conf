@@ -6,10 +6,10 @@
 \title{The Log Logistic Distribution}
 \description{
   Density, distribution function, quantile function,
-  and random generation for the log logistic. 
-  The corresponding code for these functions as well as the 
-  manual information included here is attributed to   
-  Christophe Pouzat's STAR Package (archived 2022-05-23). 
+  and random generation for the log logistic distribution.
+  The corresponding code for these functions as well as the
+  manual information included here is attributed to
+  Christophe Pouzat's STAR Package (archived 2022-05-23).
 }
 \usage{
 dllogis(x, location = 0, scale = 1, log = FALSE)
@@ -22,7 +22,7 @@ rllogis(n, location = 0, scale = 1)
   \item{x, q}{vector of quantiles.}
   \item{p}{vector of probabilities.}
   \item{n}{number of observations. If \code{length(n) > 1}, the length
-    is taken to be the number required.} 
+    is taken to be the number required.}
   \item{location, scale}{location and scale parameters (non-negative numeric).}
   \item{lower.tail}{logical; if \code{TRUE} (default), probabilities are
     \code{P[X <= x]}, otherwise, \code{P[X > x]}.}
@@ -32,15 +32,15 @@ rllogis(n, location = 0, scale = 1)
   If \code{location} or \code{scale} are omitted, they assume the
   default values of 0 and 1 respectively.
 
-  The log-Logistic distribution with \code{location = m} and \code{scale
+  The log-logistic distribution with \code{location = m} and \code{scale
     = s} has distribution function
 
   \deqn{\mathrm{F}(x) = \frac{1}{1+ \exp(-\frac{\log (x) - m}{s})}}{F(x) = 1 / (1 + exp(-(log(x)-m)/s))}
 
   and density
 
-  \deqn{\mathrm{f}(x)=\frac{1}{s \, x} \frac{\exp (-\frac{\log (x) - m}{s})}{(1+ \exp(-\frac{\log (x) - m}{s}))^2}}{f(x) = 1/(s*x) exp(-(log(x)-m)/s) (1 + exp(-(log(x)-m)/s))^-2.}
-  
+  \deqn{f(x)=\frac{1}{s \, x} \frac{\exp (-\frac{\log (x) - m}{s})}{(1+ \exp(-\frac{\log (x) - m}{s}))^2}}{f(x) = 1/(s*x) exp(-(log(x)-m)/s) (1 + exp(-(log(x)-m)/s))^-2}.
+
 }
 \value{
   \code{dllogis} gives the density, \code{pllogis} gives the

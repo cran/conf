@@ -29,13 +29,13 @@
     \item various sample sizes,
     \item various numbers of successes.
   }
-  
+
   When the \code{binomTestMSE} function is called, it returns a two-element vector in which
   \itemize{
     \item the first element is the lower bound of the RMSE-minimizing confidence interval, and
     \item the second element is the upper bound of the RMSE-minimizing confidence interval.
   }
-  
+
   An RMSE-minimizing two-sided 100 * (1 - alpha) percent confidence interval
   for p is constructed from a random sample of size n from a Bernoulli(p)
   population.  The parameter \code{x} gives the number of successes in the n
@@ -61,9 +61,15 @@
   interval procedures might prove to be optimal.  However, this procedure does
   ensure a lower RMSE than any of the four existing confidence intervals for
   all n.
+
 }
 
-\author{Kexin Feng (\email{kfeng01@email.wm.edu}),
+\references{
+  Feng, K., Sasinowska, H., Leemis, L. (2022), "RMSE-Minimizing Confidence Interval
+  for the Binomial Parameter", Computational Statistics, 37 (4), 2022, 1855-1885.
+}
+
+\author{Kexin Feng (\email{kfeng@caltech.edu}),
   Larry Leemis (\email{leemis@math.wm.edu}),
   Heather Sasinowska (\email{hdsasinowska@wm.edu})
 }

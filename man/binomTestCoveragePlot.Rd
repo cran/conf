@@ -75,7 +75,7 @@
   The \code{gridCurves} argument is assigned a logical value which indicates whether the acceptance curves giving all possible actual coverage values should be displayed as gray curves.
 }
 
-\author{Hayeon Park (\email{hpark03@email.wm.edu}),
+\author{Hayeon Park (\email{hpark031@gmail.com}),
   Larry Leemis (\email{leemis@math.wm.edu})
   }
 
