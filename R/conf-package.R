@@ -52,6 +52,7 @@
 #'
 #' Maintainer: Christopher Weld <ceweld241@gmail.com>
 #'
+#' @aliases conf-package
 #' @docType package
 #' @name conf
 
