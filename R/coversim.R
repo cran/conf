@@ -39,9 +39,9 @@
 #' @param xlab string specifying the horizontal axis label (applies to confidence region plots when \code{showplot = TRUE}).
 #' @param ylab string specifying the vertical axis label (applies to confidence region plots when \code{showplot = TRUE}).
 #' @param main string specifying the plot title (applies to confidence region plots when \code{showplot = TRUE}).
-#' @param xlas numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}},
+#' @param xlas numeric value of 0, 1, 2, or 3 specifying the style of axis labels (see \code{las} in \code{\link{par}},
 #' applies to confidence region plots when \code{showplot = TRUE}).
-#' @param ylas numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}},
+#' @param ylas numeric value of 0, 1, 2, or 3 specifying the style of axis labels (see \code{las} in \code{\link{par}},
 #' applies to confidence region plots when \code{showplot = TRUE}).
 #' @param origin logical argument to include the plot origin (applies to confidence region plots when \code{showplot = TRUE}).
 #' @param xlim two element vector containing horizontal axis minimum and maximum values (applies to confidence region plots

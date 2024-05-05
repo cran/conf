@@ -28,8 +28,8 @@
 #' @param xlab string specifying the x axis label.
 #' @param ylab string specifying the y axis label.
 #' @param main string specifying the plot title.
-#' @param xlas numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}}).
-#' @param ylas numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}}).
+#' @param xlas numeric value of 0, 1, 2, or 3 specifying the style of axis labels (see \code{las} in \code{\link{par}}).
+#' @param ylas numeric value of 0, 1, 2, or 3 specifying the style of axis labels (see \code{las} in \code{\link{par}}).
 #' @param origin logical argument to include the plot origin (default is \code{FALSE}).
 #' @param xlim two-element vector containing horizontal axis minimum and maximum values.
 #' @param ylim two-element vector containing vertical axis minimum and maximum values.

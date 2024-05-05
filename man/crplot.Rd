@@ -74,9 +74,9 @@ digits argument in the R function \code{\link{round}} as it pertains to the hori
 
 \item{main}{string specifying the plot title.}
 
-\item{xlas}{numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}}).}
+\item{xlas}{numeric value of 0, 1, 2, or 3 specifying the style of axis labels (see \code{las} in \code{\link{par}}).}
 
-\item{ylas}{numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}}).}
+\item{ylas}{numeric value of 0, 1, 2, or 3 specifying the style of axis labels (see \code{las} in \code{\link{par}}).}
 
 \item{origin}{logical argument to include the plot origin (default is \code{FALSE}).}
 

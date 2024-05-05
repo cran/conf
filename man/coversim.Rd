@@ -100,10 +100,10 @@ in the R function \code{\link{round}} as it pertains the horizontal and vertical
 
 \item{main}{string specifying the plot title (applies to confidence region plots when \code{showplot = TRUE}).}
 
-\item{xlas}{numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}},
+\item{xlas}{numeric value of 0, 1, 2, or 3 specifying the style of axis labels (see \code{las} in \code{\link{par}},
 applies to confidence region plots when \code{showplot = TRUE}).}
 
-\item{ylas}{numeric in {0, 1, 2, 3} specifying the style of axis labels (see \code{las} in \code{\link{par}},
+\item{ylas}{numeric value of 0, 1, 2, or 3 specifying the style of axis labels (see \code{las} in \code{\link{par}},
 applies to confidence region plots when \code{showplot = TRUE}).}
 
 \item{origin}{logical argument to include the plot origin (applies to confidence region plots when \code{showplot = TRUE}).}

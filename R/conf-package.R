@@ -12,6 +12,8 @@
 #' \item calculating confidence intervals and the associated actual coverage for binomial proportions, and
 #' \item calculating the support values and the probability mass function of the Kaplan-Meier product-limit
 #' estimator.
+#' \item plotting the actual coverage function for a randomly right-censored data set with exponential
+#' failure times and exponential censoring times.
 #' }
 #'
 #' \bold{Request from authors}:  Please properly cite any use of this package and/or its algorithms,
@@ -25,17 +27,18 @@
 #' @details
 #' This package includes the functions:
 #' \itemize{
-#' \item confidence region plots: \code{\link{crplot}},
-#' \item confidence region coverage analysis: \code{\link{coversim}},
 #' \item confidence intervals for binomial proportions: \code{\link{binomTest}},
 #' \item actual coverage calculation for binomial proportions: \code{\link{binomTestCoverage}},
-#' \item actual coverage plots for binomial proportions: \code{\link{binomTestCoveragePlot}}, and
-#' \item ensemble confidence intervals for binomial proportions: \code{\link{binomTestEnsemble}}.
-#' \item  minimum root mean square confidence intervals for binomial proportions: \code{\link{binomTestMSE}}
-#' \item  Kaplan-Meier product-limit estimator support values: \code{\link{km.support}}
-#' \item  enumeration of Kaplan-Meier product-limit estimator outcomes: \code{\link{km.outcomes}}
-#' \item  probability mass function of the Kaplan-Meier product-limit estimator: \code{\link{km.pmf}}
-#' \item  probability mass functions of the Kaplan-Meier product-limit estimator: \code{\link{km.surv}}
+#' \item actual coverage plots for binomial proportions: \code{\link{binomTestCoveragePlot}},
+#' \item ensemble confidence intervals for binomial proportions: \code{\link{binomTestEnsemble}},
+#' \item minimum root mean square confidence intervals for binomial proportions: \code{\link{binomTestMSE}},
+#' \item confidence region coverage analysis: \code{\link{coversim}},
+#' \item confidence region plots: \code{\link{crplot}},
+#' \item actual coverage plot and table: \code{\link{km.coverage}},
+#' \item enumeration of Kaplan-Meier product-limit estimator outcomes: \code{\link{km.outcomes}},
+#' \item probability mass function of the Kaplan-Meier product-limit estimator: \code{\link{km.pmf}},
+#' \item Kaplan-Meier product-limit estimator support values: \code{\link{km.support}}, and
+#' \item probability mass functions of the Kaplan-Meier product-limit estimator: \code{\link{km.surv}}.
 #' }
 #'
 #' @section Vignettes:
@@ -48,7 +51,7 @@
 #' supported this work.
 #'
 #' @author
-#' Christopher Weld, Kexin Feng, Hayeon Park, Yuxin Qin, Heather Sasinowska, Larry Leemis
+#' Christopher Weld, Kexin Feng, Hayeon Park, Yuxin Qin, Xingyu Wang, Heather Sasinowska, Larry Leemis
 #'
 #' Maintainer: Christopher Weld <ceweld241@gmail.com>
 #'
