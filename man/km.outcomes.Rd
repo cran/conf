@@ -20,18 +20,18 @@ km.outcomes(n)
 \details{
   The Kaplan-Meier product-limit estimator is used to
   estimate the survivor function for a data set of
-  positive values in the presence of right censoring. 
+  positive values in the presence of right censoring.
   The \code{km.outcomes} function generates a matrix with
   all possible combinations of observed failures and
   right censored values and the resulting support values
   for the Kaplan-Meier product-limit estimator for a sample of
   size \code{n}.
-  
+
   The \code{n} argument must be a positive integer denoting
   the sample size. Allowable limits are from 1 to 24.
   Larger values of \code{n} are not allowed because of CPU
-  and memory limitations. 
-  
+  and memory limitations.
+
   In order to keep the support values as exact fractions,
   the numerators and denominators are stored separately in
   the \code{a} matrix in the columns named \code{num} and
@@ -49,7 +49,7 @@ km.outcomes(n)
     \item \code{d1, d2, ..., dn}: equals 0 if the event corresponds
           to a censored observation, equals 1 if the event
           corresponds to a failure;
-    \item \code{S(t)}: numeric value of the associated support value; 
+    \item \code{S(t)}: numeric value of the associated support value;
     \item \code{num}: numerator of the support value as a fraction;
     \item \code{den}: denominator of the support value as a fraction.
   }
@@ -67,7 +67,7 @@ Function of the Kaplan-Meier Product-Limit Estimator",
 }
 
 \seealso{
-  \code{\link{survfit}}
+  \code{\link[survival]{survfit}}
 }
 
 \examples{

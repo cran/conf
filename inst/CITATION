@@ -12,7 +12,7 @@ bibentry(bibtype = "Manual",
                     person("Xingyu", "Wang", role = "aut"),
                     person("Heather", "Sasinowska", role = "aut"),
                     person("Lawrence", "Leemis", role = "aut")),
-         year = "2024",
+         year = "2025",
          note = note,
          url = "https://CRAN.R-project.org/package=conf",
          key = "conf-package"

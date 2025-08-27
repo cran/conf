@@ -338,7 +338,10 @@ rinvgauss <- function(n = 1,
   ifelse(rbinom(length(x1),1,mu/(mu+x1)) == 1,x1,mu^2/x1)
 }
 
+#' @export
 coef.durationFit <- function(object,...) object$estimate
+
+#' @export
 logLik.durationFit <- function(object,...) object$logLik
 
 #' @export

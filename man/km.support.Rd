@@ -59,7 +59,7 @@ Function of the Kaplan-Meier Product-Limit Estimator",
   Larry Leemis (\email{leemis@math.wm.edu})}
 
 \seealso{
-  \code{\link{survfit}}
+  \code{\link[survival]{survfit}}
 }
 
 \examples{

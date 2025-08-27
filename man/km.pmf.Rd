@@ -26,26 +26,26 @@ km.pmf(n, h, perc, plot, sep, xfrac, cex.lollipop)
 \details{
   The Kaplan-Meier product-limit estimator is used to
   estimate the survivor function for a data set of
-  positive values in the presence of right censoring. 
+  positive values in the presence of right censoring.
   The \code{km.pmf} function generates the probability mass function for the support values
 of the Kaplan-Meier product-limit estimator for a particular sample
 size \code{n}, probability of observing a failure \code{h} at the time of interest expressed as the cumulative probability \code{perc} associated with \code{X = min(T, C)}, where \code{T} is the failure time and \code{C} is the censoring time under a random-censoring scheme.
-  
+
   The \code{n} argument must be a positive integer denoting
   the sample size. Allowable limits are from 1 to 23.
   Larger values of \code{n} are not allowed because of CPU
-  and memory limitations. 
-  
-  For larger sample size \code{n}, it is recommended to set 
-  \code{sep = FALSE}, \code{xfrac = FALSE}, and 
+  and memory limitations.
+
+  For larger sample size \code{n}, it is recommended to set
+  \code{sep = FALSE}, \code{xfrac = FALSE}, and
   \code{cex.lollipop = 0.01} for a better visual effect.
 }
 
 \value{
   The \code{km.pmf} function returns a dataframe with
-  2 columns. The column named \code{S} stores all the support 
-  values for the Kaplan-Meier product-limit estimator 
-  with sample size \code{n}, including \code{NA}. The 
+  2 columns. The column named \code{S} stores all the support
+  values for the Kaplan-Meier product-limit estimator
+  with sample size \code{n}, including \code{NA}. The
   column named \code{P} stores the associated probabilities.
 }
 
@@ -61,7 +61,7 @@ Function of the Kaplan-Meier Product-Limit Estimator",
 }
 
 \seealso{
-  \code{\link{survfit}}
+  \code{\link[survival]{survfit}}
 }
 
 \examples{

@@ -4,7 +4,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-## ---- fig.width = 6, fig.height = 4, fig.show = 'hold', echo = FALSE, warning = FALSE, results = "hide"----
+## ----fig.width = 6, fig.height = 4, fig.show = 'hold', echo = FALSE, warning = FALSE, results = "hide"----
 library(conf)
 nukedata <- c(1728, 1986, 10746)
 x1 <- crplot(nukedata, 0.1, "gamma", sf = c(2, 2), info = TRUE, repair = FALSE, showplot = FALSE)
@@ -74,15 +74,15 @@ bc <- c(bc_obs, bc_cen)
 cen <- c(rep(1, length(bc_obs)), rep(0, length(bc_cen)))
 print(length(bc))
 
-## ---- fig.width = 7, fig.height = 5, fig.show = 'hold', warning = FALSE, eval = FALSE----
-#  distns <- c("cauchy", "gamma", "llogis", "logis", "norm", "weibull")
-#  par(mfrow = c(2, 3))        # plot in a 2-row, 3-column grid
-#  for (i in 1:length(distns)) {
-#    try(crplot(dataset = bc, alpha = 0.1, distn = distns[i], cen = cen,
-#               sf = c(0, 2), ylas = 1, main = distns[i]))
-#  }
+## ----fig.width = 7, fig.height = 5, fig.show = 'hold', warning = FALSE, eval = FALSE----
+# distns <- c("cauchy", "gamma", "llogis", "logis", "norm", "weibull")
+# par(mfrow = c(2, 3))        # plot in a 2-row, 3-column grid
+# for (i in 1:length(distns)) {
+#   try(crplot(dataset = bc, alpha = 0.1, distn = distns[i], cen = cen,
+#              sf = c(0, 2), ylas = 1, main = distns[i]))
+# }
 
-## ---- fig.width = 7, fig.height = 5, fig.show = 'hold', warning = FALSE, echo = FALSE----
+## ----fig.width = 7, fig.height = 5, fig.show = 'hold', warning = FALSE, echo = FALSE----
 # results of above chunk are input directly here to save processing time on vignette (otherwise prohibitively  long for CRAN)
 distns <- c("cauchy", "gamma", "llogis", "logis", "norm", "weibull")
 par(mfrow = c(2, 3))        # plot in a 2-row, 3-column grid
@@ -142,22 +142,22 @@ for (i in 1:length(distns)) {
   }
 }
 
-## ---- fig.show = 'hold', warning = FALSE, eval = FALSE------------------------
-#  x <- crplot(bc, alpha = 0.1, distn = "gamma", cen = cen, jumpinfo = TRUE, showjump = TRUE,
-#              main = "with repairs")
-#  #> [1] "Confidence region plot complete; made using 276 boundary points."
-#  crplot(bc, alpha = 0.1, distn = "gamma", cen = cen, repair = FALSE,
-#         main = "without repairs")
-#  #> [1] "Confidence region plot complete; made using 134 boundary points."
-#  jumppoints <- t(matrix(c(x$repair$q2jumpxy, x$repair$q2jumpL, x$repair$q2jumpR,
-#                           x$repair$q4jumpxy, x$repair$q4jumpL, x$repair$q4jumpR), nrow = 2))
-#  points(jumppoints, pch = 24, bg = rep(c("red", "green", "yellow")))
-#  print(labels(x$repair))
-#  #>  [1] "q2jumpuphill" "q4jumpuphill" "q2jumpshift"  "q4jumpshift"
-#  #>  [5] "q2jumpxy"     "q4jumpxy"     "q2jumpL"      "q4jumpL"
-#  #>  [9] "q2jumpR"      "q4jumpR"      "q2gaptype"    "q4gaptype"
+## ----fig.show = 'hold', warning = FALSE, eval = FALSE-------------------------
+# x <- crplot(bc, alpha = 0.1, distn = "gamma", cen = cen, jumpinfo = TRUE, showjump = TRUE,
+#             main = "with repairs")
+# #> [1] "Confidence region plot complete; made using 276 boundary points."
+# crplot(bc, alpha = 0.1, distn = "gamma", cen = cen, repair = FALSE,
+#        main = "without repairs")
+# #> [1] "Confidence region plot complete; made using 134 boundary points."
+# jumppoints <- t(matrix(c(x$repair$q2jumpxy, x$repair$q2jumpL, x$repair$q2jumpR,
+#                          x$repair$q4jumpxy, x$repair$q4jumpL, x$repair$q4jumpR), nrow = 2))
+# points(jumppoints, pch = 24, bg = rep(c("red", "green", "yellow")))
+# print(labels(x$repair))
+# #>  [1] "q2jumpuphill" "q4jumpuphill" "q2jumpshift"  "q4jumpshift"
+# #>  [5] "q2jumpxy"     "q4jumpxy"     "q2jumpL"      "q4jumpL"
+# #>  [9] "q2jumpR"      "q4jumpR"      "q2gaptype"    "q4gaptype"
 
-## ---- fig.show = 'hold', warning = FALSE, results='hide', echo = FALSE--------
+## ----fig.show = 'hold', warning = FALSE, results='hide', echo = FALSE---------
 # results of above chunk are input directly here to save processing time on vignette (otherwise prohibitively  long for CRAN)
 par(mar = c(4, 4.5, 2, 1.5))
 a$theta1 <- c(11092.63, 10433.13, 9807.861, 8634.626, 8073.472, 7796.363, 7520.319, 6952.024, 6371.019, 5763.591, 5061.823, 4510.083, 4126.239, 4077.722,
@@ -233,11 +233,11 @@ points(pJ, pch = 24, bg = "red")
 points(pL, pch = 24, bg = "green")
 points(pR, pch = 24, bg = "yellow")
 
-## ---- fig.width = 3.5, fig.height = 3.5, fig.show = 'hold', warning = FALSE, eval = FALSE----
-#  crplot(bc, alpha = 0.1, distn = "gamma", cen = cen, jumpuphill = 0.1, showjump = TRUE)
-#  #> [1] "Confidence region plot complete; made using 277 boundary points."
+## ----fig.width = 3.5, fig.height = 3.5, fig.show = 'hold', warning = FALSE, eval = FALSE----
+# crplot(bc, alpha = 0.1, distn = "gamma", cen = cen, jumpuphill = 0.1, showjump = TRUE)
+# #> [1] "Confidence region plot complete; made using 277 boundary points."
 
-## ---- fig.width = 3.5, fig.height = 3.5, fig.show = 'hold', echo = FALSE------
+## ----fig.width = 3.5, fig.height = 3.5, fig.show = 'hold', echo = FALSE-------
 par(mar = c(4, 4.5, 2, 1.5))
 # results of above chunk are input directly here to save processing time on vignette (otherwise prohibitively long for CRAN)
 a$theta1 <- c(11092.63, 10433.13, 9807.861, 8634.626, 8073.472, 7796.363, 7520.319, 6952.024, 6371.019, 5763.591, 5061.823, 4510.083, 4126.239, 4077.722,
@@ -307,11 +307,11 @@ legend("topright", legend = c("CR boundary points", "jump-center (JC)", "JC left
        pch = c(1, rep(24, 3), 21), pt.bg = c("black", "red", "green", "yellow", "blue"), pt.cex = c(1, 1, 1, 1, 0.7),
        bty = "n", cex = 0.8)
 
-## ---- fig.width = 3.5, fig.height = 3.5, fig.show = 'hold', warning = FALSE, eval = FALSE----
-#  crplot(bc, alpha = 0.1, distn = "gamma", cen = cen, jumpshift = 0.1, showjump = TRUE)
-#  #> [1] "Confidence region plot complete; made using 292 boundary points."
+## ----fig.width = 3.5, fig.height = 3.5, fig.show = 'hold', warning = FALSE, eval = FALSE----
+# crplot(bc, alpha = 0.1, distn = "gamma", cen = cen, jumpshift = 0.1, showjump = TRUE)
+# #> [1] "Confidence region plot complete; made using 292 boundary points."
 
-## ---- fig.width = 3.5, fig.height = 3.5, fig.show = 'hold', echo = FALSE------
+## ----fig.width = 3.5, fig.height = 3.5, fig.show = 'hold', echo = FALSE-------
 par(mar = c(4, 4.5, 2, 1.5))
 # results of above chunk are input directly here to save processing time on vignette (otherwise prohibitively  long for CRAN)
 a$theta1 <- c(11092.63, 10433.13, 9807.861, 8634.626, 8073.472, 7796.363, 7520.319, 6952.024, 6371.019, 5763.591, 5061.823, 4510.083, 4126.239, 4077.722, 4069.232,
@@ -381,11 +381,11 @@ legend("topright", legend = c("CR boundary points", "jump-center (JC)", "JC left
        pch = c(1, rep(24, 3), 21), pt.bg = c("black", "red", "green", "yellow", "blue"), pt.cex = c(1, 1, 1, 1, 0.7),
        bty = "n", cex = 0.8)
 
-## ---- fig.width = 3.5, fig.height = 3.5, fig.show = 'hold', warning = FALSE, eval = FALSE----
-#  crplot(bc, alpha = 0.1, distn = "gamma", cen = cen, showjump = TRUE, ellipse_n = 80)
-#  #> [1] "Confidence region plot complete; made using 387 boundary points."
+## ----fig.width = 3.5, fig.height = 3.5, fig.show = 'hold', warning = FALSE, eval = FALSE----
+# crplot(bc, alpha = 0.1, distn = "gamma", cen = cen, showjump = TRUE, ellipse_n = 80)
+# #> [1] "Confidence region plot complete; made using 387 boundary points."
 
-## ---- fig.width = 3.5, fig.height = 3.5, fig.show = 'hold', echo = FALSE------
+## ----fig.width = 3.5, fig.height = 3.5, fig.show = 'hold', echo = FALSE-------
 par(mar = c(4, 4.5, 2, 1.5))
 # results of above chunk are input directly here to save processing time on vignette (otherwise prohibitively  long for CRAN)
 a$theta1 <- c(12444.4, 11782.27, 11241.81, 10828.5, 10494.14, 10212.32, 9967.056, 9748.017, 9548.122, 9362.297, 9186.756, 9018.561, 8855.346, 8695.125, 8536.167,
@@ -467,11 +467,11 @@ legend("topright", legend = c("CR boundary points", "jump-center (JC)", "JC left
        pch = c(1, rep(24, 3), 21), pt.bg = c("black", "red", "green", "yellow", "blue"), pt.cex = c(1, 1, 1, 1, 0.7),
        bty = "n", cex = 0.8)
 
-## ---- fig.width = 3.5, fig.height = 3.5, fig.show = 'hold', warning = FALSE, eval = FALSE----
-#  crplot(bc, alpha = 0.1, distn = "gamma", cen = cen, maxcount = 50)
-#  #> [1] "Confidence region plot complete; made using 476 boundary points."
+## ----fig.width = 3.5, fig.height = 3.5, fig.show = 'hold', warning = FALSE, eval = FALSE----
+# crplot(bc, alpha = 0.1, distn = "gamma", cen = cen, maxcount = 50)
+# #> [1] "Confidence region plot complete; made using 476 boundary points."
 
-## ---- fig.width = 3.5, fig.height = 3.5, fig.show = 'hold', echo = FALSE------
+## ----fig.width = 3.5, fig.height = 3.5, fig.show = 'hold', echo = FALSE-------
 par(mar = c(4, 4.5, 2, 1.5))
 # results of above chunk are input directly here to save processing time on vignette (otherwise prohibitively  long for CRAN)
 a$theta1 <- c(11092.63, 10433.13, 9807.861, 8634.626, 8073.472, 7796.363, 7520.319, 6952.024, 6371.019, 5763.591, 5061.823, 4510.083, 4126.239, 4077.722, 4069.232,
@@ -548,16 +548,16 @@ points(a$theta1, a$theta2, lwd = 0.65)
 axis(side = 1, at = c(a$theta1hat, range(a$theta1)))
 axis(side = 2, at = c(a$theta2hat, range(a$theta2)))
 
-## ---- fig.show = 'hold', warning = FALSE, eval = FALSE------------------------
-#  x <- crplot(bc, alpha = 0.1, distn = "gamma", cen = cen, showjump  = TRUE,
-#              jumpshift = 0.07, jumpuphill = 0.05, jumpinfo = TRUE)
-#  #> [1] "Confidence region plot complete; made using 240 boundary points."
-#  plot(c(x$theta, x$theta[1]), c(x$kappa, x$kappa[1]), type = "l", axes = FALSE,
-#       xlab = expression(theta), ylab = expression(kappa))
-#  axis(side = 1, at = range(x$theta))
-#  axis(side = 2, at = range(x$kappa))
+## ----fig.show = 'hold', warning = FALSE, eval = FALSE-------------------------
+# x <- crplot(bc, alpha = 0.1, distn = "gamma", cen = cen, showjump  = TRUE,
+#             jumpshift = 0.07, jumpuphill = 0.05, jumpinfo = TRUE)
+# #> [1] "Confidence region plot complete; made using 240 boundary points."
+# plot(c(x$theta, x$theta[1]), c(x$kappa, x$kappa[1]), type = "l", axes = FALSE,
+#      xlab = expression(theta), ylab = expression(kappa))
+# axis(side = 1, at = range(x$theta))
+# axis(side = 2, at = range(x$kappa))
 
-## ---- fig.show = 'hold', echo = FALSE-----------------------------------------
+## ----fig.show = 'hold', echo = FALSE------------------------------------------
 par(mar = c(4, 4.5, 2, 1.5))
 # results of above chunk are input directly here to save processing time on vignette (otherwise prohibitively  long for CRAN)
 a$theta1 <- c(11092.63, 10433.13, 9807.861, 8634.626, 8073.472, 7796.363, 7520.319, 6952.024, 6371.019, 5763.591, 5061.823, 4510.083, 4126.239, 4077.722, 4069.232,
@@ -633,7 +633,7 @@ plot(c(x$theta, x$theta[1]), c(x$kappa, x$kappa[1]), type = "l", axes = FALSE,
 axis(side = 1, at = range(x$theta))
 axis(side = 2, at = range(x$kappa))
 
-## ---- fig.show = 'hold', warning = FALSE--------------------------------------
+## ----fig.show = 'hold', warning = FALSE---------------------------------------
 par(mar = c(4, 4, 1.5, 1))
 # top-left confidence region extreme (zoomed-in)
 plot(x$theta, x$kappa, xlim = c(min(x$theta), x$thetahat), ylim = c(x$kappahat, max(x$kappa)), 
@@ -649,20 +649,20 @@ plot(x$theta, x$kappa, ylim = c(min(x$kappa), 0.95), type = 'l',
      xlab = expression(theta), ylab = expression(kappa), main = "bottom-right (zoom-in)")
 points(x$theta, x$kappa)
 
-## ---- fig.show = 'hold', warning = FALSE, eval = FALSE------------------------
-#  # top-left confidence region extreme (zoomed-in)
-#  x <- crplot(bc, alpha = 0.1, distn = "gamma", cen = cen, showjump  = TRUE, jumpinfo = TRUE,
-#              jumpshift = c(0.5, 0.5, 0.5, 0.07), jumpuphill = c(0.01, 0.25, 0.01, 0.05),
-#              xlim = c(min(x$theta), x$thetahat), ylim = c(x$kappahat, 4.15),
-#              main = "top-left (zoom-in)")
-#  #> [1] "Confidence region plot complete; made using 299 boundary points."
-#  
-#  # bottom-right confidence region extreme (zoomed-in)
-#  plot(x$theta, x$kappa, ylim = c(min(x$kappa), 0.95), type = 'l',
-#       xlab = expression(theta), ylab = expression(kappa), main = "bottom-right (zoom-in)")
-#  points(x$theta, x$kappa)
+## ----fig.show = 'hold', warning = FALSE, eval = FALSE-------------------------
+# # top-left confidence region extreme (zoomed-in)
+# x <- crplot(bc, alpha = 0.1, distn = "gamma", cen = cen, showjump  = TRUE, jumpinfo = TRUE,
+#             jumpshift = c(0.5, 0.5, 0.5, 0.07), jumpuphill = c(0.01, 0.25, 0.01, 0.05),
+#             xlim = c(min(x$theta), x$thetahat), ylim = c(x$kappahat, 4.15),
+#             main = "top-left (zoom-in)")
+# #> [1] "Confidence region plot complete; made using 299 boundary points."
+# 
+# # bottom-right confidence region extreme (zoomed-in)
+# plot(x$theta, x$kappa, ylim = c(min(x$kappa), 0.95), type = 'l',
+#      xlab = expression(theta), ylab = expression(kappa), main = "bottom-right (zoom-in)")
+# points(x$theta, x$kappa)
 
-## ---- fig.show = 'hold', echo = FALSE-----------------------------------------
+## ----fig.show = 'hold', echo = FALSE------------------------------------------
 par(mar = c(4, 4.5, 2, 1.5))
 # results of above chunk are input directly here to save processing time on vignette (otherwise prohibitively  long for CRAN)
 a$theta1 <- c(11092.63, 10433.13, 9807.861, 8634.626, 8073.472, 7796.363, 7520.319, 6952.024, 6371.019, 5763.591, 5061.823, 4510.083, 4126.239,
@@ -751,7 +751,7 @@ plot(x$theta, x$kappa, ylim = c(min(x$kappa), 0.95), type = 'l',
      xlab = expression(theta), ylab = expression(kappa), main = "bottom-right (zoom-in)")
 points(x$theta, x$kappa)
 
-## ---- fig.width = 6.2, fig.height = 6, fig.show = 'hold'----------------------
+## ----fig.width = 6.2, fig.height = 6, fig.show = 'hold'-----------------------
 # final plot, with all necessary repairs complete
 plot(c(x$theta, x$theta[1]), c(x$kappa, x$kappa[1]), type = "l", axes = FALSE, 
      xlab = expression(theta), ylab = expression(kappa), main = "gamma 90% CR for BF data (final)")
@@ -765,15 +765,15 @@ points(x$thetahat, x$kappahat, pch = 3)
 #> [1] "Unable to produce a confidence region for the given sample and/or parameterization.   "   
 #> [1] "--------------------------------------------------------------------------------------"
 
-## ---- fig.show = 'hold', warning = FALSE, error = FALSE, eval = FALSE---------
-#  # crplot is unable to plot this 98% confidence region
-#  crplot(dataset = c(1.5, 2), alpha = 0.01, distn = "invgauss")
-#  #> [1] "--------------------------------------------------------------------------------------"
-#  #> [1] "R uniroot failure searching for confidence region boundary---challenging parameters and/or shape."
-#  #> [1] "Unable to produce a confidence region for the given sample and/or parameterization.   "
-#  #> [1] "--------------------------------------------------------------------------------------"
+## ----fig.show = 'hold', warning = FALSE, error = FALSE, eval = FALSE----------
+# # crplot is unable to plot this 98% confidence region
+# crplot(dataset = c(1.5, 2), alpha = 0.01, distn = "invgauss")
+# #> [1] "--------------------------------------------------------------------------------------"
+# #> [1] "R uniroot failure searching for confidence region boundary---challenging parameters and/or shape."
+# #> [1] "Unable to produce a confidence region for the given sample and/or parameterization.   "
+# #> [1] "--------------------------------------------------------------------------------------"
 
-## ---- fig.show = 'hold', warning = FALSE--------------------------------------
+## ----fig.show = 'hold', warning = FALSE---------------------------------------
 # a plot without jump-center repairs is attainable, but its 3rd and 4th quadrants, 
 # relative to the MLE, are in need of jump-center repairs
 crplot(dataset = c(1.5, 2), alpha = 0.01, distn = "invgauss", repair = FALSE, 
