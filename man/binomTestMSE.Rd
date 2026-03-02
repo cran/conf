@@ -71,7 +71,7 @@
 
 \author{Kexin Feng (\email{kfeng@caltech.edu}),
   Larry Leemis (\email{leemis@math.wm.edu}),
-  Heather Sasinowska (\email{hdsasinowska@wm.edu})
+  Heather Krehbiel (\email{hdsasinowska@wm.edu})
 }
 
 \examples{

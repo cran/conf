@@ -59,7 +59,7 @@ supported this work.
 }
 
 \author{
-Christopher Weld, Kexin Feng, Hayeon Park, Yuxin Qin, Xingyu Wang, Heather Sasinowska, Larry Leemis
+Christopher Weld, Kexin Feng, Hayeon Park, Yuxin Qin, Xingyu Wang, Heather Krehbiel, Larry Leemis
 
 Maintainer: Christopher Weld <ceweld241@gmail.com>
 }

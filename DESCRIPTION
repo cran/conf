@@ -1,13 +1,13 @@
 Package: conf
 Type: Package
 Title: Visualization and Analysis of Statistical Measures of Confidence
-Version: 1.9.2
+Version: 1.9.3
 Authors@R: c(person("Christopher", "Weld", role = c("aut", "cre"), email = "ceweld241@gmail.com", comment = c(ORCID = "0000-0001-5902-9738")), 
   person("Kexin", "Feng", role = "aut"),
   person("Hayeon", "Park", role = "aut"),
   person("Yuxin", "Qin", role = "aut"), 
   person("Xingyu", "Wang", role = "aut"),
-  person("Heather", "Sasinowska", role = "aut"),
+  person("Heather", "Krehbiel", role = "aut"),
   person("Lawrence", "Leemis", role = "aut"),
   person("Yuan", "Chang", role = "ctb"),
   person("Brock", "Crook", role = "ctb"),
@@ -68,14 +68,14 @@ Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
 Language: en-US
 NeedsCompilation: no
-Packaged: 2025-08-27 18:03:15 UTC; christopherweld
+Packaged: 2026-03-02 15:16:58 UTC; christopherweld
 Author: Christopher Weld [aut, cre] (ORCID:
     <https://orcid.org/0000-0001-5902-9738>),
   Kexin Feng [aut],
   Hayeon Park [aut],
   Yuxin Qin [aut],
   Xingyu Wang [aut],
-  Heather Sasinowska [aut],
+  Heather Krehbiel [aut],
   Lawrence Leemis [aut],
   Yuan Chang [ctb],
   Brock Crook [ctb],
@@ -83,4 +83,4 @@ Author: Christopher Weld [aut, cre] (ORCID:
   Andrew Loh [ctb],
   Xin Zhang [ctb]
 Repository: CRAN
-Date/Publication: 2025-08-27 18:30:15 UTC
+Date/Publication: 2026-03-02 15:40:02 UTC

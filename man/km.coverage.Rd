@@ -70,7 +70,7 @@ bounds covering p. These sums give the actual coverage curves.
 
   Larry Leemis (\email{lmleem@wm.edu})
 
-  Heather Sasinowska (\email{hdsasinowska@wm.edu})
+  Heather Krehbiel (\email{hdsasinowska@wm.edu})
 }
 
 \examples{

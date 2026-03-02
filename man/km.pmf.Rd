@@ -56,7 +56,7 @@ Function of the Kaplan-Meier Product-Limit Estimator",
 }
 
 \author{Yuxin Qin (\email{yqin08@wm.edu}),
-  Heather Sasinowska (\email{hdsasinowska@wm.edu}),
+  Heather Krehbiel (\email{hdsasinowska@wm.edu}),
   Larry Leemis (\email{leemis@math.wm.edu})
 }
 
